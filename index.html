@@ -1,0 +1,491 @@
+
+<!-- saved from url=(0020)http://cube.vipe.re/ -->
+<html class="js-focus-visible"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<title>Rubik's Cube algos</title>
+		<link href="./index_files/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="./index_files/algos.css">
+		<script src="./index_files/jquery.min.js.download"></script>
+		<script src="./index_files/algos.js.download"></script>
+		<script src="./index_files/pre3d.modified.js.download"></script>
+		<script src="./index_files/pre3d_shape_utils.js.download"></script>
+		<script src="./index_files/pre3d_demo_utils.js.download"></script>
+		<script src="./index_files/pre3dCube.js.download"></script>
+		<script>
+		var $j = jQuery.noConflict();
+		var rubik_cube;
+		
+		$j(function (){
+			renderCubes();
+			
+			rubik_cube = new RubikCube('canvas', 3, null, null, 600);
+			rubik_cube.reset();
+
+			rubik_cube3 = new RubikCube('canvas3', 3, null, null, 600);
+			rubik_cube3.reset();
+			
+			$j('legend').click(function () {
+				$j(this).parent().children('div').toggle();
+			});
+
+			$j('#div_menu ul>li').click( function () {
+				$j('.tab_body_item').removeClass('active');
+				$j('#div_menu ul>li').removeClass('active');
+				var class_name = $j(this).attr('class');
+				$j('.tab_body_item.' + class_name).addClass('active');
+				$j(this).addClass('active');
+			});
+
+			if (window.location.hash != '') {
+				$j('#rubik_cube3_algo').val(window.location.hash.substr(1));
+				rubik_cube3.move(window.location.hash.substr(1), true, false);
+			}
+			
+			
+		});
+		
+		function setDemoAlgo(formula, obj) {
+			$j('#canvas_formula').html(formula);
+			rubik_cube.reset();
+			rubik_cube.move(formula, true, true);
+			
+			//var y_pos = $j(document.body).scrollTop();
+			var y_pos = obj.offset().top - 50;
+			console.log(y_pos);
+			$j('#div_canvas').show('fast').css('top', y_pos);
+		}
+		
+		/*
+		Cube applet : http://cubefreak.net/a/?case=R'UR'U'R'U'R'URUR2
+		*/
+
+		</script>
+	<style type="text/css">
+@font-face {
+  font-weight: 400;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 400;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-weight: 500;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 500;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-MediumItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-weight: 700;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 700;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-BoldItalic.woff2') format('woff2');
+}
+
+@font-face {
+  font-weight: 900;
+  font-style:  normal;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-Black.woff2') format('woff2');
+}
+@font-face {
+  font-weight: 900;
+  font-style:  italic;
+  font-family: 'Inter-Loom';
+
+  src: url('https://cdn.loom.com/assets/fonts/inter/Inter-UI-BlackItalic.woff2') format('woff2');
+}</style></head>
+	<body class="vsc-initialized">
+		
+	<div>
+		<div id="div_canvas">
+			<div>
+				<div style="float:left; width:200px;">
+					<canvas id="canvas" width="200" height="200">
+					  Sorry, this demo requires a web browser which supports HTML5 canvas!
+					</canvas>
+				</div>
+				<div id="canva_sidebar" style="float:left; width:60px; ">
+					<a href="javascript:void(0)" onclick="$j(&#39;#div_canvas&#39;).hide(&#39;fast&#39;);">close</a>
+					<br>
+					<a href="javascript:void(0)" onclick="rubik_cube.reset(); rubik_cube.move($j(&#39;#canvas_formula&#39;).html(), true, true);">reset</a>
+					<br>
+					<a href="javascript:void(0)" onclick="rubik_cube.move($j(&#39;#canvas_formula&#39;).html());">solve</a>
+					<a href="javascript:void(0)" onclick="rubik_cube.move($j(&#39;#canvas_formula&#39;).html(), false, true);">unsolve</a>
+					<br><br><br><br>
+					<div style="font-size:11px; padding-left:2px;">
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;U&#39;);">U</a>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;U\&#39;&#39;);">U'</a>
+						|
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;D&#39;);">D</a>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;D\&#39;&#39;);">D'</a>
+						<br>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;R&#39;);">R</a>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;R\&#39;&#39;);">R'</a>
+						|
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;L&#39;);">L</a>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;L\&#39;&#39;);">L'</a>
+						<br>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;F&#39;);">F</a>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;F\&#39;&#39;);">F'</a>
+						|
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;B&#39;);">B</a>
+						<a href="javascript:void(0)" onclick="rubik_cube.move(&#39;B\&#39;&#39;);">B'</a>
+					</div>
+
+				</div>
+				<div style="clear:both;"></div>
+			</div>
+			<div id="canva_bottombar" style="">
+				<span id="canvas_formula" style="font-size:13px;">solved</span>
+			</div>
+		</div>
+		<br>
+	</div>
+	
+	<div>
+		<div id="div_menu" class="navbar">
+			<div class="navbar-inner">
+			<ul class="nav">
+				<li class="home active"><a href="javascript:void(0)">Intro</a></li>
+				<li class="cross"><a href="javascript:void(0)">Cross</a></li>
+				<li class="f2l"><a href="javascript:void(0)">F2L</a></li>
+				<li class="oll1"><a href="javascript:void(0)">OLL (2 looks)</a></li>
+				<li class="oll2"><a href="javascript:void(0)">OLL</a></li>
+				<li class="pll1"><a href="javascript:void(0)">PLL (basics)</a></li>
+				<li class="pll2"><a href="javascript:void(0)">PLL</a></li>
+			</ul>
+			</div>
+			<!--<div style="clear:both"></div>-->
+		</div>
+	</div>
+
+	<div class="well">
+		<div id="div_tab_items">
+			<div class="tab_body_item home active">
+				<fieldset>
+					<legend>Intro</legend>
+					<div>
+						<small>Notice: click on images to view animations</small>
+					</div>
+					<br>
+
+					<div>
+						<canvas id="canvas3" width="500" height="500">
+						  Sorry, this demo requires a web browser which supports HTML5 canvas!
+						</canvas>
+					</div>
+					<div style="font-size:14px;">
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;U&#39;);">U</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;U\&#39;&#39;);">U'</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;B&#39;);">B</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;B\&#39;&#39;);">B'</a>
+						<br>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;R&#39;);">R</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;R\&#39;&#39;);">R'</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;L&#39;);">L</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;L\&#39;&#39;);">L'</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;F\&#39;&#39;);">F'</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;F&#39;);">F</a>
+						<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;D\&#39;&#39;);">D'</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;D&#39;);">D</a>
+						<br>
+						<br>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;x&#39;);">x</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;x\&#39;&#39;);">x'</a>
+						|
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;y&#39;);">y</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;y\&#39;&#39;);">y'</a>
+						|
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;z&#39;);">z</a>
+						<a href="javascript:void(0)" onclick="rubik_cube3.move(&#39;z\&#39;&#39;);">z'</a>
+					</div>
+					<div>
+						Algo : <input type="text" value="M2 y M2 z M2 z" id="rubik_cube3_algo" style="width:300px;">
+						<input type="button" onclick="rubik_cube3.move(document.getElementById(&#39;rubik_cube3_algo&#39;).value)" value="Do">
+						<input type="button" onclick="rubik_cube3.move(document.getElementById(&#39;rubik_cube3_algo&#39;).value, false, true)" value="Undo">
+						<input type="button" onclick="rubik_cube3.reset()" value="Reset"><input type="button" value="F2L train"><input type="button" value="Full"><input type="button" value="&lt;&lt;"><input type="button" value="&lt;"><input id="rubik_cube3_move_idx" type="string" value="0" style="width: 30px;"><input type="button" value="&gt;"><input type="button" value="&gt;&gt;">
+					</div>
+					<br>
+					<br>
+					<div>
+						Sources :
+						<br>https://sites.google.com/site/piauscubingsite/ &nbsp;
+						<a href="https://sites.google.com/site/piauscubingsite/3x3x3/oll">OLL</a>
+						<a href="https://sites.google.com/site/piauscubingsite/3x3x3/pll">PLL</a>
+						<br>
+						http://cube.crider.co.uk/ &nbsp;
+						<a href="http://cube.crider.co.uk/visualcube.php">visualcube</a>
+						<a href="http://sourceforge.net/projects/vcube/?source=dlp">[sources]</a>
+						<a href="http://cube.crider.co.uk/zz.php?p=f2l">f2l</a>
+						<br>
+						http://www.francocube.com/ &nbsp;
+						<a href="http://www.francocube.com/deadalnix/fridrich.php">fridrich</a>
+						<br>
+						http://monstermax.net/ &nbsp;
+						<a href="http://cube.vipe.re/pre3dCube.html">Cube Js</a>
+						<a href="https://github.com/monstermax/rubiks_cube_html5">Cube Js (github)</a>
+						<br>
+						<br>
+						Links:
+						<br>
+						<a href="http://badmephisto.com/">Badmephisto</a>
+						<br>
+						<a href="http://www.kungfoomanchu.com/">KungFooManchu</a>
+						<br>
+						<a href="http://www.cubezone.be/">CubeZone</a>
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="tab_body_item cross">
+				<fieldset>
+					<legend>Cross</legend>
+					<div>
+						<ul class="cross">
+							<li class="algo"><div class="name">1 : </div><div class="image" stage="cross" view="trans"><img src="./index_files/visualcube.php"></div><div class="formula">R2</div></li>
+							<li class="algo"><div class="name">2 : </div><div class="image" stage="cross" view="trans"><img src="./index_files/visualcube(1).php"></div><div class="formula">U R2</div></li>
+							<li class="algo"><div class="name">3 : </div><div class="image" stage="cross" view="trans"><img src="./index_files/visualcube(2).php"></div><div class="formula">U2 R2</div></li>
+							<li class="algo"><div class="name">4 : </div><div class="image" stage="cross" view="trans"><img src="./index_files/visualcube(3).php"></div><div class="formula">F R' F'</div></li>
+							<li class="algo"><div class="name">5 : </div><div class="image" stage="cross" view="trans"><img src="./index_files/visualcube(4).php"></div><div class="formula">R D' F D</div><div class="formula">R2 U' R' B' R</div></li>
+						</ul>
+					</div>
+					<div style="clear:both;">	
+						<a href="http://cubefreak.net/speed/cfop/cross.php" target="_blank">cubefreak.net cross</a>
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="tab_body_item f2l">
+				<div>
+					<fieldset>
+						<legend>F2L</legend>
+						<ul class="f2l">
+							<li class="title">white on the top</li>
+							<li class="algo"><div class="name">1 : </div><div class="image"><img src="./index_files/visualcube(5).php"></div><div class="formula">(R U R') F' U' F</div></li>
+							<li class="algo"><div class="name">2 : </div><div class="image"><img src="./index_files/visualcube(6).php"></div><div class="formula">(R U R') U (R U' R')</div><div class="image"><img src="./index_files/visualcube(7).php"></div><div class="formula">(R U2 R') U (R U' R')</div></li>
+							<li class="algo"><div class="name">3 : </div><div class="image"><img src="./index_files/visualcube(8).php"></div><div class="formula known">(R U' R') U (F' U F)</div></li>
+							<li class="algo"><div class="name">4 : </div><div class="image"><img src="./index_files/visualcube(9).php"></div><div class="formula known">(R U R' U') (R U R' U') (R U R' U')</div><div class="formula">R2 U R2 U R2 U2 R2 </div></li>
+							<li class="title">white on face 1</li>
+							<li class="algo">
+								<div class="name">1 : </div>
+								<div class="image"><img src="./index_files/visualcube(10).php"></div><div class="formula known">(R U' R')</div>
+								<div class="image"><img src="./index_files/visualcube(11).php"></div><div class="formula known">U2 [(R U' R')]</div>
+								<div class="image"><img src="./index_files/visualcube(12).php"></div><div class="formula known">(R U R') [U2 (R U' R')]</div>
+								<div class="image"><img src="./index_files/visualcube(13).php"></div><div class="formula known">(R U2 R') [U2 (R U' R')]</div>
+							</li>
+							<li class="algo"><div class="name">6 : </div><div class="image"><img src="./index_files/visualcube(14).php"></div><div class="formula known">(R U' R') U2 (R U' R')</div></li>
+							<li class="algo"><div class="name">7 : </div><div class="image"><img src="./index_files/visualcube(15).php"></div><div class="formula">(R U R') U (F' U' F)</div><div class="image"><img src="./index_files/visualcube(16).php"></div><div class="formula known">(R U R') U' (F' U F)</div></li>
+							<li class="algo"><div class="name">8 : </div><div class="image"><img src="./index_files/visualcube(17).php"></div><div class="formula">[y' U2] (R' U R ) U' (R' U' R)</div><div class="image"><img src="./index_files/visualcube(18).php"></div><div class="formula">(R' U R ) U' (R' U' R)</div></li>
+							<li class="title">white on face 2</li>
+							<li class="algo"><div class="name">9 : </div><div class="image"><img src="./index_files/visualcube(19).php"></div><div class="formula known">(R U R')</div><div class="image"><img src="./index_files/visualcube(20).php"></div><div class="formula known">U' (R U R') U [(R U R')]</div></li>
+							<li class="algo"><div class="name">10 : </div><div class="image"><img src="./index_files/visualcube(21).php"></div><div class="formula known">(R U R') U2 (R U R')</div><div class="formula">(U2) R U2 R' U R U R'</div></li>
+							<li class="algo"><div class="name">11 : </div><div class="image"><img src="./index_files/visualcube(22).php"></div><div class="formula known">[y] L' U L</div></li>
+						<ul>
+					</ul></ul></fieldset>
+				</div>
+				<div style="clear:both;">	
+					<a href="http://badmephisto.com/f2l.php" target="_blank">badmephisto.com F2L</a>
+					<br>
+					<a href="http://www.cubewhiz.com/f2l.php" target="_blank">cubewhiz.com F2L</a>
+					<br>
+					<a href="http://www.francocube.com/deadalnix/fridrich.php#f2l" target="_blank">francocube.com F2L</a>
+				</div>
+			</div>
+			
+			<div class="tab_body_item oll1">
+				<div>
+					<fieldset>
+						<legend>OLL (2 looks)</legend>
+						<ul class="oll">
+							<li class="title">Orienting Edges (2 looks OLL)</li>
+							<li class="algo"><div class="name">1 : Opposite</div><div class="image" stage="oell"><img src="./index_files/visualcube(23).php"></div><div class="formula known">F (R U R' U') F'</div></li>
+							<li class="algo"><div class="name">2 : Adjacent</div><div class="image" stage="oell"><img src="./index_files/visualcube(24).php"></div><div class="formula known">f (R U R' U') f'</div></li>
+							<li class="algo"><div class="name">3 : None</div><div class="image" stage="oell"><img src="./index_files/visualcube(25).php"></div><div class="formula known">[F (R U R' U') F'] [f (R U R' U') f']</div></li>
+							<li class="title">all Edges oriented (yellow cross)</li>
+							<li class="algo"><div class="name">OLL27 : Sune</div><div class="image"><img src="./index_files/visualcube(26).php"></div><div class="formula known">(R U R') U (R U2' R')</div></li>
+							<li class="algo"><div class="name">OLL26 : Anti Sune</div><div class="image"><img src="./index_files/visualcube(27).php"></div><div class="formula known">(R U2' R') U' (R U' R')</div><div class="formula">[U'] (R' U' R) U' (R' U2 R)</div><div class="formula">[U] L' U' L U' L' U2 L</div></li>
+							<li class="algo"><div class="name">OLL21 : Car</div><div class="image"><img src="./index_files/visualcube(28).php"></div><div class="formula known">[U] F (R U R' U') (R U R' U') (R U R' U') F'</div><div class="formula">R U R' U R U' R' U R U2' R' </div><div class="formula">[U'] R U2' R' U' R U R' U' R U' R' </div></li>
+							<li class="algo"><div class="name">OLL22 : Blinker</div><div class="image"><img src="./index_files/visualcube(29).php"></div><div class="formula known">[f (R U R' U') f'] [F (R U R' U') F']</div><div class="formula">(R U2') (R2' U') (R2 U') (R2' U2' R) </div><div class="formula">R' U2' R2 U R2' U R2 U2' R'</div></li>
+							<li class="algo"><div class="name">OLL23 : Headlights</div><div class="image"><img src="./index_files/visualcube(30).php"></div><div class="formula known">(R2 D) (R' U2) (R D') (R' U2 R')</div><div class="formula known">[ (R U R') U (R U2' R') ] U [ (R U2' R') U' (R U' R') ]</div><div class="formula">[U2] R2 D' R U2' R' D R U2 R</div></li>
+							<li class="algo"><div class="name">OLL24 : Chameleon</div><div class="image"><img src="./index_files/visualcube(31).php"></div><div class="formula known">(r U R' U') (r' F R F')</div><div class="formula">[U2] R' F' r U R U' r' F</div></li>
+							<li class="algo"><div class="name">OLL25 : Bowtie</div><div class="image"><img src="./index_files/visualcube(32).php"></div><div class="formula known">F' (r U R' U') (r' F R)</div><div class="formula">[U'] l' U R D' R' U' R D x'</div></li>
+						<ul>
+					</ul></ul></fieldset>
+				</div>
+			</div>
+			
+			<div class="tab_body_item oll2">
+				<div>
+					<fieldset>
+						<legend>OLL (advanced)</legend>
+						<ul class="oll">
+							<li class="title">No edge oriented (CLLEF)</li>
+							<li class="algo"><div class="name">OLL1</div><div class="image"><img src="./index_files/visualcube(33).php"></div><div class="formula">R U2 R2' F R F' U2' R' F R F'</div></li>
+							<li class="algo"><div class="name">OLL2</div><div class="image"><img src="./index_files/visualcube(34).php"></div><div class="formula">r U R' U2 R U2 r' U2 r U' r'</div></li>
+							<li class="algo"><div class="name">OLL18</div><div class="image"><img src="./index_files/visualcube(35).php"></div><div class="formula">R U2 R2' F R F' U2' M' U R U' r'</div></li>
+							<li class="algo"><div class="name">OLL19</div><div class="image"><img src="./index_files/visualcube(36).php"></div><div class="formula">r' R U R U R' U' r R2' F R F'</div></li>
+							<li class="algo"><div class="name">OLL17</div><div class="image"><img src="./index_files/visualcube(37).php"></div><div class="formula">R U R' U R' F R F' U2 R' F R F' </div></li>
+							<li class="algo"><div class="name">OLL3</div><div class="image"><img src="./index_files/visualcube(38).php"></div><div class="formula">r' R2 U R' U r U2 r' U M'</div></li>
+							<li class="algo"><div class="name">OLL4</div><div class="image"><img src="./index_files/visualcube(39).php"></div><div class="formula">r' R U' r U2 r' U' R U' R2' r</div></li>
+							<li class="algo"><div class="name">OLL20</div><div class="image"><img src="./index_files/visualcube(40).php"></div><div class="formula">M U R U R' U' M2 U R U' r'</div></li>
+							<li class="title">2 opposite edges oriented</li>
+							<li class="algo"><div class="name">OLL34 : C</div><div class="image"><img src="./index_files/visualcube(41).php"></div><div class="formula">R U R2' U' R' F R U R U' F'</div></li>
+							<li class="algo"><div class="name">OLL46 : C</div><div class="image"><img src="./index_files/visualcube(42).php"></div><div class="formula">R' U' R' F R F' U R</div></li>
+							<li class="algo"><div class="name">OLL33 : T</div><div class="image"><img src="./index_files/visualcube(43).php"></div><div class="formula">R U R' U' R' F R F'</div></li>
+							<li class="algo"><div class="name">OLL45 : T</div><div class="image"><img src="./index_files/visualcube(44).php"></div><div class="formula">(F R U) (R' U' F')</div></li>
+							<li class="algo"><div class="name">OLL55 : I</div><div class="image"><img src="./index_files/visualcube(45).php"></div><div class="formula">r U2 R' U' R2 r' U R' U' r U' r' </div></li>
+							<li class="algo"><div class="name">OLL56 : I</div><div class="image"><img src="./index_files/visualcube(46).php"></div><div class="formula">r' U' r U' R' U R U' R' U R r' U r </div></li>
+							<li class="algo"><div class="name">OLL51 : I</div><div class="image"><img src="./index_files/visualcube(47).php"></div><div class="formula">F (U R U' R') (U R U' R') F'</div><div class="formula">U2 f (R U R' U') (R U R' U') f'</div></li>
+							<li class="algo"><div class="name">OLL52 : I</div><div class="image"><img src="./index_files/visualcube(48).php"></div><div class="formula">R' U' R U' R' U F' U F R</div><div class="formula">[U2] R' F' U' F U' R U R' U R </div></li>
+							<li class="algo"><div class="name">OLL39 : S</div><div class="image"><img src="./index_files/visualcube(49).php"></div><div class="formula">L F' L' U' L U F U' L' </div></li>
+							<li class="algo"><div class="name">OLL40 : S</div><div class="image"><img src="./index_files/visualcube(50).php"></div><div class="formula">R' F R U R' U' F' U R U' </div></li>
+							<li class="algo"><div class="name">OLL13 : Knight move</div><div class="image"><img src="./index_files/visualcube(51).php"></div><div class="formula">F U R U2' R' U' R U R' F' </div></li>
+							<li class="algo"><div class="name">OLL14 : Knight move</div><div class="image"><img src="./index_files/visualcube(52).php"></div><div class="formula">F' U' L' U2 L U L' U' L F</div></li>
+							<li class="algo"><div class="name">OLL15 : Knight move</div><div class="image"><img src="./index_files/visualcube(53).php"></div><div class="formula">l' U' l L' U' L U l' U l</div></li>
+							<li class="algo"><div class="name">OLL16 : Knight move</div><div class="image"><img src="./index_files/visualcube(54).php"></div><div class="formula">r U M U R' U' r U' r' </div></li>
+							<li class="algo"><div class="name">OLL57 : Corners oriented</div><div class="image"><img src="./index_files/visualcube(55).php"></div><div class="formula">(R U R' U') M' U R U' r'</div></li>
+							<li class="title">2 adjacent edges oriented</li>
+							<li class="algo"><div class="name">OLL31 : P</div><div class="image"><img src="./index_files/visualcube(56).php"></div><div class="formula">R' U' F U R U' R' F' R</div></li>
+							<li class="algo"><div class="name">OLL32 : P</div><div class="image"><img src="./index_files/visualcube(57).php"></div><div class="formula">L U F' U' L' U L F L'</div></li>
+							<li class="algo"><div class="name">OLL43 : P</div><div class="image"><img src="./index_files/visualcube(58).php"></div><div class="formula">R' U' F' U F R</div></li>
+							<li class="algo"><div class="name">OLL44 : P</div><div class="image"><img src="./index_files/visualcube(59).php"></div><div class="formula">F U R U' R' F'</div><div class="formula">[U2] f R U R' U' f'</div></li>
+							<li class="algo"><div class="name">OLL36 : W</div><div class="image"><img src="./index_files/visualcube(60).php"></div><div class="formula">L' U' L U' L' U L U L F' L' F </div></li>
+							<li class="algo"><div class="name">OLL38 : W</div><div class="image"><img src="./index_files/visualcube(61).php"></div><div class="formula">R U R' U R U' R' U' R' F R F'</div></li>
+							<li class="algo"><div class="name">OLL48 : L</div><div class="image"><img src="./index_files/visualcube(62).php"></div><div class="formula">F (R U R' U')2 F'</div></li>
+							<li class="algo"><div class="name">OLL47 : L</div><div class="image"><img src="./index_files/visualcube(63).php"></div><div class="formula">F' (L' U' L U)2 F</div></li>
+							<li class="algo"><div class="name">OLL53 : L</div><div class="image"><img src="./index_files/visualcube(64).php"></div><div class="formula">l' U2 L U L' U' L U L' U l </div></li>
+							<li class="algo"><div class="name">OLL54 : L</div><div class="image"><img src="./index_files/visualcube(65).php"></div><div class="formula">r U2 R' U' R U R' U' R U' r' </div></li>
+							<li class="algo"><div class="name">OLL49 : L</div><div class="image"><img src="./index_files/visualcube(66).php"></div><div class="formula">R B' R2 F R2 B R2 F' R</div></li>
+							<li class="algo"><div class="name">OLL50 : L</div><div class="image"><img src="./index_files/visualcube(67).php"></div><div class="formula">R' F R2 B' R2 F' R2 B R' </div><div class="formula">[U2] r' U r2' U' r2 U' r2 U r'</div></li>
+							<li class="algo"><div class="name">OLL5 : square</div><div class="image"><img src="./index_files/visualcube(68).php"></div><div class="formula">l' U2' L U L' U l</div></li>
+							<li class="algo"><div class="name">OLL6 : square</div><div class="image"><img src="./index_files/visualcube(69).php"></div><div class="formula">r U2' R' U' R U' r' </div></li>
+							<li class="algo"><div class="name">OLL7 : Small lightning bolt</div><div class="image"><img src="./index_files/visualcube(70).php"></div><div class="formula">r U R' U R U2' r' </div></li>
+							<li class="algo"><div class="name">OLL8 : Small lightning bolt</div><div class="image"><img src="./index_files/visualcube(71).php"></div><div class="formula">l' U' L U' L' U2 l</div></li>
+							<li class="algo"><div class="name">OLL11 : Small lightning bolt</div><div class="image"><img src="./index_files/visualcube(72).php"></div><div class="formula">l' L2 U L' U L U2' L' U M</div></li>
+							<li class="algo"><div class="name">OLL12 : Small lightning bolt</div><div class="image"><img src="./index_files/visualcube(73).php"></div><div class="formula">r R2' U' R U' R' U2' R U' M</div></li>
+							<li class="algo"><div class="name">OLL9 : Fish</div><div class="image"><img src="./index_files/visualcube(74).php"></div><div class="formula">R' U' R y' x' R U' R' F R U R' x</div></li>
+							<li class="algo"><div class="name">OLL10 : Fish</div><div class="image"><img src="./index_files/visualcube(75).php"></div><div class="formula">R U R' y R' F R U' R' F' R</div></li>
+							<li class="algo"><div class="name">OLL35 : Fish</div><div class="image"><img src="./index_files/visualcube(76).php"></div><div class="formula">R U2 R2' F R F' R U2 R' </div></li>
+							<li class="algo"><div class="name">OLL37 : Fish</div><div class="image"><img src="./index_files/visualcube(77).php"></div><div class="formula">F R U' R' U' R U R' F'</div></li>
+							<li class="algo"><div class="name">OLL29 : Awkward</div><div class="image"><img src="./index_files/visualcube(78).php"></div><div class="formula">R U R' U' R U' R' F' U' F R U R' </div></li>
+							<li class="algo"><div class="name">OLL30 : Awkward</div><div class="image"><img src="./index_files/visualcube(79).php"></div><div class="formula">R2 U R' B' R U' R2 U R B R'</div></li>
+							<li class="algo"><div class="name">OLL41 : Awkward</div><div class="image"><img src="./index_files/visualcube(80).php"></div><div class="formula">(R U R' U R U'2 R') (F R U R' U' F')</div></li>
+							<li class="algo"><div class="name">OLL42 : Awkward</div><div class="image"><img src="./index_files/visualcube(81).php"></div><div class="formula">x (R' U R U')2 l U R' U' R U R'</div></li>
+							<li class="algo"><div class="name">OLL28 : Corners Oriented</div><div class="image"><img src="./index_files/visualcube(82).php"></div><div class="formula">r U R' U' M U R U' R'</div></li>
+							<li class="title">Extra</li>
+							<li class="algo"><div class="name">Extra 1</div><div class="image"><img src="./index_files/visualcube(83).php"></div><div class="formula">(M U) (M U) M U2 (M' U) (M' U) M' U2</div></li>
+						<ul>
+					</ul></ul></fieldset>
+				</div>
+			</div>
+			
+			<div class="tab_body_item pll1">
+				<div>
+					<fieldset>
+						<legend>PLL (basics)</legend>
+						<ul class="pll">
+							<li class="title">3 edges permutations</li>
+							<li class="algo"><div class="name">EPLL1 : U</div><div class="image"><img src="./index_files/visualcube(84).php"></div><div class="formula known">R2 U (R U R' U') R' U' R' U R'</div><div class="formula">y2 R' U R' U' R' U' R' U R U R2 </div><div class="arrows">U3U5,U5U7,U7U3</div></li>
+							<li class="algo"><div class="name">EPLL2 : Usym</div><div class="image"><img src="./index_files/visualcube(85).php"></div><div class="formula known">R U' R U R U R U' R' U' R2</div><div class="formula">y2 R2 U' R' U' R U R U R U' R</div><div class="formula">y2 F2 U R' L F2 R L' U F2</div><div class="arrows">U3U7,U7U5,U5U3</div></li>
+							<li class="title">3 Corners permutations</li>
+							<li class="algo"><div class="name">A</div><div class="image"><img src="./index_files/visualcube(86).php"></div><div class="formula known">R' F R' B2 R F' R' B2 R2</div><div class="formula">[U'] x' R2 D2 R' U' R D2 R' U R' x</div><div class="formula">[U'] y2 x L2 D2 L' U' L D2 L' U L' x'</div><div class="formula">[U'] y' l' U R' z r2 U R' U' r2 D2</div><div class="formula">[U'] y r' U r' B2 r U' r' B2 r2</div><div class="arrows">U2U8,U8U0,U0U2</div></li>
+							<li class="algo"><div class="name">Asym</div><div class="image"><img src="./index_files/visualcube(87).php"></div><div class="formula known">R2 B2 R F R' B2 R F' R</div><div class="formula">[U] x' R U' R z' R2' U' L U l2 D2 x'</div><div class="formula">y2 x L U' L D2 L' U L D2 L2 x'</div><div class="arrows">U2U0,U0U8,U8U2</div></li>
+							<li class="title">Extra</li>
+							<li class="title">2 pairs of edges permutations</li>
+							<li class="algo"><div class="name">EPLL3 : H</div><div class="image"><img src="./index_files/visualcube(88).php"></div><div class="formula known">M2 U' M2 U2 M2 U' M2</div><div class="arrows">U1U7,U7U1,U3U5,U5U3</div><div class="comment"></div></li>
+							<li class="algo"><div class="name">EPLL4 : Z</div><div class="image"><img src="./index_files/visualcube(89).php"></div><div class="formula known">M2 U M2 U M' U2 M2 U2 M' U2</div><div class="formula">R' U' R U' R U R U' R' U R U R2 U' R'</div><div class="formula">y' R U R' U R' U' R' U R U' R' U' R2 U R</div><div class="arrows">U3U7,U7U3,U5U1,U1U5</div></li>
+							<li class="title">2 pairs of corners permutations</li>
+							<li class="algo"><div class="name">E</div><div class="image"><img src="./index_files/visualcube(90).php"></div><div class="formula known">x' (R U' R') D (R U R') u2 (R' U R) D (R' U' R) x'</div><div class="formula">x (R' U R D' R' U' R D) (R' U' R D' R' U R D) x'</div><div class="arrows">U0U6,U6U0,U2U8,U8U2</div></li>
+							<li class="algo"><div class="name">X</div><div class="image"><img src="./index_files/visualcube(91).php"></div><div class="formula known">M2 U' M2 U2 M2 U' M2 U2</div><div class="arrows">U2U6,%20U6U2,%20U0U8,%20U8U0</div><div class="comment"></div></li>
+						<ul>
+					</ul></ul></fieldset>
+				</div>
+			</div>
+			
+			<div class="tab_body_item pll2">
+				<div>
+					<fieldset>
+						<legend>PLL (advanced)</legend>
+						<ul class="pll">
+							<li class="title">3 edges permutations (EPLL U)</li>
+							<li class="algo"><div class="name">Ua</div><div class="image"><img src="./index_files/visualcube(92).php"></div><div class="formula known">R U' (R U R U) R U' R' U' R2</div><div class="formula">y2 R2 U' R' U' R U R U R U' R</div><div class="arrows">U3U7,U7U5,U5U3</div><div class="comment">1 <u>ligne faite</u> + 3 headlights</div></li>
+							<li class="algo"><div class="name">Ub</div><div class="image"><img src="./index_files/visualcube(84).php"></div><div class="formula known">R2 U (R U R' U') R' U' R' U R'</div><div class="formula">y2 R' U R' U' R' U' R' U R U R2 </div><div class="arrows">U3U5,U5U7,U7U3</div><div class="comment">1 <u>ligne faite</u> + 3 headlights</div></li>
+							<li class="title">3 Corners permutations (CPLL A)</li>
+							<li class="algo"><div class="name">Aa</div><div class="image"><img src="./index_files/visualcube(86).php"></div><div class="formula known">R' F R' B2 R F' R' B2 R2</div><div class="formula">[U'] x' R2 D2 R' U' R D2 R' U R' x</div><div class="arrows">U2U8,U8U0,U0U2</div><div class="comment">2 [paires de blocks] connectes + 1 headlight ( + 1 ligne tricolore)</div></li>
+							<li class="algo"><div class="name">Ab</div><div class="image"><img src="./index_files/visualcube(87).php"></div><div class="formula known">R2 B2 R F R' B2 R F' R</div><div class="formula">[U] x' R U' R z' R2' U' L U l2 D2 x'</div><div class="arrows">U2U0,U0U8,U8U2</div><div class="comment">2 [paires de blocks] connectes + 1 headlight ( + 1 ligne tricolore)</div></li>
+							<li class="title">2 pairs of edges permutations (EPLL H &amp; Z)</li>
+							<li class="algo"><div class="name">H</div><div class="image"><img src="./index_files/visualcube(93).php"></div><div class="formula known">(M2 U' M2 U2) (M2 U' M2)</div><div class="arrows">U1U7,U7U1,U3U5,U5U3</div><div class="comment">4 headlights opposes</div></li>
+							<li class="algo"><div class="name">Z</div><div class="image"><img src="./index_files/visualcube(94).php"></div><div class="formula known">(M2 U M2 U) (M' U2) (M2 U2) (M' U2)</div><div class="formula">R' U' R U' R U R U' R' U R U R2 U' R'</div><div class="arrows">U3U7,U7U3,U5U1,U1U5</div><div class="comment">4 headlights adjacents</div></li>
+							<li class="title">2 pairs of corners permutations (CPLL E &amp; X)</li>
+							<li class="algo"><div class="name">E</div><div class="image"><img src="./index_files/visualcube(90).php"></div><div class="formula known">x' (R U' R') D (R U R') u2 (R' U R) D (R' U' R) x'</div><div class="formula">x (R' U R D' R' U' R D) (R' U' R D' R' U R D) x'</div><div class="arrows">U0U6,U6U0,U2U8,U8U2</div><div class="comment">pas de ligne faite + pas de headlight + pas de paire de blocks (4 lignes tricolores)</div></li>
+							<li class="algo"><div class="name">X</div><div class="image"><img src="./index_files/visualcube(95).php"></div><div class="formula known">(M2 U' M2 U2) (M2 U' M2 U2)</div><div class="arrows">U2U6,%20U6U2,%20U0U8,%20U8U0</div><div class="comment">4 headlights opposes</div></li>
+							<li class="title">Mixed permutations</li>
+							<li class="title">Permute 2 adjacent corners + 2 edges</li>
+							<li class="algo"><div class="name">F</div><div class="image"><img src="./index_files/visualcube(96).php"></div><div class="formula known">R' U' F' (R U R' U') R' F R2 U' R' U' (R U R') U R</div><div class="arrows">U2U8,U8U2,U1U7,U7U1</div><div class="comment">1 <u>ligne faite</u> + aucune paire de blocks + aucun headlight ( + 3 lignes tricolores)</div></li>
+							<li class="algo"><div class="name">Ja</div><div class="image"><img src="./index_files/visualcube(97).php"></div><div class="formula known">(R' U L') U2 (R U' R') U2 (L R U')</div><div class="arrows">U0U2,U2U0,U3U1,U1U3</div><div class="comment">1 <u>ligne faite</u> + 3 [paires de blocks]</div></li>
+							<li class="algo"><div class="name">Jb</div><div class="image"><img src="./index_files/visualcube(98).php"></div><div class="formula known">(R U R') F' (R U R' U') R' F R2 U' R' U'</div><div class="arrows">U7U5,U5U7,U2U8,U8U2</div><div class="comment">1 <u>ligne faite</u> + 3 [paires de blocks]</div></li>
+							<!-- <li class="algo"><div class="name">Jsym/L</div><div class="image"></div><div class="formula">L' U' L F L' U' L U L F' L2 U L U </div><div class="arrows">U0U6,U6U0,U3U7,U7U3</div><div class="comment">1 ligne faite + 3 paires de blocks</div></li> -->
+							<li class="algo"><div class="name">Ra</div><div class="image"><img src="./index_files/visualcube(99).php"></div><div class="formula known">(R U R') F' R U2 R' U2 R' F R U R U2 R' U'</div><div class="arrows">U2U8,U8U2,U1U3,U3U1</div><div class="comment">1 [paire de blocks] juste a droite d'un headlight adjacent ( + 2 lignes tricolores)</div></li>
+							<li class="algo"><div class="name">Rb</div><div class="image"><img src="./index_files/visualcube(100).php"></div><div class="formula known">R' U2 R U2 R' F (R U R' U') R' F' R2' U'</div><div class="arrows">U5U7,U7U5,U0U2,U2U0</div><div class="comment">1 [paire de blocks] juste a gauche d'un headlight adjacent ( + 2 lignes tricolores)</div></li>
+							<li class="algo"><div class="name">T</div><div class="image"><img src="./index_files/visualcube(101).php"></div><div class="formula known">(R U R' U') R' F R2 U' R' U' (R U R') F'</div><div class="arrows">U3U5,U5U3,U2U8,U8U2</div><div class="comment">2 [paires de blocks] autour d'un headlight oppose ( + 1 ligne tricolore)</div></li>
+							<li class="title">Permute 2 opposite corners (diagonal) + 2 edges</li>
+							<li class="algo"><div class="name">Na</div><div class="image"><img src="./index_files/visualcube(102).php"></div><div class="formula">z (D' R U' R2 D R' U) (D' R U' R2 D R' U) z'</div><div class="arrows">U1U7,U7U1,U2U6,U6U2</div><div class="comment">4 * ([paire de blocks] + oppose)</div></li>
+							<li class="algo"><div class="name">Nb</div><div class="image"><img src="./index_files/visualcube(103).php"></div><div class="formula">z (U R' D R2 U' R D') (U R' D R2 U' R D') z'</div><div class="arrows">U0U8,U8U0,U1U7,U7U1</div><div class="comment">4 * ([paire de blocks] + oppose)</div></li>
+							<li class="algo"><div class="name">V</div><div class="image"><img src="./index_files/visualcube(104).php"></div><div class="formula">R' U R' d' R' F' R2 U' R' U R' F R F</div><div class="arrows">U0U8,U8U0,U1U5,U5U1</div><div class="comment">2 * [paires de blocks] connectees + 2 lignes tricolores</div></li>
+							<li class="algo"><div class="name">Y</div><div class="image"><img src="./index_files/visualcube(105).php"></div><div class="formula">F R' F R2 U' (R' U' R U) R' F' (R U R' U') F'</div><div class="arrows">U0U8,U8U0,U1U3,U3U1</div><div class="comment">2 * ([paire de blocks] + oppose) ( + 2 lignes tricolores)</div></li>
+							<li class="title">Double spins (permute 3 corners + 3 edges)</li>
+							<li class="algo"><div class="name">Ga</div><div class="image"><img src="./index_files/visualcube(106).php"></div><div class="formula">R2 u R' U R' U' R u' R2 (y' R' U R)</div><div class="arrows">U0U2,U2U6,U6U0,U1U3,U3U5,U5U1</div><div class="comment">a droite (au fond) du headlight il y a une [paire de blocks]</div></li>
+							<li class="algo"><div class="name">Gb</div><div class="image"><img src="./index_files/visualcube(107).php"></div><div class="formula">(R' U' R) y R2 u R' U R U' R u' R2</div><div class="arrows">U0U6,U6U8,U8U0,U1U3,U3U7,U7U1</div><div class="comment">en face (cote gauche) du headlight il y a une [paire de blocks]</div></li>
+							<li class="algo"><div class="name">Gc</div><div class="image"><img src="./index_files/visualcube(108).php"></div><div class="formula">R2 u' R U' (R U R') u R2 (y R U' R')</div><div class="arrows">U0U6,U6U8,U8U0,U3U5,U5U7,U7U3</div><div class="comment">a gauche (au fond) du headlight il y a une [paire de blocks]</div></li>
+							<li class="algo"><div class="name">Gd</div><div class="image"><img src="./index_files/visualcube(109).php"></div><div class="formula">(R U R') y' R2 u' R U' R' U R' u R2</div><div class="arrows">U0U2,U2U6,U6U0,U1U3,U3U7,U7U1</div><div class="comment">en face (cote droit) du headlight il y a une [paire de blocks]</div></li>
+						<ul>
+					</ul></ul></fieldset>
+				</div>
+				<div style="clear:both;">	
+					<a href="https://sites.google.com/site/piauscubingsite/3x3x3/pll" target="_blank">Antoine Piau's PLL</a>
+					<br>
+					<a href="http://www.speedsolving.com/wiki/index.php/PLL" target="_blank">speedsolving.com PLL</a>
+					<br>
+					<a href="http://www.cubewhiz.com/pll.php" target="_blank">cubewhiz.com PLL</a>
+				</div>
+
+			</div>
+		</div>
+
+	</div>		
+	
+
+</body><loom-container id="lo-engage-ext-container"><div></div><loom-shadow classname="resolved"></loom-shadow></loom-container></html>

@@ -1,0 +1,96 @@
+
+body {
+	padding:5px;
+}
+
+ul.f2l, ul.oll > li, ul.pll > li{
+	list-style: none;
+}
+
+li.algo{
+	clear:both;
+	margin-bottom:20px;
+}
+
+
+li.title{
+	clear:both;
+	font-size:24px;
+	padding-top:30px;
+	padding-bottom:30px;
+	margin-left: -30px;
+	font-weight:bold;
+}
+
+.name{
+	float:left;
+	width:250px;
+}	
+.image{
+	float:left;
+	width:100px;
+	height:100px;
+}	
+.formula{
+	float:left;
+	margin-left:50px;
+}
+.comment {
+	float:left;
+	margin-left:50px;
+}
+.arrows{
+	display:none;
+}
+.comment{
+	float:left;
+	margin-left:50px;
+}
+
+/*
+fieldset>legend {
+	cursor:pointer;
+}
+fieldset>div {
+	display:none;
+}
+*/
+
+#div_canvas {
+	width:260px;
+	height:230px; 
+	position:absolute; display:none; 
+	background-color:#DDDDDD;
+	border:solid 2px #666666;
+	padding:10px;
+	margin:10px;
+}
+
+#div_menu  ul > li{
+	/*
+	margin-right:40px;
+	list-style: none;
+	float:left;
+	border: solid 2px;
+	height:25px;
+	width:120px;
+	text-align:center;
+	margin:2px;
+	cursor:pointer;
+	*/
+}
+
+#div_menu > ul > li.active{
+	background-color:#DDDDFF;
+	border-style:inset;
+}
+
+.tab_body_item {
+	display:none;
+}
+.tab_body_item.active {
+	display:block;
+}
+.known {
+	background-color:#FFFFCC;
+}
