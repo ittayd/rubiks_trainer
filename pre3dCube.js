@@ -353,13 +353,13 @@ TODO:
 			
 			"M":  {
 				getPieces		: function (nb_layer, offset) 	{ return getLayerPieces('right', nb_layer, 1); },
-				updateMatrix	: function (old_position) 		{ return { x: old_position.x, y: old_position.z, z: cube_config.nb_pieces_width-1 - old_position.y }; },
-				updateRender	: function (move_pieces, anim_duration, nb_move) 	{ rotatePieceAnim(move_pieces, anim_duration, nb_move*-Math.PI/2, 0, 0); },
+				updateMatrix	: function (old_position) 		{ return { x: old_position.x, y: cube_config.nb_pieces_width-1 - old_position.z, z: old_position.y }; },
+				updateRender	: function (move_pieces, anim_duration, nb_move) 	{ rotatePieceAnim(move_pieces, anim_duration, nb_move*Math.PI/2, 0, 0); },
 			},
 			"M'":  {
 				getPieces		: function (nb_layer, offset) 	{ return getLayerPieces('right', nb_layer, 1); },
-				updateMatrix	: function (old_position) 		{ return { x: old_position.x, y: cube_config.nb_pieces_width-1 - old_position.z, z: old_position.y }; },
-				updateRender	: function (move_pieces, anim_duration, nb_move) 	{ rotatePieceAnim(move_pieces, anim_duration, nb_move*Math.PI/2, 0, 0); },
+				updateMatrix	: function (old_position) 		{ return { x: old_position.x, y: old_position.z, z: cube_config.nb_pieces_width-1 - old_position.y }; },
+				updateRender	: function (move_pieces, anim_duration, nb_move) 	{ rotatePieceAnim(move_pieces, anim_duration, nb_move*-Math.PI/2, 0, 0); },
 			},
 			
 			"x":  {
