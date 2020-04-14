@@ -27,7 +27,7 @@ function renderPLL() {
 }
 
 function renderItem(default_stage, items) {
-	var VISUAL_CUBE_PATH = 'http://cube.crider.co.uk/visualcube.php';
+	var VISUAL_CUBE_PATH = 'https://cube.crider.co.uk/visualcube.php';
 	//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
 	items.each(function (){
