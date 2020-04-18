@@ -455,7 +455,73 @@ TODO:
 			}
 		};
 		
-		
+		var doInvert = function (mouvements) {
+			return mouvements.reverse().map(m => {
+				if (m.slice(-1) == "'")
+					return m.slice(0, -1)
+
+				// last character is a number
+				if (!isNaN(m.slice(-1))) {
+					if (m.length == 2) {
+						switch (m.slice(-1) % 4) {
+							case "0": return m; // really nothing to do. E.g. U4
+							case "1": return m.slice(0, -1) + "'"
+							case "2": return m;
+							case "3": return m.slice(0, -1); // U3 is actually U'
+						}
+					} 
+					return (doInvert([m.slice(0, -1)])[0] + m.slice(-1))
+				}					
+
+				return m + "'"
+			})
+		};
+
+		var namedMoves = {
+			"Sexy": "R U R' U'",
+			"FatSexy": "r U R' U'",
+			"Ugly": "U R U' R'",
+			"Sledge": "R' F R F'",
+			"FatSledge": "r' F R F'",
+			"Hedge": "F R' F' R",
+			"Su": "R U R' U",
+			"Pull": "R U R'",
+			"Push": "R U' R'",
+			"Super": "R U2 R'",
+			"Upward": "R U' R",
+			"Downward": "R' U R'",
+
+		};
+
+		var resolveNamedMoves = function (mouvements) {
+			return mouvements.flatMap(m => {
+				let last = m.slice(-1)
+				if (last == "'") {
+					return doInvert(resolveNamedMoves([m.slice(0, -1)])); 
+				}
+
+				let repeat = 1;
+				// last character is a number
+				if (!isNaN(last)) {
+					if (m.length == 2) {
+						return m;
+					} 
+
+					repeat = parseInt(last);
+					m = m.slice(0, -1)
+				}
+				
+				let resolved = m;
+				let temp = namedMoves[m]
+				if (temp) {
+					resolved = resolveNamedMoves(temp.split(' '))
+				}
+				return new Array(repeat).fill(resolved).flat();
+				
+			})
+
+		};
+
 		var doCubeMouvements = function (mouvements, fast, invert) {
 			if (typeof(mouvements) == "string") {
 				mouvements = mouvements.replace(/\(/g, "");
@@ -466,28 +532,14 @@ TODO:
 			}
 			
 			if (invert) {
-				// algo inverse
-				var available_mouvements = ["M", "U", "u", "D", "d", "L", "l", "R", "r", "F", "f", "B", "b", "z", "x", "y", "y'", "x'", "z'", "b'", "B'", "f'", "F'", "r'", "R'", "l'", "L'", "d'", "D'", "u'", "U'", "M'"];
-				var nb_avail_move = available_mouvements.length;
-				mouvements = mouvements.reverse();
-				for (var i=0, l=mouvements.length; i<l; i++) {
-					var tmp_move = mouvements[i];
-					tmp_move = tmp_move.replace("2", "");
-					//console.log(tmp_move);
-					var index_move = available_mouvements.indexOf(tmp_move);
-					if (index_move != -1) {
-						var new_index_move = nb_avail_move - index_move - 1;
-						var new_tmp_move = available_mouvements[new_index_move];
-						mouvements[i] = mouvements[i].replace(tmp_move, new_tmp_move);
-					}else{
-						console.log('error algo reverse');
-					}
-				}
+				mouvements = doInvert(mouvements);
 			}
 			
 			if (span_info) {
 				span_info.innerHTML = mouvements.join(' ');
 			}
+
+			mouvements = resolveNamedMoves(mouvements);
 			
 			for (var i=0, l=mouvements.length; i<l; i++) {
 				doCubeMouvement(mouvements[i], 1, 0, fast);
