@@ -490,7 +490,6 @@ TODO:
 			"Super": "R U2 R'",
 			"Upward": "R U' R",
 			"Downward": "R' U R'",
-
 		};
 
 		var resolveNamedMoves = function (mouvements) {
@@ -667,6 +666,7 @@ TODO:
 			move		: doCubeMouvements,
 			scramble	: scrambleCube,
 			reset		: resetCube,
+			named_moves : namedMoves,
 			test1		: test1,
 			test2		: test2,
 			test3		: test3,

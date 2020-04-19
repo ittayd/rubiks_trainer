@@ -340,36 +340,36 @@
     var pll = [
         {name: "Edge Permutations Only",
          algs: [
-             {type: "pll", moves: "R2 U [Sexy] (R' U') (Downward)", name: "U (a)"},
-             {type: "pll", moves: "[R U'] [R U] [R U] [R U'] R' U' R2", name: "U (b)"},
-             {type: "pll", moves: "M2 U M2 U2 M2 U M2", name: "H"},
-             {type: "pll", moves: "M2 U M2 U M' U2 M2 U2 M' U2", name: "Z"},
+             {type: "pll", moves: "M2 U [M U2 M'] U M2", name: "Ua"}, // R2 U [Sexy] (R' U') (Downward)
+             {type: "pll", moves: "M2 U' [M U2 M'] U' M2", name: "Ub"}, // [R U'] [R U] [R U] [R U'] R' U' R2
+             {type: "pll", moves: "[M2 U M2] U2 [M2 U M2]", name: "H"},
+             {type: "pll", moves: "[M2 U M2] U M' U2 M2 U2 M' U2", name: "Z"},
          ]},
         {name: "Corner Permutations Only",
          algs: [
-             {type: "pll", moves: "x [(Downward) D2] [(Push) D2] R2 x'", name: "A(a)"},
-             {type: "pll", moves: "x' [(Upward) D2] [(R' U R) D2] R2 x", name: "A(b)" },
+             {type: "pll", moves: "x [(Downward) D2] [(Push) D2] R2 x'", name: "Aa"},
+             {type: "pll", moves: "x' [(Upward) D2] [(R' U R) D2] R2 x", name: "Ab" },
              {type: "pll", moves: "x' (Push) D (Pull) D' (Pull) D (Push) D' x", name: "E"},
          ]},
         {name: "Corner & Edge Swap",
          algs: [
              {type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Pull F']", name: "T"},
-             {type: "pll", moves: "[Pull F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "J (b)"},
+             {type: "pll", moves: "[Pull F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb"},
              {type: "pll", moves: "F Push U' [Pull F'] {[Sexy] [Sledge]}", name: "Y"},
-             {type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "R (a)"},
-             {type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "R (b)"},
+             {type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra"},
+             {type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb"},
              {type: "pll", moves: "[Downward d'] [R' F'] [R2 U' R' U] [R' F R F]", name: "V"},
              {type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F]", name: "F"},
              {type: "pll", moves: "[R' U L'] [U2 Push U2] [R L U']", name: "J (a)"},
-             {type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "N (a)"},
-             {type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "N (b)"},
+             {type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na"},
+             {type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb"},
          ]},
         {name: "Corner & Edge Cycle Permutations (G perms)",
          algs: [
-             {type: "pll", moves: "R2 u Downward U' R u' R2 [y' R' U R]", name: "G (a)"},
-             {type: "pll", moves: "[R' U' R] y R2 u R' U Upward u' R2", name: "G (b)"},
-             {type: "pll", moves: "R2 u' R U' Pull u R2 [y Push]", name: "G (c)"},
-             {type: "pll", moves: "[Pull] y' R2 u' Push U R' u R2", name: "G (d)"},
+             {type: "pll", moves: "R2 u Downward U' R u' R2 [y' R' U R]", name: "Ga"},
+             {type: "pll", moves: "[R' U' R] y R2 u R' U Upward u' R2", name: "Gb"},
+             {type: "pll", moves: "R2 u' R U' Pull u R2 [y Push]", name: "Gc"},
+             {type: "pll", moves: "[Pull] y' R2 u' Push U R' u R2", name: "Gd"},
          ]}
     ]
 	function random(max) {
@@ -919,13 +919,27 @@
 				if (event.target.nodeName == 'INPUT') {
 					return true;
 				}
-			// console.log(`key is _${event.key}_`)
-			var result = handlers[event.key](event)
-			if ((typeof result) == "boolean") {
-				return result
-			}
-			return true;
+				// console.log(`key is _${event.key}_`)
+				var result = handlers[event.key](event)
+				if ((typeof result) == "boolean") {
+					return result
+				}
+				return true;
 			})
+
+			var tbl_body = document.createElement("tbody");
+			var odd_even = false;
+			$.each(cube.named_moves, function(k, v) {
+				var tbl_row = tbl_body.insertRow();
+				tbl_row.className = odd_even ? "odd" : "even";
+				var cell = tbl_row.insertCell();
+				cell.appendChild(document.createTextNode(k.toString()));
+				cell = tbl_row.insertCell();
+				cell.appendChild(document.createTextNode(v.toString()));
+				        
+				odd_even = !odd_even;               
+			});
+			$("#named-moves").append(tbl_body);   //DOM table doesn't have .appendChild
 		});
 
 		function setDemoAlgo(formula, obj) {
@@ -1149,6 +1163,14 @@
 						</div>
 					</div>
 					<br />
+					<table id="named-moves" class="table-sm text-left table-bordered w-auto">
+						<thead>
+						  <tr>
+							<th>Name</th>
+							<th>Moves</th>
+						  </tr>
+						</thead>	
+					</table>
 					<br />
 					<div>
 						Sources :
