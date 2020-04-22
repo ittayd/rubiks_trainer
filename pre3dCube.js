@@ -12,7 +12,7 @@ TODO:
  - pop 		: fonction pour poper le cube + unpop/reassemble
 */
 
-(function () {
+var RubikCube = (function () {
 	
 	/* == RubikCube == */
 	var RubikCube = function (dom_obj_name, nb_pieces_width, piece_width, piece_margin, anim_duration) {
@@ -455,73 +455,10 @@ TODO:
 			}
 		};
 		
-		var doInvert = function (mouvements) {
-			return mouvements.reverse().map(m => {
-				if (m.slice(-1) == "'")
-					return m.slice(0, -1)
-
-				// last character is a number
-				if (!isNaN(m.slice(-1))) {
-					if (m.length == 2) {
-						switch (m.slice(-1) % 4) {
-							case "0": return m; // really nothing to do. E.g. U4
-							case "1": return m.slice(0, -1) + "'"
-							case "2": return m;
-							case "3": return m.slice(0, -1); // U3 is actually U'
-						}
-					} 
-					return (doInvert([m.slice(0, -1)])[0] + m.slice(-1))
-				}					
-
-				return m + "'"
-			})
-		};
-
-		var namedMoves = {
-			"Sexy": "R U R' U'",
-			"FatSexy": "r U R' U'",
-			"Ugly": "U R U' R'",
-			"Sledge": "R' F R F'",
-			"FatSledge": "r' F R F'",
-			"Hedge": "F R' F' R",
-			"Su": "R U R' U",
-			"Pull": "R U R'",
-			"Push": "R U' R'",
-			"Super": "R U2 R'",
-			"Upward": "R U' R",
-			"Downward": "R' U R'",
-		};
-
-		var resolveNamedMoves = function (mouvements) {
-			return mouvements.flatMap(m => {
-				let last = m.slice(-1)
-				if (last == "'") {
-					return doInvert(resolveNamedMoves([m.slice(0, -1)])); 
-				}
-
-				let repeat = 1;
-				// last character is a number
-				if (!isNaN(last)) {
-					if (m.length == 2) {
-						return m;
-					} 
-
-					repeat = parseInt(last);
-					m = m.slice(0, -1)
-				}
-				
-				let resolved = m;
-				let temp = namedMoves[m]
-				if (temp) {
-					resolved = resolveNamedMoves(temp.split(' '))
-				}
-				return new Array(repeat).fill(resolved).flat();
-				
-			})
-
-		};
-
 		var doCubeMouvements = function (mouvements, fast, invert) {
+			if (invert) {
+				throw "invert not supported"
+			}
 			if (typeof(mouvements) == "string") {
 				mouvements = mouvements.replace(/\(/g, "");
 				mouvements = mouvements.replace(/\)/g, "");
@@ -530,16 +467,10 @@ TODO:
 				mouvements = mouvements.split(" ");
 			}
 			
-			if (invert) {
-				mouvements = doInvert(mouvements);
-			}
-			
 			if (span_info) {
 				span_info.innerHTML = mouvements.join(' ');
 			}
 
-			mouvements = resolveNamedMoves(mouvements);
-			
 			for (var i=0, l=mouvements.length; i<l; i++) {
 				doCubeMouvement(mouvements[i], 1, 0, fast);
 			}
@@ -666,7 +597,6 @@ TODO:
 			move		: doCubeMouvements,
 			scramble	: scrambleCube,
 			reset		: resetCube,
-			named_moves : namedMoves,
 			test1		: test1,
 			test2		: test2,
 			test3		: test3,
@@ -744,7 +674,7 @@ TODO:
 		};
 	}
 	
-	if (window.RubikCube === undefined) window.RubikCube = RubikCube;
+	return RubikCube;
 	
 })();
 

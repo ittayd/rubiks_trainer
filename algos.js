@@ -1,62 +1,662 @@
 
-function renderCubes() {
-	renderCross();
-	renderF2L();
-	renderOLL();
-	renderPLL();
-}
+algos = (function ($) {
+	var f2l = [ /* http://www.rubiksplace.com/speedcubing/F2L-algorithms/ */
+		{
+			name: "Corner on top, FL color facing side, edge colors match",
+			algs: [// {type: "f2l", moves: "U (R U' R')"},
+				// {type: "f2l", moves: "y' U' (R' U R) y"},
+				{ type: "f2l", moves: "U' R U R' U2 (R U' R')" },
+				{ type: "f2l", moves: "d R' U' R U2' (R' U R) y" },
+				{ type: "f2l", moves: "U' R U2' R' U2 (R U' R')" },
+				{ type: "f2l", moves: "d R' U2 R U2' (R' U R) y" },
+				{ type: "f2l", moves: "y' R' U R U' d' (R U R')" },
+				{ type: "f2l", moves: "R U' R' U d (R' U' R) y" }]
+		},
+		{
+			name: "Corner on top, FL color facing side, edge colors opposite",
+			algs: [
+				// {type: "f2l", moves: "y' (R' U' R) y"},
+				// {type: "f2l", moves: "(R U R')"},
+				{ type: "f2l", moves: "d R' U' R U' (R' U' R) y" },
+				{ type: "f2l", moves: "U' R U R' U (R U R')" },
+				{ type: "f2l", moves: "U' R U2' R' d (R' U' R) y" },
+				{ type: "f2l", moves: "R' U2 R2 U R2' U R" },
+				{ type: "f2l", moves: "d R' U R U' (R' U' R) y" },
+				{ type: "f2l", moves: "U' R U' R' U (R U R')" }]
+		},
+		{
+			name: "Corner on top, FL color facing up",
+			algs: [
+				{ type: "f2l", moves: "R U2' R' U' (R U R')" },
+				{ type: "f2l", moves: "y' R' U2 R U (R' U' R) y" },
+				{ type: "f2l", moves: "U R U2 R' U (R U' R')" },
+				{ type: "f2l", moves: "y' U' R' U2 R U' (R' U R) y" },
+				{ type: "f2l", moves: "U2 R U R' U (R U' R')" },
+				{ type: "f2l", moves: "y' U2 R' U' R U' (R' U R) y" },
+				{ type: "f2l", moves: "y' U R' U2 R y R U2 R' U R U' R'" },
+				{ type: "f2l", moves: "U' R U2' R' y' R' U2 R U' R' U R y" }]
+		},
+		{
+			name: "Corner down, edge on top",
+			algs: [
+				{ type: "f2l", moves: "U R U' R' d' (L' U L) y'" },
+				{ type: "f2l", moves: "y' U' R' U R r' U' R U M' y" },
+				{ type: "f2l", moves: "y' R' U' R U (R' U' R) y" },
+				{ type: "f2l", moves: "R U R' U' (R U R')" },
+				{ type: "f2l", moves: "R U' R' U (R U' R')" },
+				{ type: "f2l", moves: "y' R' U R U' (R' U R) y" }]
+		},
+		{
+			name: "Edge down, corner on top",
+			algs: [
+				{ type: "f2l", moves: "U' R U' R' U2 (R U' R')" },
+				{ type: "f2l", moves: "d R' U R U2 (R' U R) y" },
+				{ type: "f2l", moves: "U' R U R' d (R' U' R) y" },
+				{ type: "f2l", moves: "d R' U' R d' (R U R')" },
+				{ type: "f2l", moves: "R U' R' d (R' U R) y" },
+				{ type: "f2l", moves: "[R U R' U'] [R U R' U'] (R U R')" }]
+		},
+		{
+			name: "Corner down, edge down",
+			algs: [
+				{ type: "f2l", moves: "R U' R' U' R U R' U2 (R U' R')" },
+				{ type: "f2l", moves: "R U R' U2 R U' R' U (R U R')" },
+				{ type: "f2l", moves: "R U' R' d R' U' R U' (R' U' R) y" },
+				{ type: "f2l", moves: "R U R' U' R U' R' U2 y' (R' U' R) y" },
+				{ type: "f2l", moves: "R U' R' U y' R' U2 R U2' (R' U R) y" }]
+		}
+	]
 
+    /*
+    var oll = [
+        { "type": "oll", "name": "28", "imageFileName": "oll28.gif", "moves": "(M' U M) U2 (M' U M)", "comments": "The middle slices should be done with the left ring finger for M' and the left thumb for M. The (M' U M) group may take some getting used to." },
+        { "type": "oll", "name": "57", "imageFileName": "oll57.gif", "moves": "(R U R' U') r (R' U R U') r'", "comments": "There's nothing too fancy here. The finger tricks used are pretty common. I do the slice turn as M' now because I think it's a little faster that way." },
+        { "type": "oll", "name": "20", "imageFileName": "oll20.gif", "moves": "r' (R U) (R U R' U' r2) (R2' U) (R U') r'", "comments": "Here, I use the slice as (r' R) because it flows a little nicer. This is the least common OLL case (1/216). The finger tricks here are pretty simple." },
+        { "type": "oll", "name": "23", "imageFileName": "oll23.gif", "moves": "(R2' D) (R' U2) (R D') (R' U2 R')", "comments": "This is one of the most awkward OLLs with all correctly flipped edges. It's still pretty fast, though." },
+        { "type": "oll", "name": "24", "imageFileName": "oll24.gif", "moves": "(r U) (R' U') (r' F) (R F')", "comments": "Custom." },
+        { "type": "oll", "name": "25", "imageFileName": "oll25.gif", "moves": "F' (r U R' U') (r' F R)", "comments": "Custom. Super fast." },
+        { "type": "oll", "name": "27", "imageFileName": "oll27.gif", "moves": "(R U R' U) (R U2 R')", "comments": "This is the Sune. Your right hand should never come off of the cube during the execution at any time." },
+        { "type": "oll", "name": "26", "imageFileName": "oll26.gif", "moves": "(R U2) (R' U' R U' R')", "comments": "This is just the inverse of the Sune, called the Antisune." },
+        { "type": "oll", "name": "22", "imageFileName": "oll22.gif", "moves": "(R U2') (R2' U') (R2 U') (R2' U2' R)", "comments": "The execution of this algorithm is pretty neat. The R2 turns should alternate in direction so that they can be performed by the right hand without letting go of the cube. The left hand holds the cube and makes the U' turns." },
+        { "type": "oll", "name": "21", "imageFileName": "oll21.gif", "moves": "L' U' L U' L' U L U' L' U2 L", "comments": "Custom. Double sune (or anti-sune, I can never remember) with the left hand." },
+        { "type": "oll", "name": "3", "imageFileName": "oll03.gif", "moves": "f (R U R' U') f' U' F (R U R' U') F'", "comments": "This is a clever combination of the two six move OLLs." },
+        { "type": "oll", "name": "4", "imageFileName": "oll04.gif", "moves": "f (R U R' U') f' U F (R U R' U') F'", "comments": "This is another combination of the two six move OLLs." },
+        { "type": "oll", "name": "17", "imageFileName": "oll17.gif", "moves": "(R U R' U) (R' F R F') U2 (R' F R F')", "comments": "This one is very fast. Each of the three triggers should be lightning fast." },
+        { "type": "oll", "name": "19", "imageFileName": "oll19.gif", "moves": "r' (R U) (R U R' U' r) x (R2' U) (R U') x'", "comments": "This alg is the same as the &quot;X&quot; orientation (#20) except with a slight modification." },
+        { "type": "oll", "name": "18", "imageFileName": "oll18.gif", "moves": "F (R U R' U) y' (R' U2) (R' F R F') y", "comments": "This case has a couple of fast triggers in it." },
+        { "type": "oll", "name": "2", "imageFileName": "oll02.gif", "moves": "[F (R U R' U') F'] [f (R U R' U') f']", "comments": "This algorithm is just the easy T-orientation followed by the easy P-orientation.The S can take a little getting used to." },
+        { "type": "oll", "name": "1", "imageFileName": "oll01.gif", "moves": "(R U2) (R2' F R F') U2' (R' F R F')", "comments": "This is just (R U2 R') followed by a couple of sledgehammers." },
+        { "type": "oll", "name": "33", "imageFileName": "oll33.gif", "moves": "(R U R' U') (R' F R F')", "comments": "This orientation makes up the second half of the Y-permutation. Both triggers are lightning fast, so this should easily be sub-1 second." },
+        { "type": "oll", "name": "45", "imageFileName": "oll45.gif", "moves": "F (R U R' U') F'", "comments": "This is the quickest and shortest OLL case. I use the left index for the U' and the right thumb for the F'." },
+        { "type": "oll", "name": "44", "imageFileName": "oll44.gif", "moves": "f (R U R' U') f'", "comments": "This is very similar to the easy T orientation (#45) except with a double layer turn instead of just F. It is helpful to know the inverse to avoid a U2 before the alg." },
+        { "type": "oll", "name": "43", "imageFileName": "oll43.gif", "moves": "f' (L' U' L U) f", "comments": "This is just the mirror of OLL #44. I also recommend being able to perform this alg from a U2." },
+        { "type": "oll", "name": "32", "imageFileName": "oll32.gif", "moves": "(R d) (L' d') (R' U) (l U l')", "comments": "There should be a nice balance between both hands in performing this algorithm." },
+        { "type": "oll", "name": "31", "imageFileName": "oll31.gif", "moves": "(R' U') F (U R U' R') F' R", "comments": "This is just the mirror of OLL #32, but I don't perform it as such. Instead, I do an algorithm that contains the inverse of the easy T orienation in it." },
+        { "type": "oll", "name": "38", "imageFileName": "oll38.gif", "moves": "(R U R' U) (R U' R' U') (R' F R F')", "comments": "There's nothing difficult about any of these three triggers." },
+        { "type": "oll", "name": "36", "imageFileName": "oll36.gif", "moves": "(L' U' L U') (L' U L U) (L F' L' F)", "comments": "This is just the mirror of OLL #38. You could also do U2 and perform a right handed version of this algorithm." },
+        { "type": "oll", "name": "54", "imageFileName": "oll54.gif", "moves": "(r U) (R' U) (R U') (R' U) (R U2' r')", "comments": "The left hand only holds the cube while the right does everything else. This is sort of like a fat double Sune." },
+        { "type": "oll", "name": "53", "imageFileName": "oll53.gif", "moves": "(r' U') (R U') (R' U) (R U') (R' U2 r)", "comments": "This is similar to OLL #54, but the first U' is done with the left index finger." },
+        { "type": "oll", "name": "50", "imageFileName": "oll50.gif", "moves": "(R B' R B R2') U2 (F R' F' R)", "comments": "Use the right hand to do the first set of moves all in one motion. The second trigger should be very fast." },
+        { "type": "oll", "name": "49", "imageFileName": "oll49.gif", "moves": "(R' F R' F' R2) U2 y (R' F R F') y'", "comments": "This algorithm is very similar to OLL #50 with an added cube rotation to make the second trigger easier to perform." },
+        { "type": "oll", "name": "48", "imageFileName": "oll48.gif", "moves": "F (R U R' U') (R U R' U') F'", "comments": "This is just the easy T-orientation performed twice in a row." },
+        { "type": "oll", "name": "47", "imageFileName": "oll47.gif", "moves": "F' (L' U' L U) (L' U' L U) F", "comments": "This is just the mirror of OLL #48." },
+        { "type": "oll", "name": "39", "imageFileName": "oll39.gif", "moves": "(L F') (L' U' L U) F U' L'", "comments": "The right thumb gets a lot of work done at the end of this algorithm.The first trigger can be a little tricky if you don't grip the cube properly. The end can be a bit tricky, too." },
+        { "type": "oll", "name": "40", "imageFileName": "oll40.gif", "moves": "(R' F) (R U R' U') F' U R", "comments": "This is just the mirror of OLL #39." },
+        { "type": "oll", "name": "34", "imageFileName": "oll34.gif", "moves": "(R U R2' U') (R' F) (R U) (R U') F'", "comments": "This case is fast. It takes a little while to get used to the R2' not being just R', but the algorithm flows very nicely. I make the last F' turn with my right index finger." },
+        { "type": "oll", "name": "46", "imageFileName": "oll46.gif", "moves": "(R' U') (R' F R F') (U R)", "comments": "There's nothing fancy here. This is just a sledgehammer with a setup move." },
+        { "type": "oll", "name": "5", "imageFileName": "oll05.gif", "moves": "(r' U2) (R U R' U r)", "comments": "This is just a fat Antisune performed from the back of the cube." },
+        { "type": "oll", "name": "6", "imageFileName": "oll06.gif", "moves": "(r U2) (R' U' R U' r')", "comments": "This is just a fat Antisune." },
+        { "type": "oll", "name": "7", "imageFileName": "oll07.gif", "moves": "(r U R' U) (R U2 r')", "comments": "This case is just the inverse of one of the squares (OLL #6)." },
+        { "type": "oll", "name": "12", "imageFileName": "oll12.gif", "moves": "[F (R U R' U') F'] U [F (R U R' U') F']", "comments": "This is just a Sune from the back right except with a setup move." },
+        { "type": "oll", "name": "8", "imageFileName": "oll08.gif", "moves": "(r' U' R U') (R' U2 r)", "comments": "Like OLL #7, this is just the inverse of one of the squares (OLL #5)." },
+        { "type": "oll", "name": "11", "imageFileName": "oll11.gif", "moves": "[F' (L' U' L U) F] y [F (R U R' U') F'] y'", "comments": "Like OLL #12, this is just a Sune with a setup move." },
+        { "type": "oll", "name": "37", "imageFileName": "oll37.gif", "moves": "F (R U') (R' U' R U) (R' F')", "comments": "This is one of the fastest orientations. It's the first half of the Y-permutation. The last six moves are EXTREMELY FAST." },
+        { "type": "oll", "name": "35", "imageFileName": "oll35.gif", "moves": "(R U2) (R2 F) (R F' R U2 R')", "comments": "This is just the sledgehammer with a setup move." },
+        { "type": "oll", "name": "10", "imageFileName": "oll10.gif", "moves": "(R U R' U) (R' F R F') (R U2 R')", "comments": "This is kind of like a Sune with a sledgehammer mixed in." },
+        { "type": "oll", "name": "9", "imageFileName": "oll09.gif", "moves": "(R U R' U' R' F) (R2 U R' U' F')", "comments": "This is a pretty fast algorithm that flows very nicely." },
+        { "type": "oll", "name": "51", "imageFileName": "oll51.gif", "moves": "f (R U R' U') (R U R' U') f'", "comments": "This is just the easy P-orientation repeated twice." },
+        { "type": "oll", "name": "52", "imageFileName": "oll52.gif", "moves": "(R U R' U R d') (R U' R' F') y'", "comments": "The d' turn eliminates the need for a rotation, so this algorithm can be done very quickly." },
+        { "type": "oll", "name": "56", "imageFileName": "oll56.gif", "moves": "f (R U R' U') f' F (R U R' U') (R U R' U') F'", "comments": "I do this algorithm as the easy P-orientation followed by the easy T-orientation repeated twice." },
+        { "type": "oll", "name": "55", "imageFileName": "oll55.gif", "moves": "(R U2) (R2 U' R U' R' U2) (F R F')", "comments": "This is just a Sune performed from the back right with a setup at the beginning and a sledgehammer at the end." },
+        { "type": "oll", "name": "13", "imageFileName": "oll13.gif", "moves": "(r U' r' U' r U r' y' (R' U R) y", "comments": "I like this algorithm. I just wish it didn't have a rotation." },
+        { "type": "oll", "name": "16", "imageFileName": "oll16.gif", "moves": "(r U r') (R U R' U') (r U' r')", "comments": "This is just a fast trigger with a fast setup before and after." },
+        { "type": "oll", "name": "14", "imageFileName": "oll14.gif", "moves": "(R' F) (R U R' F' R) y' (R U' R') y", "comments": "This case is pretty nice, but like OLL #13, I don't like the rotation." },
+        { "type": "oll", "name": "15", "imageFileName": "oll15.gif", "moves": "(l' U' l) (L' U' L U) (l' U l)", "comments": "This is just the mirror of OLL #16." },
+        { "type": "oll", "name": "41", "imageFileName": "oll41.gif", "moves": "(R U') (R' U2) (R U) y (R U') (R' U' F') y'", "comments": "This case looks difficult, but it's actually pretty easy and flows kind of nicely." },
+        { "type": "oll", "name": "30", "imageFileName": "oll30.gif", "moves": "(R2' U R' B') (R U') (R2' U) (l U l')", "comments": "After the first set of moves, everything picks up a bit and it's easy to finish the algorithm." },
+        { "type": "oll", "name": "42", "imageFileName": "oll42.gif", "moves": "(L' U) (L U2') (L' U') y' (L' U) (L U F) y", "comments": "This is just the mirror of OLL #41." },
+        { "type": "oll", "name": "29", "imageFileName": "oll29.gif", "moves": "(L2 U' L B) (L' U) (L2 U') (r' U' r)", "comments": "This is just the mirror of OLL #30." },
+    ]*/
 
-function renderCross() {
-	var items = $j('ul.cross li.algo');
-	renderItem('f2l', items);
-}
-function renderF2L() {
-	var items = $j('ul.f2l li.algo');
-	renderItem('f2l', items);
-}
+	var oll1look = {
+		name: "Align Edges",
+		algs: [
+			{ moves: "F (Sexy) F'", name: "opposite", image: {stage: 'oell'} },
+			{ moves: "f (Sexy) f'", name: "adjacent", image: {stage: 'oell'} },
+			{ moves: "[F (Sexy) F'] [f (Sexy) f']", name: "none", image: {stage: 'oell'} }
+		]}
+	
 
-function renderOLL() {
-	var items = $j('ul.oll li.algo');
-	renderItem('oll', items);
-}
+	var oll = [
+		{
+			name: "All Edges Correctly Oriented",
+			algs: [ /* http://badmephisto.com/2LookOLL.pdf */
+				{ type: "oll", moves: "Su (Super)", name: "Sune" },
+				{ type: "oll", moves: "(R' U' R) U' (R' U2 R)", name: "AntiSune" },
+				{ type: "oll", moves: "F Sexy3 F'", name: "Car" },
+				{ type: "oll", moves: "[f (Sexy) f'] [F (Sexy) F']", name: "Blinker" },
+				{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "Headlights" },
+				{ type: "oll", moves: "(FatSexy) (FatSledge)", name: "Chameleon" },
+				{ type: "oll", moves: "F' (FatSexy) (r' F R )", name: "Bowtie" },
+			]
+		},
+		{
+			name: "No Edges Correctly Oriented",
+			algs: [
+				{ type: "oll", moves: "R U2 [R2' F R F'] U2' [Sledge]" },
+				{ type: "oll", moves: "[F Sexy F'] [f Sexy f']" },
+				{ type: "oll", moves: "(f Sexy f') U' (F Sexy F')" },
+				{ type: "oll", moves: "(f Sexy f') U (F Sexy F')" },
+				{ type: "oll", moves: "[Su] [Sledge] U2 [Sledge]" },
+				{ type: "oll", moves: "M U Sexy M2 [U R U' r']" },
+				{ type: "oll", moves: "[F Su] y' R' U2 [Sledge]" },
+				{ type: "oll", moves: "[r' R] U [Sexy] r [R2' F R F']" },
+			]
+		},
+		{
+			name: "C shapes",
+			algs: [
+				{ type: "oll", moves: "R' U' [Sledge] U R" },
+				{ type: "oll", moves: "R U R2 U' R' F R U R U' F'" },
+			]
+		},
+		{
+			name: "I shapes",
+			algs: [
+				{ type: "oll", moves: "R U2 R2 U' Push U2 F R F'" },
+				{ type: "oll", moves: "Su R d' Push F'" },
+				{ type: "oll", moves: "f Sexy2 f'" },
+				{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'" },
+			]
+		},
+		{
+			name: "L shapes",
+			algs: [
+				{ type: "oll", moves: "F Sexy2 F'" },
+				{ type: "oll", moves: "R' U' Sledge2 U R" },
+				{ type: "oll", moves: "[r U R' U] [Push U] [R U2' r']" },
+				{ type: "oll", moves: "[l' U' L U'] [L' U L U'] [L' U2 l]" },
+				{ type: "oll", moves: "[R' F R' F'] R2 U2' y [Sledge]" },
+				{ type: "oll", moves: "R' F R2 B' R2' F' R2 B R'" },
+			]
+		},
+		{
+			name: "P shapes",
+			algs: [
+				{ type: "oll", moves: "f [Sexy] f'" },
+				{ type: "oll", moves: "f' (L' U' L U) f" },
+				{ type: "oll", moves: "R U B' U' R' U R B R'" },
+				{ type: "oll", moves: "[R' U'] F [Ugly] F' R" },
+			]
+		},
+		{
+			name: "T shapes",
+			algs: [
+				{ type: "oll", moves: "F [Sexy] F'" },
+				{ type: "oll", moves: "[Sexy] [Sledge]" },
+			]
+		},
+		{
+			name: "W shapes",
+			algs: [
+				{ type: "oll", moves: "[Su] [Push U'] [Sledge]" },
+				{ type: "oll", moves: "[L' U' L U'] [L' U L U] [L F' L' F]" },
+			]
+		},
+		{
+			name: "Awkward shapes",
+			algs: [
+				{ type: "oll", moves: "R2 U R' B' R U' R2 U R B R'" },
+				{ type: "oll", moves: "M U [Sexy] [Sledge] M'" },
+				{ type: "oll", moves: "[Push U2] R U y Push U' F'" },
+				{ type: "oll", moves: "R' U2 [Su] R y [F Sexy F']" },
+			]
+		},
+		{
+			name: "Fish shapes",
+			algs: [
+				{ type: "oll", moves: "F Push U' Pull F'" },
+				{ type: "oll", moves: "R U2' [R2 F R F'] [Super]" },
+				{ type: "oll", moves: "[Su] [Sledge] [Super]" },
+				{ type: "oll", moves: "[Sexy R' F] R2 U R' U' F'" },
+			]
+		},
+		{
+			name: "Knight Move shapes",
+			algs: [
+				{ type: "oll", moves: "r U' r' U' r U r' y' [R' U R]" },
+				{ type: "oll", moves: "R' F Pull F' R y' [Push]" },
+				{ type: "oll", moves: "[r U r'] [Sexy] [r U' r']" },
+				{ type: "oll", moves: "[l' U' l] [L' U' L U] [l' U l]" },
+			]
+		},
+		{
+			name: "Big Lightning Bolts shapes",
+			algs: [
+				{ type: "oll", moves: "[R' F Sexy F'] U R" },
+				{ type: "oll", moves: "[L F' L' U' L U F] U' L'" },
+			]
+		},
+		{
+			name: "Small Lightning Bolts shapes",
+			algs: [
+				{ type: "oll", moves: "R U2' R' U2 Sledge" },
+				{ type: "oll", moves: "[r U R' U] [R U2' r']" },
+				{ type: "oll", moves: "[F Sexy F'] U [F Sexy F']" },
+				{ type: "oll", moves: "[F' L' U' L U F] y [F Sexy F'] y'" },
+			]
+		},
+		{
+			name: "Square shapes",
+			algs: [
+				{ type: "oll", moves: "r U2' R' U' R U' r'" },
+				{ type: "oll", moves: "l' U2 L U L' U l" },
+			]
+		},
+		{
+			name: "Arrow & H shapes",
+			algs: [
+				{ type: "oll", moves: "M' U M U2 M' U M" },
+				{ type: "oll", moves: "[Sexy] M' [U R U' r']" },
+			]
+		},
 
-function renderPLL() {
-	var items = $j('ul.pll li.algo');
-	renderItem('pll', items);
-}
+	]
 
-function renderItem(default_stage, items) {
-	var VISUAL_CUBE_PATH = 'https://cube.crider.co.uk/visualcube.php';
-	//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
+	/*
+   var pll = [
+	   { "type": "pll", "name": "Aa", "imageFileName": "pll01.gif", "moves": "x (R' U R') D2 (R U' R') D2 R2 x'", "comments": "This is a basic corner 3-cycle. It is one of my favorite and fastest algorithms. Perform the D2s with the left hand and everything else with the right." },
+	   { "type": "pll", "name": "Ab", "imageFileName": "pll02.gif", "moves": "x R2 D2 (R U R') D2 (R U' R) [y'] y x'", "comments": "This is just the inverse of the other A perm. It is performed in a very similar manner." },
+	   { "type": "pll", "name": "E", "imageFileName": "pll03.gif", "moves": "x' (R U') (R' D) (R U R' D') (R U R' D) (R U') (R' D') x", "comments": "This alg is just two orientations performed consecutively." },
+	   { "type": "pll", "name": "Ua", "imageFileName": "pll06.gif", "moves": "(R U' R U) (R U) (R U') (R' U' R2)", "comments": "This is just a simple 3-edge cycle. It is almost as fast as the corner cycles. I solve this case with the bar at the front or the back." },
+	   { "type": "pll", "name": "Ub", "imageFileName": "pll07.gif", "moves": "(R2 U) (R U R' U') (R' U') (R' U R')", "comments": "This is the inverse of the other U perm. I place my hands slightly differently for this algorithm. I solve this case with the bar at the front or the back." },
+	   { "type": "pll", "name": "H", "imageFileName": "pll05.gif", "moves": "(M2' U) (M2' U2) (M2' U) M2'", "comments": "This is extremely easy to recognize and can be performed VERY quickly. The M'2 is actually performed as (M'M') with rapid pushing at the back face of the M layer with the ring and then middle fingers." },
+	   { "type": "pll", "name": "Z", "imageFileName": "pll04.gif", "moves": "(M2' U) (M2' U) (M' U2) (M2' U2) (M' U2)", "comments": "The Z permutation is performed very similarly to the H perm. The last U2 is not necessary if you account for it before the algorithm." },
+	   { "type": "pll", "name": "Ja", "imageFileName": "pll08.gif", "moves": "(R' U L') U2 (R U' R') U2 (L R U')", "comments": "I perform the R of the [R L] a split second after I start the L so that I can immediately perform the U' to AUF when the L face has been moved to where it belongs." },
+	   { "type": "pll", "name": "Jb", "imageFileName": "pll09.gif", "moves": "(R U R' F') (R U R' U') (R' F) (R2 U') (R' U')", "comments": "This is the same as the T perm with the last four moves instead performed at the beginning." },
+	   { "type": "pll", "name": "T", "imageFileName": "pll10.gif", "moves": "(R U R' U') (R' F) (R2 U') (R' U' R U) (R' F')", "comments": "This is the T permuation. It is long but definitely very fast and easy. It can be performed in almost one swift motion without any readjusting of the fingers. Note that it is a combination of two easy orientations." },
+	   { "type": "pll", "name": "Rb", "imageFileName": "pll11.gif", "moves": "(R' U2) (R U2) (R' F R U R' U') (R' F' R2 U')", "comments": "This is a pretty straightforard alg that flows pretty nicely." },
+	   { "type": "pll", "name": "Ra", "imageFileName": "pll12.gif", "moves": "R U R' F' R U2 R' U2 R' F R U R U2 R' U'", "comments": "You could also just mirror Rb, but this alg is more right hand friendly. Notice the similarity with the Jb permutation." },
+	   { "type": "pll", "name": "F", "imageFileName": "pll13.gif", "moves": "R' U' F' (R U R' U') (R' F) (R2 U') (R' U' R U) (R' U R)", "comments": "This is a T permutation with a 3 move setup in the beginning and a cancellation of one of those moves at the end." },
+	   { "type": "pll", "name": "Ga", "imageFileName": "pll15.gif", "moves": "(R2' u) (R' U R' U' R u') R2' y' (R' U R) y", "comments": "This alg has a pretty decent flow to it and can be performed almost in one motion until the rotation." },
+	   { "type": "pll", "name": "Gb", "imageFileName": "pll16.gif", "moves": "(R' U' R) y (R2' u R' U) (R U' R u' R2') y'", "comments": "This is the inverse of Ga. Note how similar they look. I perform this one almost exactly the same way." },
+	   { "type": "pll", "name": "Gc", "imageFileName": "pll14.gif", "moves": "(R2' u' R U') (R U R' u R2) (f R' f')", "comments": "You could rotate and insert the pair instead of performing the last three moves as shown." },
+	   { "type": "pll", "name": "Gd", "imageFileName": "pll17.gif", "moves": "(R U R') y' (R2' u' R U') (R' U R' u R2) y", "comments": "This is just the inverse of Gc. I execute it very similarly because most of the moves overlap in the same manner." },
+	   { "type": "pll", "name": "V", "imageFileName": "pll18.gif", "moves": "(R' U R' d') (R' F' R2 U') (R' U R' F) (R F) y'", "comments": "This is one of my least favorite permutations because the flow just isn't there." },
+	   { "type": "pll", "name": "Na", "imageFileName": "pll19.gif", "moves": "(z) D (R' U) (R2 D' R D U') (R' U) (R2 D' R U' R) z'", "comments": "This alg could also be performed using <R,U,L> if you don't do the rotation, but this way is faster with practice." },
+	   { "type": "pll", "name": "Nb", "imageFileName": "pll20.gif", "moves": "(z) U' (R D') (R2' U R' D U') (R D') (R2' U R' D R') z'", "comments": "This is just the mirror of the other N permutation." },
+	   { "type": "pll", "name": "Y", "imageFileName": "pll21.gif", "moves": "(F R U') (R' U' R U) (R' F') (R U R' U') (R' F R F')", "comments": "This is very quick and can be performed without any adjustments of where the fingers are. It is just a combination of two quick orientations." }
+   ] */
 
-	items.each(function (){
-		var $item     = $j(this);
-		var $images   = $item.find('.image');
-		var $formulas = $item.find('.formula');		
-		var arrows    = $item.find('.arrows').html();
-		$images.each(function () {
-			var $image  = $j(this);
-			var formula = $image.next().html();
-			var stage   = $image.attr('stage') ? $image.attr('stage') : default_stage;
-			var view    = $image.attr('view') ? $image.attr('view') : (stage == 'f2l' ? '' : 'plan');
-			var img_url = VISUAL_CUBE_PATH + "?fmt=svg&size=100&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
-			$image.html('<img src="' + img_url + '" />').click(function () {
-				setDemoAlgo(formula, $image);
-			});
+	/* http://badmephisto.com/pll.html */
+	var pll = [
+		{
+			name: "Edge Permutations Only",
+			algs: [
+				{ type: "pll", moves: "M2 U [M U2 M'] U M2", name: "Ua", image: { arw: 'U3U7-s8,U7U5-s8,U5U3-s8', ac: 'red' } }, // R2 U [Sexy] (R' U') (Downward)
+				{ type: "pll", moves: "M2 U' [M U2 M'] U' M2", name: "Ub", image: { arw: 'U3U5-s8,U5U7-s8,U7U3-s8', ac: 'red' } }, // [R U'] [R U] [R U] [R U'] R' U' R2
+				{ type: "pll", moves: "[M2 U M2] U2 [M2 U M2]", name: "H", image: { arw: 'U1U7,U7U1,U3U5,U5U3', ac: 'red' } },
+				{ type: "pll", moves: "[M2 U M2] U M' U2 M2 U2 M' U2", name: "Z", image: { arw: 'U3U7,U7U3,U5U1,U1U5', ac: 'red' } },
+			]
+		},
+		{
+			name: "Corner Permutations Only",
+			algs: [
+				{ type: "pll", moves: "x [(Downward) D2] [(Push) D2] R2 x'", name: "Aa", image: {arw: 'U2U8-s8,U8U0-s8,U0U2-s8', ac: 'blue'} },
+				{ type: "pll", moves: "x' [(Upward) D2] [(R' U R) D2] R2 x", name: "Ab", image: {arw: 'U2U0-s8,U0U8-s8,U8U2-s8', ac: 'blue'} },
+				{ type: "pll", moves: "x' (Push) D (Pull) D' (Pull) D (Push) D' x", name: "E", image: {arw: 'U0U6,U6U0,U2U8,U8U2', ac: 'blue'} },
+			]
+		},
+		{
+			name: "Corner & Edge Swap",
+			algs: [
+				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Pull F']", name: "T", image: {arw: 'U3U5,U5U3,U2U8-blue,U8U2-blue', ac: 'red'} },
+				{ type: "pll", moves: "[R' U L'] [U2 Push U2] [R L U']", name: "Ja", image: {arw: 'U0U2-blue,U2U0-blue,U3U1,U1U3', ac: 'red' }},
+				{ type: "pll", moves: "[Pull F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", image: {arw: 'U2U8-blue,U8U2-blue,U5U7,U7U5', ac: 'red' } },
+				{ type: "pll", moves: "F Push U' [Pull F'] {[Sexy] [Sledge]}", name: "Y", image: {arw: 'U1U3,U3U1,U0U8-blue,U8U0-blue', ac: 'red' } },
+				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", image: {arw: 'U0U2-blue,U2U0-blue,U3U7,U7U3', ac: 'red' } },
+				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", image: {arw: 'U0U2-blue,U2U0-blue,U5U7,U7U5', ac: 'red' } },
+				{ type: "pll", moves: "[Downward d'] [R' F'] [R2 U' R' U] [R' F R F]", name: "V", image: {arw: 'U1U5,U5U1,U0U8-blue,U8U0-blue', ac: 'red' } },
+				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F]", name: "F", image: {arw: 'U2U8-blue,U8U2-blue,U1U7,U7U1', ac: 'red' } },
+				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na", image: {arw: 'U1U7,U7U1,U0U8-blue,U8U0-blue', ac: 'red' } },
+				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb", image: {arw: 'U1U7,U7U1,U6U2-blue,U2U6-blue', ac: 'red' } },
+			]
+		},
+		{
+			name: "Corner & Edge Cycle Permutations (G perms)",
+			algs: [
+				{ type: "pll", moves: "R2 u Downward U' R u' R2 [y' R' U R]", name: "Ga", image: {arw: 'U0U2-blue,U2U6-blue,U6U0-blue,U1U3,U3U5,U5U1', ac: 'red' } },
+				{ type: "pll", moves: "[R' U' R] y R2 u R' U Upward u' R2", name: "Gb", image: {arw: 'U0U6-blue,U6U8-blue,U8U0-blue,U1U7,U7U3,U3U1', ac: 'red' } },
+				{ type: "pll", moves: "R2 u' R U' Pull u R2 [y Push]", name: "Gc", image: {arw: 'U0U6-blue,U6U8-blue,U8U0-blue,U7U3,U3U5,U5U7', ac: 'red' } },
+				{ type: "pll", moves: "[Pull] y' R2 u' Push U R' u R2", name: "Gd", image: {arw: 'U0U2-blue,U2U6-blue,U6U0-blue,U1U3,U3U7,U7U1', ac: 'red' } },
+			]
+		}
+	]
+
+	var triggers = {
+		"Sexy": "R U R' U'",
+		"FatSexy": "r U R' U'",
+		"Ugly": "U R U' R'",
+		"Sledge": "R' F R F'",
+		"FatSledge": "r' F R F'",
+		"Hedge": "F R' F' R",
+		"Su": "R U R' U",
+		"Pull": "R U R'",
+		"Push": "R U' R'",
+		"Super": "R U2 R'",
+		"Upward": "R U' R",
+		"Downward": "R' U R'",
+	};
+
+	function match(value, arr, defaultf) {
+		for (let [predicate, func] of arr) {
+			let matched = false;
+			if (isFunction(predicate)) {
+				matched = predicate(value)
+			} else {
+				matched = (predicate === value)
+			}
+			if (matched) {
+				return func(value)
+			}
+		}
+		return isFunction(defaultf) ? defaultf(value) : defaultf;
+	}
+
+	var isNumber = n => !isNaN(n)
+
+	var isOpeningBrace = c => ["(", "[", "{"].includes(c)
+
+	var isClosingBrace = c => [")", "]", "}"].includes(c)
+
+	function matchingBrace(b) {
+		const options = ["(", "[", "{", "}", "]", ")"]
+		var idx = options.indexOf(b);
+		var ridx = options.length - idx - 1;
+		return options[ridx]
+	}
+
+	function splitJoin(algo, func) {
+		var asString = false;
+		if (!Array.isArray(algo)) {
+			asString = true;
+			algo = algo.split(' ')
+		}
+
+		var result = func(algo)
+
+		return asString ? result.join(' ') : result
+
+	}
+
+	
+	function invert(algo, individual) {
+		const parenthesize = (v, o, c, prefix) => prefix == individual ? o + v : v + c;
+		function reve(m) {
+			return match(m.slice(-1), [
+				["'", _ => m.slice(0, -1)],
+				[isNumber, c => match(c % 4, [
+					[0, _ => m], // really nothing to do. E.g. U4
+					[1, _ => m.slice(0, -1) + "'"],
+					[2, _ => m],
+					[3, _ => m.slice(0, -1)] // U3 is actually U'
+				])],
+				[isClosingBrace, b => parenthesize(reve(m.slice(0, -1)), matchingBrace(b), b, false)]],
+				_ => m + "'"
+			)
 			
-		});
-		$formulas.each(function () {
-			var $formula = $j(this);
-			var formula  = $formula.html();
-			$formula.click(function () {
-				setDemoAlgo(formula, $formula);
+		}
+
+		function revs(m) {
+			var first = m.charAt(0);
+			switch (first) {
+				case "(":
+				case "[":
+				case "{":
+					return parenthesize(revs(m.substring(1)), first, matchingBrace(first), true)
+				default: 
+					return reve(m)
+			}
+		}
+
+		return splitJoin(algo, algo => {
+			algo = algo.map(revs);
+			return !individual ? algo.reverse() : algo;
+		})
+
+
+		/*
+	   return mouvements.reverse().map(m => {
+		   if (m.slice(-1) == "'")
+			   return m.slice(0, -1)
+
+		   // last character is a number
+		   if (!isNaN(m.slice(-1))) {
+			   if (m.length == 2) {
+				   switch (m.slice(-1) % 4) {
+					   case "0": return m; // really nothing to do. E.g. U4
+					   case "1": return m.slice(0, -1) + "'"
+					   case "2": return m;
+					   case "3": return m.slice(0, -1); // U3 is actually U'
+				   }
+			   } 
+			   return (invert([m.slice(0, -1)])[0] + m.slice(-1))
+		   }					
+
+		   return m + "'"
+	   })*/
+	}
+
+	function resolveTriggers(algo) {
+		function append(arr, char) {
+			if (arr.length == 0) return [char]
+			arr[arr.length - 1] = arr[arr.length - 1] + char;
+			return arr;
+		}
+
+		function prepend(char, arr) {
+			if (arr.length == 0) return [char]
+			arr[0] = char + arr[0];
+			return arr;
+		}
+
+		function resolvee(m) {
+			if (m.length == 0) return []
+			return match(m.slice(-1), [
+				["'", _ => invert(resolvee(m.slice(0, -1)))],
+				[isNumber, c => {
+					if (m.length == 2) return m;
+					let repeat = parseInt(c)
+					return new Array(repeat).fill(resolvee(m.slice(0, -1))).flat();
+				}],
+				[isClosingBrace, b => append(resolvee(m.slice(0, -1)), b)]
+			],
+				_ => {
+					let resolved = [m];
+					let temp = triggers[m]
+					if (temp) {
+						resolved = resolveTriggers(temp.split(' '))
+					}
+					return resolved;
+				})
+		}
+
+		function resolves(m) {
+			if (m.length == 0) return []
+			var first = m.charAt(0);
+			switch (first) {
+				case "(": 
+				case "[": 
+				case "{":
+					return prepend(first, resolves(m.substring(1)));
+				default: return resolvee(m)
+			}
+		}
+		return splitJoin(algo, algo => algo.flatMap(resolves), false);
+	};
+
+
+	$(document).ready(_ => {
+		/*renderCross();*/
+		renderF2L();
+		renderOLL();
+		renderPLL();
+	})
+
+
+	function renderCross() {
+		var items = $('ul.cross li.algo');
+		renderItem('f2l', items);
+	}
+	function renderF2L() {
+		renderItem('f2l', f2l, $('#nav-f2l ul.f2l'));
+	}
+
+	function renderOLL() {
+		renderItem('oll', [oll1look, oll[0]], $('#nav-oll2 ul.oll'));
+		renderItem('oll', oll, $('#nav-oll ul.oll'));
+	}
+
+	function renderPLL() {
+		renderItem('pll', pll, $('#nav-pll ul.pll'));
+		renderItem('pll', [pll[0], pll[1]], $('#nav-pll2 ul.pll'));
+	}
+
+
+	(function (old) {
+		$.fn.attr = function () {
+			if (arguments.length === 0) {
+				if (this.length === 0) {
+					return null;
+				}
+
+				var obj = {};
+				$.each(this[0].attributes, function () {
+					if (this.specified) {
+						obj[this.name] = this.value;
+					}
+				});
+				return obj;
+			}
+
+			return old.apply(this, arguments);
+		};
+	})($.fn.attr);
+
+	const isFunction = value => value && (Object.prototype.toString.call(value) === "[object Function]" || "function" === typeof value || value instanceof Function);
+
+	function formatURL(base, parameters) {
+		return `${base}?` + Object.entries(parameters).reduce((result, [key, value]) => {
+			value = isFunction(value) ? value.apply(null, [parameters]) : value
+			return `${result}${key}=${encodeURIComponent(value)}&`
+		}, '')
+	}
+
+
+	/*
+		<li class="title">white on the top</li>
+		<li class="algo">
+			<div class="name">1 : </div>
+			<div class="image"></div>
+			<div class="formula">(R U R') F' U' F</div>
+		</li>
+	*/
+	function renderItem(default_stage, items, $container) {
+		var VISUAL_CUBE_PATH = 'https://cube.crider.co.uk/visualcube.php';
+		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
+
+		function renderImageAndMoves($container, { image, moves, comment }) {
+			var formula = Array.isArray(moves) ? moves[0] : moves;
+			formula = resolveTriggers(formula);
+
+			var parameters = $.extend({
+				stage: default_stage,
+				view: p => (p.stage == 'f2l' ? '' : 'plan'),
+				case: formula,
+				bg: 't',
+				ac: 'black',
+				size: 100,
+				fmt: 'svg'
+			}, image)
+			var img_url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
+			$image = $(`<div class="image"></div>`).appendTo($container);
+			$image.html('<img src="' + img_url + '" loading="auto"/>').click(function () {
+				setDemoAlgo(formula, $(this));
 			});
-			
+			var known = 'known';
+			[].concat(moves).forEach(move => {
+				$(`<div class="formula ${known}">${move}</div>`).appendTo($container).click(function () {
+					setDemoAlgo(formula, $(this));
+				});
+				known = '';
+			})
+			if (comment) {
+				$container.append(`<div class="comment">${comment}</div>`)
+			}
+		}
+
+		items.forEach(({ name, algs }) => {
+			$container.append(`<li class="title">${name ? name : "<p>"}</li>`)
+			algs.forEach(alg => {
+				$alg = $(`<li class="algo"></li>`).appendTo($container)
+				$alg.append(`<div class="name">${alg.name ? alg.name : "<p>"}</name>`)
+				if (alg.grouping) {
+					alg.grouping.forEach(alg => renderImageAndMoves($alg, alg))
+				} else {
+					renderImageAndMoves($alg, alg);
+				}
+			});
+			/*
+			var $item = $(this);
+			var $images = $item.find('.image');
+			$images.each(function () {
+				var $image = $(this);
+				var formula = $image.next().html();
+				var parameters = $.extend({
+					stage: default_stage,
+					view: _ => {(stage == 'f2l' ? '' : 'plan')},
+					case: formula,
+					bg: 't', 
+					ac: 'black',
+					size: 100,
+					fmt: 'svg'
+				}, $image.attr())
+				
+				var img_url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
+				$image.html('<img src="' + img_url + '" />').click(function () {
+					setDemoAlgo(formula, $image);
+				});
+			});
+
+			var $formulas = $item.find('.formula');
+			$formulas.each(function () {
+				var $formula = $(this);
+				var formula = $formula.html();
+				$formula.click(function () {
+					setDemoAlgo(formula, $formula);
+				});
+
+			});*/
 		});
-	});
-}
+	}
 
-function selectMenuItem() {
-
-}
+	return {
+		f2l: f2l,
+		oll: oll,
+		oll1look: oll1look,
+		pll: pll,
+		triggers: triggers,
+		resolveTriggers: resolveTriggers,
+		invert: invert
+	}
+})(jQuery)
