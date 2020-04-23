@@ -25,9 +25,9 @@
         "Control": nop,
         " ": event => {
             switch (move) {
-                case "P": train.pll_scramble(); move = ''; break;
-                case "O": train.oll_scramble(); move = ''; break;
-                case "T": train.f2l_scramble(); move = ''; break;
+                case "P": pll_scramble(); move = ''; break;
+                case "O": oll_scramble(); move = ''; break;
+                case "T": f2l_scramble(); move = ''; break;
             }
             /*
             let do_reverse = false;
