@@ -558,8 +558,6 @@
 				<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
 					<a class="nav-item nav-link active show" id="nav-intro-tab" data-toggle="tab" href="#nav-intro"
 						role="tab" aria-controls="nav-intro" aria-selected="true">Intro</a>
-					<a class="nav-item nav-link" id="nav-cross-tab" data-toggle="tab" href="#nav-cross" role="tab"
-						aria-controls="nav-cross" aria-selected="false">Cross</a>
 					<a class="nav-item nav-link" id="nav-f2l-tab" data-toggle="tab" href="#nav-f2l" role="tab"
 						aria-controls="nav-f2l" aria-selected="false">F2L</a>
 					<a class="nav-item nav-link" id="nav-oll2-tab" data-toggle="tab" href="#nav-oll2" role="tab"
@@ -703,15 +701,7 @@
 							</div>
 						</div>
 					</div>
-					<br />
-					<table id="named-moves" class="table-sm text-left table-bordered w-auto">
-						<thead>
-						  <tr>
-							<th>Name</th>
-							<th>Moves</th>
-						  </tr>
-						</thead>	
-					</table>
+					<br />				
 					<br />
 					<div>
 						Sources :
@@ -741,46 +731,7 @@
 						<a href="https://www.cubezone.be/">CubeZone</a>
 					</div>
 				</fieldset>
-			</div>
-
-			<div class="tab-pane fade" id="nav-cross" role="tabpanel" aria-labelledby="nav-cross-tab">
-				<div>
-					<fieldset>
-						<legend>Cross</legend>
-						<ul class="cross">
-							<li class="algo">
-								<div class="name">1 : </div>
-								<div class="image" stage="cross" view="trans"></div>
-								<div class="formula">R2</div>
-							</li>
-							<li class="algo">
-								<div class="name">2 : </div>
-								<div class="image" stage="cross" view="trans"></div>
-								<div class="formula">U R2</div>
-							</li>
-							<li class="algo">
-								<div class="name">3 : </div>
-								<div class="image" stage="cross" view="trans"></div>
-								<div class="formula">U2 R2</div>
-							</li>
-							<li class="algo">
-								<div class="name">4 : </div>
-								<div class="image" stage="cross" view="trans"></div>
-								<div class="formula">F R' F'</div>
-							</li>
-							<li class="algo">
-								<div class="name">5 : </div>
-								<div class="image" stage="cross" view="trans"></div>
-								<div class="formula">R D' F D</div>
-								<div class="formula">R2 U' R' B' R</div>
-							</li>
-						</ul>
-					</fieldset>
-				</div>
-				<div style="clear:both;">
-					<a href="https://cubefreak.net/speed/cfop/cross.php" target="_blank">cubefreak.net cross</a>
-				</div>
-			</div>
+			</div>			
 
 			<div class="tab-pane fade" id="nav-f2l" role="tabpanel" aria-labelledby="nav-f2l-tab">
 				<div> Note: maybe use alg.grouping to put similar cases on the same line
@@ -844,7 +795,14 @@
 
 			</div>
 		</div>
-
+		<table id="named-moves" class="table-sm text-left table-bordered w-auto">
+			<thead>
+			  <tr>
+				<th>Name</th>
+				<th>Moves</th>
+			  </tr>
+			</thead>	
+		</table>
 	</div>
 </body>
 

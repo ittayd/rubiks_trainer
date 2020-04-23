@@ -575,6 +575,7 @@ algos = (function ($) {
 		var VISUAL_CUBE_PATH = 'https://cube.crider.co.uk/visualcube.php';
 		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
+		const triggersPattern = new RegExp(Object.keys(triggers).sort((a,b) => b.length - a.length).join('|'), "g")
 		function renderImageAndMoves($container, { image, moves, comment }) {
 			var formula = Array.isArray(moves) ? moves[0] : moves;
 			formula = resolveTriggers(formula);
@@ -595,7 +596,14 @@ algos = (function ($) {
 			});
 			var known = 'known';
 			[].concat(moves).forEach(move => {
-				$(`<div class="formula ${known}">${move}</div>`).appendTo($container).click(function () {
+				// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
+				move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${triggers[match]}">${match}</span>`)
+				console.log(move)
+				let $move = $(`<span>${move}</span>`)
+				$move.find('[data-toggle="tooltip"]').tooltip();
+				$div = $(`<div class="formula ${known}"></div>`)
+				$div.append($move)
+				$div.appendTo($container).click(function () {
 					setDemoAlgo(formula, $(this));
 				});
 				known = '';
