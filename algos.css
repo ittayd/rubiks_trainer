@@ -1,3 +1,18 @@
+.algo g {
+	color: Chartreuse;
+}
+
+.algo r {
+	color: orangered;
+}
+
+.algo bl {
+	color: dodgerblue;
+}
+
+.algo m {
+	color: magenta;
+}
 
 body {
 	padding:5px;
@@ -91,6 +106,8 @@ fieldset>div {
 .tab_body_item.active {
 	display:block;
 }
+/*
 .known {
-	background-color:#FFFFCC;
-}
+	/* background-color:#FFFFCC; 
+	font-weight: 600;
+}*/

@@ -6,8 +6,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 		crossorigin="anonymous">
 	<link rel="stylesheet" href="algos.css">
-		<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
 		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
 		crossorigin="anonymous"></script>
@@ -43,8 +42,8 @@
 
     var cube;
 	
-	var move_idx_elem
-	var algo_elem;
+	var $move_idx
+	var $algo;
 
     var all_moves;
 
@@ -76,7 +75,7 @@
              cube.reset();
         }
 
-        move_idx_elem.val(to)
+        $move_idx.val(to)
 
 		var partial = all_moves_arr.slice(Math.min(current_idx, to), Math.max(current_idx, to))
 		if(delta < 0)
@@ -90,9 +89,9 @@
 
     }
 
-	function random_alg(group, tip_elem) {
+	function random_alg(group, $tip) {
     	var alg = random(random(group).algs)
-		tip(tip_elem, alg)
+		tip($tip, alg)
 		return alg.moves
     }
 
@@ -139,7 +138,7 @@
                     break;
                 }
                 case -2:
-                    algo = algo_elem.val();
+                    algo = $algo.val();
                     break;
                 case -1:
                     algo = random_alg(algos.oll, '#oll-tips');
@@ -161,7 +160,7 @@
         var moves = train_moves
 
         moves = moves + " " + pll_scramble();
-        algo_elem.val(train_moves)
+        $algo.val(train_moves)
         all_moves = moves;
         advance({reset: true})
         console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
@@ -185,7 +184,7 @@
                     break;
                 }
                 case -2:
-                    algo = algo_elem.val();
+                    algo = $algo.val();
                     break;
                 case -1:
                     algo = random_alg(algos.pll, '#pll-tips');
@@ -207,7 +206,7 @@
         var moves = train_moves
 
         moves = moves
-        algo_elem.val(train_moves)
+        $algo.val(train_moves)
         all_moves = moves;
         advance({reset: true})
         console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
@@ -221,7 +220,7 @@
             let groupIdx = parseInt($('#f2l-group').find(":selected").val());
             switch(groupIdx) {
                 case -2:
-                    algo = algo_elem.val();
+                    algo = $algo.val();
                     break;
                 case -1:
                     algo = random_alg(algos.f2l, '#f2l-tips');
@@ -235,7 +234,9 @@
                     algo = group.algs[i].moves
                 }
             }
-        }
+		}
+		
+		algo = algos.cleanMarkup(algo)
 
         var train_moves = simplify(pre_moves + algo)
 
@@ -247,152 +248,14 @@
             moves = moves + " y "
         }
         moves = moves + " " + oll_scramble()
-        algo_elem.val(train_moves)
+        $algo.val(train_moves)
         all_moves = moves;
         advance({reset: true})
         console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
         return all_moves;
     }
 
-    
-
-
-	/*
-    var previous = $('input[type="button"][value="Reset"]');
-
-    function chain(elem) {
-        elem = $(elem)
-        previous.after(elem);
-        previous = elem;
-        return elem
-    }
-
-    chain('<input type="button" value="F2L"/>').click(function() {
-       f2l_scramble();
-    })
-
-    var f2lGroupSelectElem = $('<select />');
-    $('<option />', {value: -1, text: "-- random --"}).appendTo(f2lGroupSelectElem);
-    $('<option />', {value: -2, text: "-- algo --"}).appendTo(f2lGroupSelectElem);
-
-    f2l.forEach((group, i) => {
-        $('<option />', {value: i, text: group.name}).appendTo(f2lGroupSelectElem);
-    })
-
-    chain(f2lGroupSelectElem);
-
-    chain('<input type="button" value="OLL"/>').click(function() {
-       oll_scramble();
-    })
-
-    var ollGroupSelectElem = $('<select />');
-    $('<option />', {value: -3, text: "-- 2 look --"}).appendTo(ollGroupSelectElem);
-    $('<option />', {value: -1, text: "-- random --"}).appendTo(ollGroupSelectElem);
-    $('<option />', {value: -2, text: "-- algo --"}).appendTo(ollGroupSelectElem);
-
-    oll.forEach((group, i) => {
-        $('<option />', {value: i, text: group.name}).appendTo(ollGroupSelectElem);
-    })
-
-    chain(ollGroupSelectElem);
-
-    chain('<input type="button" value="PLL"/>').click(function() {
-       pll_scramble();
-    })
-
-    var pllGroupSelectElem = $('<select />');
-    $('<option />', {value: -3, text: "-- 2 look --"}).appendTo(pllGroupSelectElem);
-    $('<option />', {value: -1, text: "-- random --"}).appendTo(pllGroupSelectElem);
-    $('<option />', {value: -2, text: "-- algo --"}).appendTo(pllGroupSelectElem);
-
-    pll.forEach((group, i) => {
-        $('<option />', {value: i, text: group.name}).appendTo(pllGroupSelectElem);
-    })
-
-    chain(pllGroupSelectElem);
-
-    chain('<input type="button" value="Full"/>').click(function(){
-        algo_elem.val(all_moves);
-    })
-
-    chain('<input type="button" value="↞"/>').click(function(){
-        advance({reset: true});
-
-    })
-
-    chain('<input type="button" value="←"/>').click(function(){
-      advance({delta: -1})
-    })
-
-    move_idx_elem = chain('<input id="rubik_cube3_move_idx" type="string" value="0" style="width: 30px;"/>').change(function(event) {
-        advance({to: $(this).val(), jump: true})
-    })
-
-    chain('<input type="button" value="→"/>').click(function(){
-       advance({delta: 1})
-
-    })
-
-    chain('<input type="button" value="↠"/>').click(function(){
-       advance({to: (algo_elem.val().split(' ').length), jump: true})
-
-    })
-
-    var reverseEleme = chain('<input type="string" value="" style="width: 300px;"/>')
-    chain('<input type="button" value="Reverse"/>').click(function(){
-        reverseElem.val(reverse(algo_elem.val()))
-	})
-	
-*/
- 
-/*
-    body.keypress(function(event){
-        if (event.target.nodeName == 'INPUT') {
-            console.log('ignoring input')
-            return true;
-        }
-
-
-        if (event.key == 'T') {
-           f2l_scramble()
-            return true;
-        }
-        if (event.keyCode == 13 || event.keyCode == 32) {
-            //event.preventDefault()
-            cube.move(move);
-            move = ''
-            return !(event.target == document.body);
-        }
-
-        move += String.fromCharCode(event.keyCode);
-        
-    })h
-
-    body.keyup(function(event) {
-       if (event.key == "ArrowLeft") {
-            if (event.shiftKey) {
-                advance({reset: true});
-            } else {
-                advance({delta: -1})
-            }
-            return;
-        }
-        if (event.key == "ArrowRight") {
-           if (event.shiftKey) {
-                  advance({to: (algo.val().split(' ').length), jump: true})
-           } else {
-               advance({delta: 1})
-           }
-           return
-        }
-
-        if (event.key == "Escape") {
-           move = ''
-           return;
-        }
-    })*/
-
-
+   
 		$j(function () {
 
 			rubik_cube = new RubikCube('canvas', 3, null, null, 600);
@@ -422,11 +285,11 @@
 			}
 
 			cube = rubik_cube3
-			move_idx_elem = $('#move_idx') 
-			algo_elem = $('#rubik_cube3_algo')
+			$move_idx = $('#move_idx') 
+			$algo = $('#rubik_cube3_algo')
 
-			algo_elem.change(function(){
-				all_moves = algo_elem.val();
+			$algo.change(function(){
+				all_moves = $algo.val();
 				advance({reset: true});
 			})
 
@@ -437,7 +300,7 @@
 			$('#pll-btn').click(_ => pll_scramble())
 
 			$('#full-btn').click(function(){
-				algo_elem.val(all_moves);
+				$algo.val(all_moves);
 			})
 
 			$('#start-btn').click(function () {
@@ -449,7 +312,7 @@
 				advance({ delta: -1 })
 			})
 
-			move_idx_elem.change(function (event) {
+			$move_idx.change(function (event) {
 				advance({ to: $(this).val(), jump: true })
 			})
 
@@ -459,12 +322,12 @@
 			})
 
 			$('#end-btn').click(function () {
-				advance({ to: (algo_elem.val().split(' ').length), jump: true })
+				advance({ to: ($algo.val().split(' ').length), jump: true })
 			})
 
 			var reverseEleme = $('#reverse-text')
 			$('#reverse-btn').click(function () {
-				reverseElem.val(reverse(algo_elem.val()))
+				reverseElem.val(reverse($algo.val()))
 			})
 
 
@@ -483,16 +346,6 @@
 			$("#named-moves").append(tbl_body);   //DOM table doesn't have .appendChild
 		});
 
-		function setDemoAlgo(formula, obj) {
-			$j('#canvas_formula').html(formula);
-			rubik_cube.reset();
-			rubik_cube.move(algos.resolveTriggers(algos.invert(formula)), true);
-
-			//var y_pos = $j(document.body).scrollTop();
-			var y_pos = obj.offset().top - 50;
-			console.log(y_pos);
-			$j('#div_canvas').show('fast').css('top', y_pos);
-		}
 
 		/*
 		Cube applet : https://cubefreak.net/a/?case=R'UR'U'R'U'R'URUR2

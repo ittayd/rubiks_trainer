@@ -53,8 +53,8 @@
             return !(event.target == document.body);
         },
         "Enter": " ",
-        "ArrowLeft": event => control.advance(event.shiftKey ? { reset: true } : { delta: -1 }),
-        "ArrowRight": event => control.advance(event.shiftKey ? { to: (algo_elem.val().split(' ').length), jump: true } : { delta: 1 }),
+        "ArrowLeft": event => advance(event.shiftKey ? { reset: true } : { delta: -1 }),
+        "ArrowRight": event => advance(event.shiftKey ? { to: (algo_elem.val().split(' ').length), jump: true } : { delta: 1 }),
 
         "__default__": event => move += event.key
     })
