@@ -279,11 +279,6 @@
 		});
 			*/
 
-			if (window.location.hash != '') {
-				$j('#rubik_cube3_algo').val(window.location.hash.substr(1));
-				rubik_cube3.move(window.location.hash.substr(1), true, false);
-			}
-
 			cube = rubik_cube3
 			$move_idx = $('#move_idx') 
 			$algo = $('#rubik_cube3_algo')
@@ -292,6 +287,23 @@
 				all_moves = $algo.val();
 				advance({reset: true});
 			})
+
+			function move(algo, {invert = false, fast = false}) {
+				algo = invert ? algos.invert(algo) : algo
+				algo = algos.resolveTriggers(algo)
+				cube.move(algo, fast)
+			}
+
+			if (window.location.hash != '') {
+				$j('#rubik_cube3_algo').val(window.location.hash.substr(1));
+				move(window.location.hash.substr(1), {fast: true});
+			}
+
+
+			$('#do-btn').click(_ => move($algo.val()));
+			$('#undo-btn').click(_ => move($algo.val(), {invert: true}));
+			$('#reset-btn').click(_ => cube.reset());
+
 
 			$('#f2l-btn').click(_ => f2l_scramble())
 
@@ -478,9 +490,9 @@
 						<div class="row">
 							<div class="col mx-1">
 								<div class="row form-group"> <input class="form-control-sm col-6" type="text" value="M2 y M2 z M2 z" id="rubik_cube3_algo">
-									<input class="form-control-sm col-2" type="button" onclick="rubik_cube3.move(document.getElementById('rubik_cube3_algo').value)" value="Do">
-									<input class="form-control-sm col-2" type="button" onclick="rubik_cube3.move(algos.invert(document.getElementById('rubik_cube3_algo').value), false)" value="Undo">
-									<input class="form-control-sm col-2" type="button" onclick="rubik_cube3.reset()" value="Reset">
+									<input class="form-control-sm col-2" type="button" id="do-btn" value="Do">
+									<input class="form-control-sm col-2" type="button" id="undo-btn" value="Undo">
+									<input class="form-control-sm col-2" type="button" id="reset-btn" value="Reset">
 								</div>
 							</div>
 							<div class="col mx-1">
