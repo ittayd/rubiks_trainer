@@ -209,7 +209,7 @@ algos = (function ($) {
 			}, image)
 			var img_url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
 			$image = $(`<div class="image"></div>`).appendTo($container);
-			$image.html('<img src="' + img_url + '" loading="auto"/>').click(function () {
+			$image.html('<img src="' + img_url + '" loading="lazy"/>').click(function () {
 				setDemoAlgo(formula, $(this));
 			});
 			var known = 'known';
