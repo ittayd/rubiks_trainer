@@ -103,16 +103,14 @@ algos = (function ($) {
 		return splitJoin(algo, algo => algo.flatMap(resolve));
 	};
 
-
-	$(document).ready(_ => {
-		/*renderCross();*/
-		let src = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://raw.githubusercontent.com/ittayd/rubiks_cube_html5/master/algos-data.js'
-		$.getScript(src).done(_ => {
-			renderF2L();
-			renderOLL();
-			renderPLL();
-		})
+	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://raw.githubusercontent.com/ittayd/rubiks_cube_html5/master/algos-data.js'
+	var data = $.getScript(dataSrc)
+	data.done(_ => {
+		renderF2L();
+		renderOLL();
+		renderPLL();
 	})
+
 
 
 	function renderCross() {
@@ -163,8 +161,12 @@ algos = (function ($) {
 		}, '')
 	}
 
-	function cleanMarkup(algo) {
-		return algo.replace(/<\/?[^>]*>/g, '').replace(new RegExp("({[]})".split("").map(c => escapeRE(c)).join("|"), "g"), ' ');
+	function cleanMarkup(algo, {tags = true, braces = true, spaces = true} = {}) {
+		const cre = new RegExp("({[]})".split("").map(c => escapeRE(c)).join("|"), "g");
+		algo = tags ? algo.replace(/<\/?[^>]*>/g, '') : algo
+		algo = braces ? algo.replace(cre, ' ') : algo
+		algo = spaces ? algo.replace(/\s+/g, ' ').trim() : algo
+		return algo;
 	}
 
 
@@ -209,7 +211,7 @@ algos = (function ($) {
 			}, image)
 			var img_url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
 			$image = $(`<div class="image"></div>`).appendTo($container);
-			$image.html('<img src="' + img_url + '" loading="lazy"/>').click(function () {
+			$image.html(`<img src="${img_url}" loading="lazy" width="${parameters.size}" height="${parameters.size}"/>`).click(function () {
 				setDemoAlgo(formula, $(this));
 			});
 			var known = 'known';
@@ -278,6 +280,7 @@ algos = (function ($) {
 	return {
 		resolveTriggers: resolveTriggers,
 		invert: invert,
-		cleanMarkup: cleanMarkup
+		cleanMarkup: cleanMarkup,
+		data: data
 	}
 })(jQuery)

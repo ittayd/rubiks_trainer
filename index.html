@@ -7,6 +7,9 @@
 		crossorigin="anonymous">
 	<link rel="stylesheet" href="algos.css">
 	<script src="https://code.jquery.com/jquery-3.4.1.js" crossorigin="anonymous"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
 		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
 		crossorigin="anonymous"></script>
@@ -50,7 +53,7 @@
     var current_idx;
 
     function advance({to = 0, delta = undefined, jump = false, reset = false} = {}) {
-        var all_moves_arr = all_moves.split(' ')
+        var all_moves_arr = algos.cleanMarkup(all_moves, {tags: false}).split(' ')
 
         if (reset) {
             current_idx = all_moves_arr.length
@@ -91,7 +94,7 @@
 
 	function random_alg(group, $tip) {
     	var alg = random(random(group).algs)
-		tip($tip, alg)
+		tip(alg, $tip)
 		return alg.moves
     }
 
@@ -123,9 +126,12 @@
         var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
 
         if (algo === undefined) {
-            let groupIdx = parseInt($('#oll-group').find(":selected").val());
-            switch(groupIdx) {
-                case -3: {
+			let selected = $('#oll-group').val();
+			if (selected.length == 0) {
+				throw "No OLL selected"
+			}
+			switch(selected[0]) {
+                case '-3': {
 					let first = random(algos.oll1look.algs)
 					tip(first, '#oll-tips')
                     if (first.type === "none") {
@@ -137,18 +143,21 @@
                     algo = first.moves + " " + interim_moves + second.name + ": " + second.moves
                     break;
                 }
-                case -2:
+                case '-2':
                     algo = $algo.val();
                     break;
-                case -1:
+                case '-1':
                     algo = random_alg(algos.oll, '#oll-tips');
                     break;
                 case NaN:
                     alert("could not parse selection");
                     break;
                 default: {
-                    let group = algos.oll[groupIdx];
-					algo = random(group.algs)
+					let algs = selected.flatMap(s => {
+						let [group, alg] = s.split('.')
+						return algos.oll[group].algs.slice(alg, alg === undefined ? alg : 1);
+					})
+					algo = random(algs)					
 					tip(algo, '#oll-tips')
                     algo = algo.moves
                 }
@@ -160,8 +169,8 @@
         var moves = train_moves
 
         moves = moves + " " + pll_scramble();
-        $algo.val(train_moves)
-        all_moves = moves;
+        $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+        all_moves = algos.cleanMarkup(moves, {braces: false});
         advance({reset: true})
         console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
         return all_moves;
@@ -172,9 +181,12 @@
         var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
 
         if (algo === undefined) {
-            let groupIdx = parseInt($('#pll-group').find(":selected").val());
-            switch(groupIdx) {
-                case -3: { // 2look
+			let selected = $('#pll-group').val();
+			if (selected.length == 0) {
+				return
+			}
+            switch(selected[0]) {
+                case '-3': { // 2look
 					let first = random(algos.pll[0].algs)
 					tip(first, '#pll-tips')
 					let second = random(algos.pll[1].algs)
@@ -183,18 +195,18 @@
                     algo = first.moves + " " + interim_moves + second.moves
                     break;
                 }
-                case -2:
+                case '-2':
                     algo = $algo.val();
                     break;
-                case -1:
+                case '-1':
                     algo = random_alg(algos.pll, '#pll-tips');
                     break;
-                case NaN:
-                    alert("could not parse selection");
-                    break;
                 default: {
-                    let group = algos.pll[groupIdx];
-					algo = random(group.algs)
+					let algs = selected.flatMap(s => {
+						let [group, alg] = s.split('.')
+						return algos.pll[group].algs.slice(alg, alg === undefined ? alg : 1);
+					})
+                    algo = random(algs)
 					tip(algo, '#pll-tips')
                     algo = algo.moves
                 }
@@ -206,8 +218,8 @@
         var moves = train_moves
 
         moves = moves
-        $algo.val(train_moves)
-        all_moves = moves;
+        $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+        all_moves = algos.cleanMarkup(moves, {braces: false});
         advance({reset: true})
         console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
         return all_moves;
@@ -248,8 +260,8 @@
             moves = moves + " y "
         }
         moves = moves + " " + oll_scramble()
-        $algo.val(train_moves)
-        all_moves = moves;
+        $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+        all_moves = algos.cleanMarkup(moves, {braces: false});
         advance({reset: true})
         console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
         return all_moves;
@@ -288,7 +300,7 @@
 				advance({reset: true});
 			})
 
-			function move(algo, {invert = false, fast = false}) {
+			function move(algo, {invert = false, fast = false} = {}) {
 				algo = invert ? algos.invert(algo) : algo
 				algo = algos.resolveTriggers(algo)
 				cube.move(algo, fast)
@@ -309,6 +321,50 @@
 
 			$('#oll-btn').click(_ => oll_scramble())
 	
+			algos.data.done(_ => {
+				function renderSelect($select, coll) {
+					$select = $($select)
+					coll.forEach((group, gidx) => {
+						$select.append($('<option>').val(gidx).text(group.name).addClass('opt-l1'));
+						group.algs.forEach((alg, aidx) => {
+							$select.append($('<option>').val(`${gidx}.${aidx}`).text(alg.name).addClass('opt-l2'));
+						})
+					})
+					$select.select2({
+						templateResult: function (data) {    
+							// We only really care if there is an element to pull classes from
+							if (!data.element) {
+							return data.text;
+							}
+
+							var $element = $(data.element);
+
+							var $wrapper = $('<span></span>');
+							$wrapper.addClass($element[0].className);
+
+							$wrapper.text(data.text);
+
+							return $wrapper;
+						}
+					});
+					$select.on('select2:select', function (e) {
+						var data = e.params.data;
+						if (data.id < 0) {
+							$select.val(data.id).trigger('change')
+							$select.children().filter((i, e) => e.id != data.id).attr('disabled', 'disabled')
+						}
+					});
+
+					$select.on('select2:unselect', function (e) {
+						var data = e.params.data;
+						if (data.id < 0) {
+							$select.children().removeAttr('disabled')
+						}
+					});
+				}
+				renderSelect('#pll-group', algos.pll);
+				renderSelect('#oll-group', algos.oll)
+			})
 			$('#pll-btn').click(_ => pll_scramble())
 
 			$('#full-btn').click(function(){
@@ -497,12 +553,12 @@
 							</div>
 							<div class="col mx-1">
 								<div class="row form-group">							
-										<input id="f2l-btn" type="button" value="F2L" class="form-control-sm col-2">
+										<input id="f2l-btn" type="button" value="F2L" class="form-control-sm col-2"></input>
 										<select id="f2l-group" class="form-control-sm col-10">
 											<option value="-1">-- random --</option>
 											<option value="-2">-- algo --</option>
-											<option value="0">Corner on top, FL color facing side, edge colors match</option>
-											<option value="1">Corner on top, FL color facing side, edge colors opposite</option>
+											<option value="0" >Corner on top, FL color facing side, edge colors match</option>
+											<option value="1" >Corner on top, FL color facing side, edge colors opposite</option>
 											<option value="2">Corner on top, FL color facing up</option>
 											<option value="3">Corner down, edge on top</option>
 											<option value="4">Edge down, corner on top</option>
@@ -514,25 +570,10 @@
 							<div class="col mx-1">
 								<div class="row form-group">
 									<input id="oll-btn" class="form-control-sm col-2" type="button" value="OLL">
-									<select id="oll-group" class="form-control-sm col-10">
-										<option value="-3">-- 2 look --</option>
+									<select id="oll-group" class="form-control-sm col-10" multiple="multiple">
+										<option value="-3" selected>-- 2 look --</option>
 										<option value="-1">-- random --</option>
 										<option value="-2">-- algo --</option>
-										<option value="0">All Edges Correctly Oriented</option>
-										<option value="1">No Edges Correctly Oriented</option>
-										<option value="2">C shapes</option>
-										<option value="3">I shapes</option>
-										<option value="4">L shapes</option>
-										<option value="5">P shapes</option>
-										<option value="6">T shapes</option>
-										<option value="7">W shapes</option>
-										<option value="8">Awkward shapes</option>
-										<option value="9">Fish shapes</option>
-										<option value="10">Knight Move shapes</option>
-										<option value="11">Big Lightning Bolts shapes</option>
-										<option value="12">Small Lightning Bolts shapes</option>
-										<option value="13">Square shapes</option>
-										<option value="14">Arrow &amp; H shapes</option>
 									</select>
 									<input id="oll-tips" class="form-control-sm col-10 offset-2" type="text">
 								</div>
@@ -540,14 +581,10 @@
 							<div class="col mx-1">
 								<div class="row form-group">
 									<input id="pll-btn" class="form-control-sm col-2" type="button" value="PLL">
-									<select id="pll-group" class="form-control-sm col-10">
-										<option value="-3">-- 2 look --</option>
+									<select id="pll-group" class="form-control-sm col-10" multiple="multiple">
+										<option value="-3" selected>-- 2 look --</option>
 										<option value="-1">-- random --</option>
 										<option value="-2">-- algo --</option>
-										<option value="0">Edge Permutations Only</option>
-										<option value="1">Corner Permutations Only</option>
-										<option value="2">Corner &amp; Edge Swap</option>
-										<option value="3">Corner &amp; Edge Cycle Permutations (G perms)</option>
 									</select>
 									<input id="pll-tips" class="form-control-sm col-10 offset-2" type="text" value="">
 								</div>
