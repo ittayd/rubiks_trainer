@@ -105,32 +105,16 @@ algos = (function ($) {
 
 	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://raw.githubusercontent.com/ittayd/rubiks_cube_html5/master/algos-data.js'
 	var data = $.getScript(dataSrc)
-	data.done(_ => {
-		renderF2L();
-		renderOLL();
-		renderPLL();
-	})
+	
+	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => renderItem('f2l', algos.f2l, $('#nav-f2l ul.f2l')))
 
+	$(document).one('show.bs.tab', '#nav-oll2-tab', _ => renderItem('oll', [algos.oll1look, algos.oll[0]], $('#nav-oll2 ul.oll')))
 
+	$(document).one('show.bs.tab', '#nav-oll-tab', _ =>  renderItem('oll', algos.oll, $('#nav-oll ul.oll')))
 
-	function renderCross() {
-		var items = $('ul.cross li.algo');
-		renderItem('f2l', items);
-	}
-	function renderF2L() {
-		renderItem('f2l', algos.f2l, $('#nav-f2l ul.f2l'));
-	}
+	$(document).one('show.bs.tab', '#nav-pll-tab', _ => renderItem('pll', algos.pll, $('#nav-pll ul.pll')));
 
-	function renderOLL() {
-		renderItem('oll', [algos.oll1look, algos.oll[0]], $('#nav-oll2 ul.oll'));
-		renderItem('oll', algos.oll, $('#nav-oll ul.oll'));
-	}
-
-	function renderPLL() {
-		renderItem('pll', algos.pll, $('#nav-pll ul.pll'));
-		renderItem('pll', [algos.pll[0], algos.pll[1]], $('#nav-pll2 ul.pll'));
-	}
-
+	$(document).one('show.bs.tab', '#nav-pll2-tab', _ => renderItem('pll', [algos.pll[0], algos.pll[1]], $('#nav-pll2 ul.pll')));
 
 	(function (old) {
 		$.fn.attr = function () {
