@@ -8,7 +8,7 @@
 				{ type: "f2l", moves: "d R' U' R U2' (BackMatch) y" },
 				{ type: "f2l", moves: "U' R U2' R' U2 (R U' R')" },
 				{ type: "f2l", moves: "d R' U2 R U2' (BackMatch) y" },
-				{ type: "f2l", moves: "y' BackMatchU' d' (R U R')" },
+				{ type: "f2l", moves: "y' BackMatch U' d' (R U R')" },
 				{ type: "f2l", moves: "R U' R' U d (R' U' R) y" }]
 		},
 		{
@@ -20,7 +20,7 @@
 				{ type: "f2l", moves: "U' R U R' U (R U R')" },
 				{ type: "f2l", moves: "U' R U2' R' d (R' U' R) y" },
 				{ type: "f2l", moves: "R' U2 R2 U R2' U R" },
-				{ type: "f2l", moves: "d BackMatchU' (R' U' R) y" },
+				{ type: "f2l", moves: "d BackMatch U' (R' U' R) y" },
 				{ type: "f2l", moves: "U' R U' R' U (R U R')" }]
 		},
 		{
@@ -32,24 +32,24 @@
 				{ type: "f2l", moves: "y' U' R' U2 R U' (BackMatch) y" },
 				{ type: "f2l", moves: "U2 R U R' U (R U' R')" },
 				{ type: "f2l", moves: "y' U2 R' U' R U' (BackMatch) y" },
-				{ type: "f2l", moves: "y' U R' U2 R y R U2 BackMatchU' R'" },
-				{ type: "f2l", moves: "U' R U2' R' y' R' U2 R U' BackMatchy" }]
+				{ type: "f2l", moves: "y' U R' U2 R y R U2 BackMatch U' R'" },
+				{ type: "f2l", moves: "U' R U2' R' y' R' U2 R U' BackMatch y" }]
 		},
 		{
 			name: "Corner down, edge on top",
 			algs: [
 				{ type: "f2l", moves: "U R U' R' d' (L' U L) y'" },
-				{ type: "f2l", moves: "y' U' BackMatchr' U' R U M' y" },
+				{ type: "f2l", moves: "y' U' BackMatch r' U' R U M' y" },
 				{ type: "f2l", moves: "y' R' U' R U (R' U' R) y" },
 				{ type: "f2l", moves: "R U R' U' (R U R')" },
 				{ type: "f2l", moves: "R U' R' U (R U' R')" },
-				{ type: "f2l", moves: "y' BackMatchU' (BackMatch) y" }]
+				{ type: "f2l", moves: "y' BackMatch U' (BackMatch) y" }]
 		},
 		{
 			name: "Edge down, corner on top",
 			algs: [
 				{ type: "f2l", moves: "U' R U' R' U2 (R U' R')" },
-				{ type: "f2l", moves: "d BackMatchU2 (BackMatch) y" },
+				{ type: "f2l", moves: "d BackMatch U2 (BackMatch) y" },
 				{ type: "f2l", moves: "U' R U R' d (R' U' R) y" },
 				{ type: "f2l", moves: "d R' U' R d' (R U R')" },
 				{ type: "f2l", moves: "R U' R' d (BackMatch) y" },
@@ -69,7 +69,7 @@
     /*
     var oll = [
         { "type": "oll", "name": "28", "imageFileName": "oll28.gif", "moves": "(M' U M) U2 (M' U M)", "comments": "The middle slices should be done with the left ring finger for M' and the left thumb for M. The (M' U M) group may take some getting used to." },
-        { "type": "oll", "name": "57", "imageFileName": "oll57.gif", "moves": "(R U R' U') r (BackMatchU') r'", "comments": "There's nothing too fancy here. The finger tricks used are pretty common. I do the slice turn as M' now because I think it's a little faster that way." },
+        { "type": "oll", "name": "57", "imageFileName": "oll57.gif", "moves": "(R U R' U') r (BackMatch U') r'", "comments": "There's nothing too fancy here. The finger tricks used are pretty common. I do the slice turn as M' now because I think it's a little faster that way." },
         { "type": "oll", "name": "20", "imageFileName": "oll20.gif", "moves": "r' (R U) (R U R' U' r2) (R2' U) (R U') r'", "comments": "Here, I use the slice as (r' R) because it flows a little nicer. This is the least common OLL case (1/216). The finger tricks here are pretty simple." },
         { "type": "oll", "name": "23", "imageFileName": "oll23.gif", "moves": "(R2' D) (R' U2) (R D') (R' U2 R')", "comments": "This is one of the most awkward OLLs with all correctly flipped edges. It's still pretty fast, though." },
         { "type": "oll", "name": "24", "imageFileName": "oll24.gif", "moves": "(r U) (R' U') (r' F) (R F')", "comments": "Custom." },
