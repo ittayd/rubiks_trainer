@@ -103,7 +103,7 @@ algos = (function ($) {
 		return splitJoin(algo, algo => algo.flatMap(resolve));
 	};
 
-	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://raw.githubusercontent.com/ittayd/rubiks_cube_html5/master/algos-data.js'
+	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://cdn.jsdelivr.net/gh/ittayd/rubiks_cube_html5/algos-data.js'
 	var data = $.getScript(dataSrc)
 	
 	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => renderItem('f2l', algos.f2l, $('#nav-f2l ul.f2l')))
