@@ -385,7 +385,8 @@ algos = (function ($) {
 		invert: function (algo, individual) {
 			if (individual) throw "individual is not supported"
 			if (Array.isArray(algo)) algo = algo.join(' ')
-			return parse(algo).inverted.toArray().flat(Infinity)},
+			return parse(algo).inverted.toArray().flat(Infinity)
+		},
 		cleanMarkup: cleanMarkup,
 		data: data,
 		parse: parse
