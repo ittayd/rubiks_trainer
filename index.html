@@ -400,7 +400,7 @@
 					cell = tbl_row.insertCell();
 					cell.appendChild(document.createTextNode(v.moves));
 					cell = tbl_row.insertCell();
-					cell.appendChild(document.createTextNode(v.inverse));
+					cell.appendChild(document.createTextNode(v.inverse || ""));
 							
 					odd_even = !odd_even;               
 				});
