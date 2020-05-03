@@ -455,10 +455,7 @@ var RubikCube = (function () {
 			}
 		};
 		
-		var doCubeMouvements = function (mouvements, fast, invert) {
-			if (invert) {
-				throw "invert not supported"
-			}
+		var doCubeMouvements = function (mouvements, fast) {
 			if (typeof(mouvements) == "string") {
 				mouvements = mouvements.replace(/\(/g, "");
 				mouvements = mouvements.replace(/\)/g, "");
@@ -467,6 +464,7 @@ var RubikCube = (function () {
 				mouvements = mouvements.split(" ");
 			}
 			
+			console.log('move', mouvements)
 			if (span_info) {
 				span_info.innerHTML = mouvements.join(' ');
 			}

@@ -15,14 +15,12 @@
 		crossorigin="anonymous"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"
 		crossorigin="anonymous"></script>
-	<script src="algos.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.js" crossorigin="anonymous"></script>	<script src="algos.js"></script>
 	<script src="pre3d.modified.js"></script>
 	<script src="pre3d_shape_utils.js"></script>
 	<script src="pre3d_demo_utils.js"></script>
 	<script src="pre3dCube.js"></script>
 	<script src="keyboard.js"></script>
-	<script src="//cdn.statically.io/gh/gyroninja/LetsCube/13ee9b92/public/alg/alg_jison.js"></script>
-	<script src="//cdn.statically.io/gh/gyroninja/LetsCube/13ee9b92/public/alg/alg.js"></script>
 	<script>
 		var $j = jQuery.noConflict();
 		var $ = $j;
@@ -84,7 +82,7 @@
 		if(delta < 0)
 			partial = algos.invert(partial)
 
-        cube.move(algos.resolveTriggers(partial).join(' '), jump ? true : false);
+        cube.move(algos.resolve(partial), jump ? true : false);
 
         current_idx = to;
 
@@ -96,10 +94,6 @@
     	var alg = random(random(group).algs)
 		tip(alg, $tip)
 		return alg.moves
-    }
-
-    function simplify(algo) {
-        return alg.cube.simplify(algo.replace(/\[/g, "((").replace(/\]/g, "))")).replace(/U' d /g, "y' ").replace(/U' y'/g, "y' U'").replace(/\(\(/g, "[").replace(/\)\)/g, "]")
     }
 
 	function tip(alg, elem) {
@@ -164,7 +158,7 @@
             }
         }
 
-        var train_moves = pre_moves + algo // simplify(pre_moves + algo)
+        var train_moves = pre_moves + algo 
 
         var moves = train_moves
 
@@ -213,7 +207,7 @@
             }
         }
 
-        var train_moves = pre_moves + algo // simplify(pre_moves + algo)
+        var train_moves = pre_moves + algo 
 
         var moves = train_moves
 
@@ -250,7 +244,7 @@
 		
 		algo = algos.cleanMarkup(algo)
 
-        var train_moves = simplify(pre_moves + algo)
+        var train_moves = pre_moves + algo
 
         var moves = train_moves + ' y '
         for (var i = 0; i < 3; i++) {
@@ -298,7 +292,7 @@
 
 			function move(algo, {invert = false, fast = false} = {}) {
 				algo = invert ? algos.invert(algo) : algo
-				algo = algos.resolveTriggers(algo)
+				algo = algos.resolve(algo)
 				cube.move(algo, fast)
 			}
 
@@ -434,11 +428,11 @@
 					<a href="javascript:void(0)" onclick="$j('#div_canvas').hide('fast');">close</a>
 					<br />
 					<a href="javascript:void(0)"
-						onclick="rubik_cube.reset(); rubik_cube.move(algos.invert($j('#canvas_formula').html()), true);">reset</a>
+						onclick="rubik_cube.reset(); rubik_cube.move($j('#canvas_formula').data('formula').inverted.toArray().flat(Infinity), true);">reset</a>
 					<br />
-					<a href="javascript:void(0)" onclick="rubik_cube.move($j('#canvas_formula').html());">solve</a>
+					<a href="javascript:void(0)" onclick="rubik_cube.move($j('#canvas_formula').data('formula').toArray().flat(Infinity));">solve</a>
 					<a href="javascript:void(0)"
-						onclick="rubik_cube.move(algos.invert($j('#canvas_formula').html()), false);">unsolve</a>
+						onclick="rubik_cube.move($j('#canvas_formula').data('formula').inverted.toArray().flat(Infinity), false);">unsolve</a>
 					<br /><br /><br /><br />
 					<div style="font-size:11px; padding-left:2px;">
 						<a href="javascript:void(0)" onclick="rubik_cube.move('U');">U</a>
