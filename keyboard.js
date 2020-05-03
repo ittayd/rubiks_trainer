@@ -47,7 +47,7 @@
             }
             */
             if (move.length > 0) {
-                cube.move(algos.resolveTriggers(move));
+                cube.move(algos.resolve(move));
             }
             move = '';
             return !(event.target == document.body);

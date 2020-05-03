@@ -1,110 +1,238 @@
 
 algos = (function ($) {
 
-	function match(value, arr, defaultf) {
-		for (let [predicate, func] of arr) {
-			let matched = false;
-			if (isFunction(predicate)) {
-				matched = predicate(value)
-			} else {
-				matched = (predicate === value)
-			}
-			if (matched) {
-				return func(value)
-			}
-		}
-		return isFunction(defaultf) ? defaultf(value) : defaultf;
-	}
-
-	var isNumber = str => !/\D/.test(str);
-
-	var isOpeningBrace = c => ["(", "[", "{"].includes(c)
-
-	var isClosingBrace = c => [")", "]", "}"].includes(c)
-
-	var isBrace = c => isClosingBrace(c) || isOpeningBrace(c)
-
-	function matchingBrace(b) {
-		const options = ["(", "[", "{", "}", "]", ")"]
-		var idx = options.indexOf(b);
-		var ridx = options.length - idx - 1;
-		return options[ridx]
-	}
-
-	function escapeRE(s) {
-		return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-	};
-
-	function split(algo) {
-		const sre = new RegExp(`(${"({[]}) ".split("").map(c => escapeRE(c)).join("|")})`)
-		return algo.split(sre).filter(c => c.length > 0)
-	}
-
-	function splitJoin(algo, func) {
-		var asString = false;
-		if (!Array.isArray(algo)) {
-			asString = true;
-			algo = split(algo)
-		}
-
-		var result = func(algo)
-
-		return asString ? result.join('') : result
-
-	}
-
-	
-
-	function invert(algo, individual) {
-		function rev(m) {
-			return match(m.slice(-1), [
-				["'", _ => m.slice(0, -1)],
-				[isNumber, c => match(c % 4, [
-					[0, _ => m], // really nothing to do. E.g. U4
-					[1, _ => m.slice(0, -1) + "'"],
-					[2, _ => m],
-					[3, _ => m.slice(0, -1)] // U3 is actually U'
-				])],
-				[isBrace, b => individual ? b : matchingBrace(b)],
-				[" ", _ => m]],
-				_ => m + "'"
-			)
-		}
-
-		return splitJoin(algo, algo => {
-			algo = algo.map(rev)
-			return !individual ? algo.reverse() : algo;
-		})
-	}
-
-	function resolveTriggers(algo) {
-		function resolve(m) {
-			if (m.length == 0) return []
-			return match(m.slice(-1), [
-				["'", _ => invert(resolve(m.slice(0, -1)))],
-				[isNumber, c => {
-					if (m.length == 2) return m;
-					let repeat = parseInt(c)
-					return new Array(repeat).fill(resolve(m.slice(0, -1))).flat();
-				}],
-				[isBrace, b => b],
-				[" ", _ => " "]
-			],
-				_ => {
-					let resolved = [m];
-					let temp = algos.triggers[m]
-					if (temp) {
-						resolved = resolveTriggers(split(temp) )
-					}
-					return resolved;
-				})
-		}
-
-		return splitJoin(algo, algo => algo.flatMap(resolve));
-	};
 
 	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://cdn.jsdelivr.net/gh/ittayd/rubiks_cube_html5/algos-data.js'
-	var data = $.getScript(dataSrc)
+	var notationpeg = $.ajax('notation.pegjs')
+	var data = $.when($.getScript(dataSrc), notationpeg)
+
+	var parse;
+	var classes = (function(){
+		class RepeatedUnit {
+			_amount = 1
+			order = undefined
+			
+			constructor(order, amount) {
+				this.order = order;
+				if (amount !== undefined) {
+					this.amount = amount;
+				}
+			}
+
+			set amount(amount) {
+				if (this.order !== undefined) {
+					amount = (amount + this.order) % this.order
+
+					if (amount > this.order / 2) {
+						amount = amount - this.order
+					} 
+				}
+				this._amount = amount
+			}
+
+			get amount() {
+				return this._amount;
+			}
+
+			toArray(options = {}) {
+				if (this.amount == 0) return []
+				if (this.isContainer(options)) {
+					return new Array(Math.abs(this.amount)).fill(this.containedArray(this.amount < 0, options).map(s => s.toArray(options)))
+				 } 
+				 
+				 return [this.toString()] 
+			}
+
+			get stringAmount() {
+				switch(this.amount) {
+					case 0: return "0"
+					case 1: return ""
+					case -1: return "'"
+					default: return this.amount > 0 ? this.amount : ("'" + this.amount)
+				}
+			}
+		}
+
+		class Nop {
+			get inverted() {
+				return this;
+			}
+
+			toArray(options = {}) {
+				return options.keepNop ? [toString()] : []
+			}
+		}
+
+		class Atomic extends RepeatedUnit {
+			constructor(character, inner, outer, amount) {
+				super(4, amount)
+				this.character = character;
+				this.inner = inner;
+				this.outer = outer;
+			}
+
+			get inverted() {
+				return new Atomic(this.character, this.inner, this.outer, -this.amount)
+			}
+
+			isContainer(options) {
+				return false;
+			}
+
+			toString() {
+				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}${this.stringAmount}`
+			}
+		}
+
+		class Trigger extends RepeatedUnit {
+			constructor(name, amount) {
+				if (!algos.triggers[name]) throw `Trigger ${name} is not registered`
+				super(algos.triggers[name].order, amount)
+				this.name = name;
+			}
+
+			get inverted() {
+				var amount = -this.amount
+				var name = algos.triggers[this.name].inverse
+				if (amount > 0 || name === undefined) {
+					name = this.name
+				} else {
+					amount = -amount // double inverse, since we have an inverse
+				}
+				return new Trigger(name, amount)
+			}
+
+			isContainer(options) {
+				return !options.skipTriggers;
+			}
+			
+			containedArray(invert, options) {
+				return parse(algos.triggers[this.name].moves).containedArray(invert, options)
+			}
+
+			toString() {
+				return `${name}${stringAmount}`
+			}
+		}
+
+		class Sequence extends RepeatedUnit {
+			constructor(sub, amount) {
+				super(undefined, amount)
+				this.sub = sub
+			}
+
+			get inverted() {
+				if (this.amount == 1) 
+					return new Sequence(this.containedArray(true));
+				return new Sequence(this.sub, -this.amount)	
+			}
+
+			isContainer(options) {
+				return true;
+			}
+
+			containedArray(invert, options) {
+				if (!invert) return this.sub
+				return this.sub.map(s => s.inverted).reverse()
+			}
+
+			toString(noparen) {
+				var str = `${this.sub.map(s => s.toString()).join(" ")}`
+				if (noparen && this.amount == 1) {
+					return str;
+				}
+				return `(${str})${this.stringAmount}`
+			}
+
+		}
+
+		class Conjugate extends RepeatedUnit {
+			constructor(a, b) {
+				super()
+				this.a = a;
+				this.b = b;
+			}
+
+			get inverted() {
+				return new Conjugate(this.a, this.b.inverted())
+			}
+
+			isContainer(options) {
+				return true;
+			}
+
+			containedArray(invert, options) {
+				return [a, invert ? b.inverted : b, a.inverted]
+			}
+
+			toString() {
+				return `[${a.toString()}:${b.toString()}]`
+			}
+		}
+
+		class Commutator extends RepeatedUnit {
+			constructor(a, b) {
+				super()
+				this.a = a;
+				this.b = b;
+			}
+
+			get inverted() {
+				return new Commutator(this.b, this.a);
+			}
+
+			isContainer(options) {
+				return true;
+			}
+
+			containedArray(invert, options) {
+				a = invert ? this.b : this.a
+				b = invert ? this.a : this.b
+				return [a, b, a.inverted, b.inverted]
+			}
+
+			toString() {
+				return `[${a.toString()},${b.toString()}]`
+			}
+		}
+
+		class Comment extends Nop {
+			constructor(text) {
+				super();
+				this.text = text;
+			}
+
+
+		}
+
+		class NewLine extends Nop {
+		}
+
+		class Pause extends Nop {
+		}
+
+		return {
+			Atomic: Atomic,
+			Trigger: Trigger,
+			Sequence: Sequence,
+			Conjugate: Conjugate,
+			Commutator: Commutator,
+			Comment: Comment,
+			NewLine: NewLine,
+			Pause: Pause
+		}
+	})()
+
+	notationpeg.done(data => {
+		let parser = PEG.buildParser(data, {classes: classes});
+		
+		parse = function(algo) {
+			return parser.parse(algo, {classes: classes});
+		}
+
+		algos.parse = parse;
+	})
+
 	
 	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => renderItem('f2l', algos.f2l, $('#nav-f2l ul.f2l')))
 
@@ -145,6 +273,10 @@ algos = (function ($) {
 		}, '')
 	}
 
+	function escapeRE(s) {                                         
+        return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');    
+	}
+
 	function cleanMarkup(algo, {tags = true, braces = true, spaces = true} = {}) {
 		const cre = new RegExp("({[]})".split("").map(c => escapeRE(c)).join("|"), "g");
 		algo = tags ? algo.replace(/<\/?[^>]*>/g, '') : algo
@@ -155,10 +287,15 @@ algos = (function ($) {
 
 
 	function setDemoAlgo(formula, obj) {
-		$j('#canvas_formula').html(formula);
 		rubik_cube.reset();
+		var $formula = $j('#canvas_formula')
+		$formula.html(formula);
+
 		formula = cleanMarkup(formula)
-		rubik_cube.move(resolveTriggers(invert(formula)), true);
+		formula = algos.parse(formula)
+
+		$formula.data('formula', formula)
+		rubik_cube.move(formula.inverted.toArray().flat(Infinity), true);
 
 		//var y_pos = $j(document.body).scrollTop();
 		var y_pos = obj.offset().top - 50;
@@ -181,27 +318,37 @@ algos = (function ($) {
 		const triggersPattern = new RegExp(Object.keys(algos.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
 		function renderImageAndMoves($container, { image, moves, comment }) {
 			var formula = Array.isArray(moves) ? moves[0] : moves;
-			formula = cleanMarkup(formula);
-			formula = resolveTriggers(formula);
-
-			var parameters = $.extend({
-				stage: default_stage,
-				view: p => (p.stage == 'f2l' ? '' : 'plan'),
-				case: formula,
-				bg: 't',
-				ac: 'black',
-				size: 100,
-				fmt: 'svg'
-			}, image)
-			var img_url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
+			function check_and_set(key, renderer)  {
+				var value = localStorage.getItem(key);
+				if (value !== null) {
+					return value;
+				}
+				value = renderer();
+				localStorage.setItem(key, value);
+				return value;
+			}
+			var img_url = check_and_set(JSON.stringify([formula, image]), _ => {
+				formula = cleanMarkup(formula);
+				formula = algos.parse(formula).toArray().flat(Infinity).join(" ");
+				var parameters = $.extend({
+					stage: default_stage,
+					view: p => (p.stage == 'f2l' ? '' : 'plan'),
+					case: formula,
+					bg: 't',
+					ac: 'black',
+					size: 100,
+					fmt: 'svg'
+				}, image)
+				return formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
+			});
 			$image = $(`<div class="image"></div>`).appendTo($container);
-			$image.html(`<img src="${img_url}" loading="lazy" width="${parameters.size}" height="${parameters.size}"/>`).click(function () {
+			$image.html(`<img src="${img_url}" loading="lazy" width="100" height="100"/>`).click(function () {
 				setDemoAlgo(formula, $(this));
 			});
 			var known = 'known';
 			[].concat(moves).forEach(move => {
 				// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
-				move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${algos.triggers[match]}">${match}</span>`)
+				move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${algos.triggers[match].moves}">${match}</span>`)
 				let $move = $(`<span>${move}</span>`)
 				$move.find('[data-toggle="tooltip"]').tooltip();
 				$div = $(`<div class="formula ${known}"></div>`)
@@ -227,44 +374,20 @@ algos = (function ($) {
 					renderImageAndMoves($alg, alg);
 				}
 			});
-			/*
-			var $item = $(this);
-			var $images = $item.find('.image');
-			$images.each(function () {
-				var $image = $(this);
-				var formula = $image.next().html();
-				var parameters = $.extend({
-					stage: default_stage,
-					view: _ => {(stage == 'f2l' ? '' : 'plan')},
-					case: formula,
-					bg: 't', 
-					ac: 'black',
-					size: 100,
-					fmt: 'svg'
-				}, $image.attr())
-				
-				var img_url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
-				$image.html('<img src="' + img_url + '" />').click(function () {
-					setDemoAlgo(formula, $image);
-				});
-			});
-
-			var $formulas = $item.find('.formula');
-			$formulas.each(function () {
-				var $formula = $(this);
-				var formula = $formula.html();
-				$formula.click(function () {
-					setDemoAlgo(formula, $formula);
-				});
-
-			});*/
 		});
 	}
 
 	return {
-		resolveTriggers: resolveTriggers,
-		invert: invert,
+		resolve: function(algo) {
+			if (Array.isArray(algo)) algo = algo.join(' ')
+			return parse(algo).toArray().flat(Infinity)
+		},
+		invert: function (algo, individual) {
+			if (individual) throw "individual is not supported"
+			if (Array.isArray(algo)) algo = algo.join(' ')
+			return parse(algo).inverted.toArray().flat(Infinity)},
 		cleanMarkup: cleanMarkup,
-		data: data
+		data: data,
+		parse: parse
 	}
 })(jQuery)
