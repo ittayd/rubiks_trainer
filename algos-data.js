@@ -304,8 +304,8 @@
 			algs: [
 				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", image: { arw: 'U3U7-s8,U7U5-s8,U5U3-s8', ac: 'red' } }, // R2 U [Sexy] (R' U') (Pull)
 				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", image: { arw: 'U3U5-s8,U5U7-s8,U7U3-s8', ac: 'red' } }, // [R U'] [R U] [R U] [R U'] R' U' R2
-				{ type: "pll", moves: "<g>[M2 U M2]</g> U2 <g>[M2 U M2]</g>", name: "H", image: { arw: 'U1U7,U7U1,U3U5,U5U3', ac: 'red' } },
-				{ type: "pll", moves: "{(<g>M2 U</g>) (<g>M2 U</g>)} {(M' <bl>U2</bl>) (M2 <bl>U2</bl>) (M' <bl>U2</bl>)}", name: "Z", image: { arw: 'U3U1,U1U3,U5U7,U7U5', ac: 'red' } },
+				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", image: { arw: 'U1U7,U7U1,U3U5,U5U3', ac: 'red' } },
+				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", image: { arw: 'U3U1,U1U3,U5U7,U7U5', ac: 'red' } },
 			]
 		},
 		{
