@@ -464,7 +464,6 @@ var RubikCube = (function () {
 				mouvements = mouvements.split(" ");
 			}
 			
-			console.log('move', mouvements)
 			if (span_info) {
 				span_info.innerHTML = mouvements.join(' ');
 			}
