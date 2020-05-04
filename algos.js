@@ -8,6 +8,161 @@ algos = (function ($) {
 
 	var parse;
 	var classes = (function(){
+		class Permutation {
+			// visual studio code doesn't recognize '#'...
+			constructor(array) {
+				this.array = array || Array.from({length: 54}, (_, i) => i);
+			}
+
+			static faces(U, L, F, R, B, D) {
+				return new Permutation([U, L, F, R, B, D].map(f => f.toArray()).flat())
+			}
+
+			get inverted() {
+				let arr = []
+				for (let i = 0; i < this.array.length; i++) {
+					arr[this.array[i]] = i
+				}
+				return new Permutation(arr)
+			}
+
+			clone() {
+				return new Permutation([...this.array])
+			}
+
+			equals(other) {
+				for (let i = 0; i < this.array.length; i++) {
+					if (this.array[i] != other.array[i]) return false
+				}
+				return true;
+			}
+
+			addFollowing(other) {
+				for (var i = 0; i < this.array.length; i++) {
+					this.array[i] = other.array[this.array[i]];
+				}
+				return this;
+			}
+
+			then(other) {
+				return this.clone().addFollowing(other)
+			}
+
+			lcm(n1, n2) {
+				//Find the smallest and biggest number from both the numbers
+				let lar = Math.max(n1, n2);
+				let small = Math.min(n1, n2);
+				
+				//Loop till you find a number by adding the largest number which is divisble by the smallest number
+				let i = lar;
+				while(i % small !== 0){
+				  i += lar;
+				}
+				
+				//return the number
+				return i;
+			}
+
+			get order() {
+				let lcm = 1
+				let temp = [...this.array]
+				for (var i = 0; i < temp.length; i++) {
+					if (temp[i] == -1) continue;
+					let start = i
+					let current = temp[i]
+					temp[i] = -1
+					let count = 1
+					while(current != start) {
+						let prev = current
+						current = temp[current]
+						temp[prev] = -1
+						count++
+					}
+					lcm = this.lcm(lcm, count)
+				}
+				return lcm;
+			}
+
+
+
+		}
+
+		class Face {
+			constructor(arr) {
+				if (!Array.isArray(arr)) arr = arguments;
+				([this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br] = arr)
+			}
+
+			get clockwise() {
+				return new Face(this.bl, this.el, this.tl, this.bm, this.em, this.tm, this.br, this.er, this.tr)
+			}
+
+			get counter() {
+				return new Face(this.tr, this.er, this.br, this.tm, this.em, this.bm, this.tl, this.el, this.bl)
+			}
+
+			get reverse() {
+				return new Face(this.br, this.bm, this.bl, this.er, this.em, this.el, this.tr, this.tm, this.tl)
+			}
+
+			top(idxs) {return idxs == undefined ? [this.tl, this.tm, this.tr] : new Face(...idxs, this.el, this.em, this.er, this.bl, this.bm, this.br) }
+			equator(idxs) {return idxs == undefined ? [this.el, this.em, this.er] : new Face(this.tl, this.tm, this.tr, ...idxs, this.bl, this.bm, this.br)}
+			bottom(idxs) {return idxs == undefined ? [this.bl, this.bm, this.br] : new Face(this.tl, this.tm, this.tr, this.el, this.em, this.er, ...idxs)}
+			left(idxs) {return idxs == undefined ? [this.tl, this.el, this.bl] : new Face(idxs[0], this.tm, this.tr, idxs[1], this.em, this.er, idxs[2], this.bm, this.br)}
+			middle(idxs) {return idxs == undefined ? [this.tm, this.em, this.bm] : new Face(this.tl, idxs[0], this.tr, this.el, idxs[1], this.er, this.bl, idxs[2], this.br)}
+			right(idxs) {return idxs == undefined ? [this.tr, this.er, this.br] : new Face(this.tl, this.tm, idxs[0], this.el, this.em, idxs[1], this.bl, this.bm, idxs[2])}
+
+
+			toArray() {
+				return [this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br]
+			}
+
+			static from(start) {
+				return new Face(Array.from({length: 9}, (_, i) => i + start))
+			}
+		}
+
+		Face.U = Face.from(0)
+		Face.L = Face.from(9)
+		Face.F = Face.from(18)
+		Face.R = Face.from(27)
+		Face.B = Face.from(36)
+		Face.D = Face.from(45)
+
+		Permutation.identity = new Permutation();
+		with (Face) {
+			Permutation.x = Permutation.faces(F, L.counter, D, R.clockwise, U.reverse, B.reverse)
+			Permutation.y = Permutation.faces(U.clockwise, F, R, B, L, D.counter)
+	/*	Permutation.z = {with (Face) {Permutation.faces(U.left(L.bottom()).middle(L.equator()).right(L.top()), 
+															L.left(B.bottom()).middle(B.equator()).right(B.top()),
+															F.clockwise,
+															R.left(U.bottom()).middle(U.equator()).right(U.top()),
+															B.counter,
+															D.left(R.bottom()).middle(R.equator).bottom(R.top()))
+															}}*/
+
+
+			Permutation.U = Permutation.faces(U.clockwise, L.top(F.top()), F.top(R.top()), R.top(B.top()), B.top(L.top()), D)
+			Permutation.u = Permutation.U.then(Permutation.faces(U, L.equator(F.equator()), F.equator(R.equator()), R.equator(B.equator()), B.equator(L.equator()), D))
+		}
+
+		with (Permutation) {
+			Permutation.z = x.then(y)
+			Permutation.L = z.then(U).then(z.inverted)
+			Permutation.l = z.then(u).then(z.inverted)
+			Permutation.F = x.then(U).then(x.inverted)
+			Permutation.f = x.then(u).then(x.inverted)
+			Permutation.R = z.inverted.then(U).then(z)
+			Permutation.r = z.inverted.then(u).then(z)
+			Permutation.B = x.inverted.then(U).then(x)
+			Permutation.b = x.inverted.then(u).then(x)
+			Permutation.D = x.then(x).then(U).then(x).then(x)
+			Permutation.d = x.then(x).then(u).then(x).then(x)
+		}
+
+		'ULFRBDulfrbd'.split('').forEach(p => Permutation[`{$p}2`] = Permutation[p].then(Permutation[p]))
+		
+
 		class RepeatedUnit {
 			_amount = 1
 			order = undefined
@@ -39,7 +194,7 @@ algos = (function ($) {
 				if (this.isContainer(options)) {
 					let containedArray = this.containedArray(this.amount < 0, options)
 					if (options.string) {
-						return containedArray.reduce((acc, val) => `${acc} ${val.toMoves(options)}`).repeat(Math.abs(this.amount))
+						return containedArray.reduce((acc, val) => `${acc} ${val.toMoves(options)}`, "").repeat(Math.abs(this.amount))
 					}
 					let op = options.nested ? 'map' : 'flatMap'
 					let result = new Array(Math.abs(this.amount)).fill(containedArray[op](s => s.toMoves(options)))
@@ -57,6 +212,16 @@ algos = (function ($) {
 					default: return this.amount > 0 ? this.amount : ("'" + this.amount)
 				}
 			}
+
+			get permutation() {
+				let containedArray = this.amount == 0 ? [] : this.containedArray(this.amount < 0, {})
+				let p = containedArray.reduce((permutation, val) => permutation.addFollowing(val.permutation), new Permutation())
+				for(let i = 1; i < Math.abs(this.amount); i++) {
+					p = p.then(p)
+				}
+				return p
+
+			}
 		}
 
 		class Nop {
@@ -67,6 +232,10 @@ algos = (function ($) {
 			toMoves(options = {}) {
 				if (options.string) return options.keepNop ? toString() : ""
 				return options.keepNop ? [toString()] : []
+			}
+
+			get permutation() {
+				return Permutation.identity
 			}
 		}
 
@@ -88,6 +257,15 @@ algos = (function ($) {
 
 			toString() {
 				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}${this.stringAmount}`
+			}
+
+			get permutation() {
+				let p = Permutation[this.character]
+				switch(this.amount) {
+					case 1: return p
+					case 2: return p.then(p)
+					case -1: return p.inverted
+				}
 			}
 		}
 
@@ -226,7 +404,9 @@ algos = (function ($) {
 			Commutator: Commutator,
 			Comment: Comment,
 			NewLine: NewLine,
-			Pause: Pause
+			Pause: Pause, 
+			Permutation: Permutation,
+			Face: Face
 		}
 	})()
 
@@ -386,15 +566,6 @@ algos = (function ($) {
 	}
 
 	return {
-		/*resolve: function(algo) {
-			if (Array.isArray(algo)) algo = algo.join(' ')
-			return parse(algo).toMoves()
-		},
-		invert: function (algo, individual) {
-			if (individual) throw "individual is not supported"
-			if (Array.isArray(algo)) algo = algo.join(' ')
-			return parse(algo).inverted.toMoves()
-		},*/
 		cleanMarkup: cleanMarkup,
 		data: data,
 		parse: parse
