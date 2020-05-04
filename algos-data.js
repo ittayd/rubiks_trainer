@@ -140,7 +140,7 @@
 		{
 			name: "All Edges Correctly Oriented",
 			algs: [ /* http://badmephisto.com/2LookOLL.pdf */
-				{ type: "oll", moves: "Su (LeftSlot)", name: "27-Sune" },
+				{ type: "oll", moves: "Match U (LeftSlot)", name: "27-Sune" },
 				{ type: "oll", moves: "(BackMatch) U' (R' U2 R)", name: "26-AntiSune" },
 				{ type: "oll", moves: "F Sexy3 F'", name: "21-Car" },
 				{ type: "oll", moves: "[f (Sexy) f'] [F (Sexy) F']", name: "22-Blinker" },
@@ -156,9 +156,9 @@
 				{ type: "oll", moves: "[F Sexy F'] [f Sexy f']", name: "2-No" },
 				{ type: "oll", moves: "(f Sexy f') U' (F Sexy F')", name: "3-No" },
 				{ type: "oll", moves: "(f Sexy f') U (F Sexy F')", name: "4-No" },
-				{ type: "oll", moves: "[Su] [Sledge] U2 [Sledge]", name: "17-No" },
+				{ type: "oll", moves: "[Match U] [Sledge] U2 [Sledge]", name: "17-No" },
 				{ type: "oll", moves: "M U Sexy M2 [U R U' r']", name: "20-No" },
-				{ type: "oll", moves: "[F Su] y' R' U2 [Sledge]", name: "18-No" },
+				{ type: "oll", moves: "[F Match U] y' R' U2 [Sledge]", name: "18-No" },
 				{ type: "oll", moves: "[r' R] U [Sexy] r [R2' F R F']", name: "19-No" },
 			]
 		},
@@ -173,7 +173,7 @@
 			name: "I shapes",
 			algs: [
 				{ type: "oll", moves: "R U2 R2 U' Slot U2 F R F'", name: "55-I" },
-				{ type: "oll", moves: "Su R d' Slot F'", name: "52-I" },
+				{ type: "oll", moves: "Match U R d' Slot F'", name: "52-I" },
 				{ type: "oll", moves: "f Sexy2 f'", name: "51-I" },
 				{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'", name: "56-I" },
 			]
@@ -208,7 +208,7 @@
 		{
 			name: "W shapes",
 			algs: [
-				{ type: "oll", moves: "[Su] [Slot U'] [Sledge]", name: "38-W" },
+				{ type: "oll", moves: "[Match U] [Slot U'] [Sledge]", name: "38-W" },
 				{ type: "oll", moves: "[L' U' L U'] [L' U L U] [L F' L' F]", name: "36-W" },
 			]
 		},
@@ -218,7 +218,7 @@
 				{ type: "oll", moves: "R2 U R' B' R U' R2 U R B R'", name: "30-Awkward" },
 				{ type: "oll", moves: "M U [Sexy] [Sledge] M'", name: "29-Awkward" },
 				{ type: "oll", moves: "[Slot U2] R U y Slot U' F'", name: "41-Awkward" },
-				{ type: "oll", moves: "R' U2 [Su] R y [F Sexy F']", name: "42-Awkward" },
+				{ type: "oll", moves: "R' U2 [Match U] R y [F Sexy F']", name: "42-Awkward" },
 			]
 		},
 		{
@@ -226,7 +226,7 @@
 			algs: [
 				{ type: "oll", moves: "F Slot U' Match F'", name: "37-Fish" },
 				{ type: "oll", moves: "R U2' [R2 F R F'] [LeftSlot]", name: "35-Fish" },
-				{ type: "oll", moves: "[Su] [Sledge] [LeftSlot]", name: "10-Fish" },
+				{ type: "oll", moves: "[Match U] [Sledge] [LeftSlot]", name: "10-Fish" },
 				{ type: "oll", moves: "[Sexy R' F] R2 U R' U' F'", name: "9-Fish" },
 			]
 		},
@@ -366,7 +366,7 @@
 	add("FatSexy", "r U R' U'", 12)
 	add("Sledge", "R' F R F'", 6, "Hedge")
 	add("FatSledge", "r' F R F'", 12)
-	add("Su", "R U R' U", 5)
+//	add("Su", "R U R' U", 5)
 	add("Match", "R U R'", 4, "Slot");
 	add("BackMatch", "R' U' R", 4, "BackSlot")
 	add("LeftSlot", "R U2 R'", 2, "LeftSlot")

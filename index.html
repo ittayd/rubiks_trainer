@@ -79,10 +79,11 @@
         $move_idx.val(to)
 
 		var partial = all_moves_arr.slice(Math.min(current_idx, to), Math.max(current_idx, to))
+		partial = algos.parse(partial)
 		if(delta < 0)
-			partial = algos.invert(partial)
+			partial = partial.inverted
 
-        cube.move(algos.resolve(partial), jump ? true : false);
+        cube.move(partial.toMoves(), jump ? true : false);
 
         current_idx = to;
 
@@ -291,8 +292,9 @@
 			})
 
 			function move(algo, {invert = false, fast = false} = {}) {
-				algo = invert ? algos.invert(algo) : algo
-				algo = algos.resolve(algo)
+				algo = algos.parse(algo)
+				algo = invert ? algo.inverted : algo
+				algo = algo.toMoves()
 				cube.move(algo, fast)
 			}
 
@@ -430,11 +432,11 @@
 					<a href="javascript:void(0)" onclick="$j('#div_canvas').hide('fast');">close</a>
 					<br />
 					<a href="javascript:void(0)"
-						onclick="rubik_cube.reset(); rubik_cube.move($j('#canvas_formula').data('formula').inverted.toArray().flat(Infinity), true);">reset</a>
+						onclick="rubik_cube.reset(); rubik_cube.move($j('#canvas_formula').data('formula').inverted.toMoves(), true);">reset</a>
 					<br />
-					<a href="javascript:void(0)" onclick="rubik_cube.move($j('#canvas_formula').data('formula').toArray().flat(Infinity));">solve</a>
+					<a href="javascript:void(0)" onclick="rubik_cube.move($j('#canvas_formula').data('formula').toMoves();">solve</a>
 					<a href="javascript:void(0)"
-						onclick="rubik_cube.move($j('#canvas_formula').data('formula').inverted.toArray().flat(Infinity), false);">unsolve</a>
+						onclick="rubik_cube.move($j('#canvas_formula').data('formula').inverted.toMoves(), false);">unsolve</a>
 					<br /><br /><br /><br />
 					<div style="font-size:11px; padding-left:2px;">
 						<a href="javascript:void(0)" onclick="rubik_cube.move('U');">U</a>
@@ -502,7 +504,17 @@
 						<canvas id="canvas3" width="500" height="500">
 							Sorry, this demo requires a web browser which supports HTML5 canvas!
 						</canvas>
+						<table id="named-moves" class="table-sm text-left table-bordered w-auto">
+							<thead>
+							  <tr>
+								<th>Name</th>
+								<th>Moves</th>
+								<th>Inverse</th>
+							  </tr>
+							</thead>	
+						</table>
 					</div>
+					
 					<div style="font-size:14px;">
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a href="javascript:void(0)" onclick="rubik_cube3.move('U');">U</a>
@@ -685,15 +697,6 @@
 
 			</div>
 		</div>
-		<table id="named-moves" class="table-sm text-left table-bordered w-auto">
-			<thead>
-			  <tr>
-				<th>Name</th>
-				<th>Moves</th>
-				<th>Inverse</th>
-			  </tr>
-			</thead>	
-		</table>
 	</div>
 </body>
 

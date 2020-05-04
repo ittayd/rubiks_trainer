@@ -34,10 +34,16 @@ algos = (function ($) {
 				return this._amount;
 			}
 
-			toArray(options = {}) {
-				if (this.amount == 0) return []
+			toMoves(options = {}) {
+				if (this.amount == 0) return (options.string ? "" : [])
 				if (this.isContainer(options)) {
-					return new Array(Math.abs(this.amount)).fill(this.containedArray(this.amount < 0, options).map(s => s.toArray(options)))
+					let containedArray = this.containedArray(this.amount < 0, options)
+					if (options.string) {
+						return containedArray.reduce((acc, val) => `${acc} ${val.toMoves(options)}`).repeat(Math.abs(this.amount))
+					}
+					let op = options.nested ? 'map' : 'flatMap'
+					let result = new Array(Math.abs(this.amount)).fill(containedArray[op](s => s.toMoves(options)))
+					return options.nested ? result : result.flat(Infinity)
 				 } 
 				 
 				 return [this.toString()] 
@@ -58,7 +64,8 @@ algos = (function ($) {
 				return this;
 			}
 
-			toArray(options = {}) {
+			toMoves(options = {}) {
+				if (options.string) return options.keepNop ? toString() : ""
 				return options.keepNop ? [toString()] : []
 			}
 		}
@@ -227,6 +234,7 @@ algos = (function ($) {
 		let parser = PEG.buildParser(data, {classes: classes});
 		
 		parse = function(algo) {
+			algo = Array.isArray(algo) ? algo.join(' ') : algo
 			return parser.parse(algo, {classes: classes});
 		}
 
@@ -295,7 +303,7 @@ algos = (function ($) {
 		formula = algos.parse(formula)
 
 		$formula.data('formula', formula)
-		rubik_cube.move(formula.inverted.toArray().flat(Infinity), true);
+		rubik_cube.move(formula.inverted.toMoves(), true);
 
 		//var y_pos = $j(document.body).scrollTop();
 		var y_pos = obj.offset().top - 50;
@@ -329,7 +337,7 @@ algos = (function ($) {
 			}
 			var img_url = check_and_set(JSON.stringify([formula, image]), _ => {
 				formula = cleanMarkup(formula);
-				formula = algos.parse(formula).toArray().flat(Infinity).join(" ");
+				formula = algos.parse(formula).toMoves({string: true})
 				var parameters = $.extend({
 					stage: default_stage,
 					view: p => (p.stage == 'f2l' ? '' : 'plan'),
@@ -378,15 +386,15 @@ algos = (function ($) {
 	}
 
 	return {
-		resolve: function(algo) {
+		/*resolve: function(algo) {
 			if (Array.isArray(algo)) algo = algo.join(' ')
-			return parse(algo).toArray().flat(Infinity)
+			return parse(algo).toMoves()
 		},
 		invert: function (algo, individual) {
 			if (individual) throw "individual is not supported"
 			if (Array.isArray(algo)) algo = algo.join(' ')
-			return parse(algo).inverted.toArray().flat(Infinity)
-		},
+			return parse(algo).inverted.toMoves()
+		},*/
 		cleanMarkup: cleanMarkup,
 		data: data,
 		parse: parse

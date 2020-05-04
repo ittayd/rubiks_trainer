@@ -48,7 +48,7 @@
             */
             if (move.length > 0) {
                 try {
-                    cube.move(algos.resolve(move));
+                    cube.move(algos.parse(move).toMoves());
                 } catch{}
             }
             move = '';

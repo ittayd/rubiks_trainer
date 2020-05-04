@@ -66,11 +66,14 @@ li.title{
 .arrows{
 	display:none;
 }
-.comment{
+.comment {
 	float:left;
 	margin-left:50px;
 }
 
+#named-moves {
+	float: right;
+}
 /*
 fieldset>legend {
 	cursor:pointer;
