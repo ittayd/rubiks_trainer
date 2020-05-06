@@ -302,42 +302,42 @@
 		{
 			name: "Edge Permutations Only",
 			algs: [
-				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", image: { arw: 'U3U7-s8,U7U5-s8,U5U3-s8', ac: 'red' } }, // R2 U [Sexy] (R' U') (Pull)
-				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", image: { arw: 'U3U5-s8,U5U7-s8,U7U3-s8', ac: 'red' } }, // [R U'] [R U] [R U] [R U'] R' U' R2
-				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", image: { arw: 'U1U7,U7U1,U3U5,U5U3', ac: 'red' } },
-				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", image: { arw: 'U3U1,U1U3,U5U7,U7U5', ac: 'red' } },
+				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", comment: "3bar+headlights | 3color checkers"}, // R2 U [Sexy] (R' U') (Pull)
+				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", comment: "3bar+headlights | 3color checkers" }, // [R U'] [R U] [R U] [R U'] R' U' R2
+				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H" },
+				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z" },
 			]
 		},
 		{
 			name: "Corner Permutations Only",
 			algs: [
-				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", image: {arw: 'U2U8-s8,U8U0-s8,U0U2-s8', ac: 'blue'} },
-				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", image: {arw: 'U2U0-s8,U0U8-s8,U8U2-s8', ac: 'blue'} },
-				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", image: {arw: 'U0U6,U6U0,U2U8,U8U2', ac: 'blue'} },
+				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa" },
+				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab" },
+				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E" },
 			]
 		},
 		{
 			name: "Corner & Edge Swap",
 			algs: [
-				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", image: {arw: 'U3U5,U5U3,U2U8-blue,U8U2-blue', ac: 'red'} },
-				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", image: {arw: 'U0U2-blue,U2U0-blue,U3U1,U1U3', ac: 'red' }},
-				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", image: {arw: 'U2U8-blue,U8U2-blue,U5U7,U7U5', ac: 'red' } },
-				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", image: {arw: 'U1U3,U3U1,U0U8-blue,U8U0-blue', ac: 'red' } },
-				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", image: {arw: 'U0U2-blue,U2U0-blue,U3U7,U7U3', ac: 'red' } },
-				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", image: {arw: 'U0U2-blue,U2U0-blue,U5U7,U7U5', ac: 'red' } },
-				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F]", name: "V", image: {arw: 'U1U5,U5U1,U0U8-blue,U8U0-blue', ac: 'red' } },
-				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F]", name: "F", image: {arw: 'U2U8-blue,U8U2-blue,U1U7,U7U1', ac: 'red' } },
-				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na", image: {arw: 'U1U7,U7U1,U0U8-blue,U8U0-blue', ac: 'red' } },
-				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb", image: {arw: 'U1U7,U7U1,U6U2-blue,U2U6-blue', ac: 'red' } },
+				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T" },
+				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja"},
+				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb" },
+				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y" },
+				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra" },
+				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb" },
+				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F]", name: "V" },
+				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F]", name: "F" },
+				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na" },
+				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb" },
 			]
 		},
 		{
 			name: "Corner & Edge Cycle Permutations (G perms)",
 			algs: [
-				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot]", name: "Ga", image: {arw: 'U0U2-blue,U2U6-blue,U6U0-blue,U1U3,U3U5,U5U1', ac: 'red' } },
-				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2", name: "Gb", image: {arw: 'U0U6-blue,U6U8-blue,U8U0-blue,U1U7,U7U3,U3U1', ac: 'red' } },
-				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot]", name: "Gc", image: {arw: 'U0U6-blue,U6U8-blue,U8U0-blue,U7U3,U3U5,U5U7', ac: 'red' } },
-				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2", name: "Gd", image: {arw: 'U0U2-blue,U2U6-blue,U6U0-blue,U1U3,U3U7,U7U1', ac: 'red' } },
+				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot]", name: "Ga" },
+				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2", name: "Gb" },
+				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot]", name: "Gc" },
+				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2", name: "Gd" },
 			]
 		}
 	]

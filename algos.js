@@ -1,6 +1,33 @@
 
 algos = (function ($) {
-
+	class LRU {
+		constructor(max=10) {
+			this.max = max;
+			this.cache = new Map();
+		}
+	
+		get(key) {
+			let item = this.cache.get(key);
+			if (item) // refresh key
+			{
+				this.cache.delete(key);
+				this.cache.set(key, item);
+			}
+			return item;
+		}
+	
+		set(key, val) {
+			if (this.cache.has(key)) // refresh key
+				this.cache.delete(key);
+			else if (this.cache.size == this.max) // evict oldest
+				this.cache.delete(this._first());
+			this.cache.set(key, val);
+		}
+	
+		_first(){
+			return this.cache.keys().next().value;
+		}
+	}
 
 	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://cdn.jsdelivr.net/gh/ittayd/rubiks_cube_html5/algos-data.js'
 	var notationpeg = $.ajax('notation.pegjs')
@@ -8,14 +35,48 @@ algos = (function ($) {
 
 	var parse;
 	var classes = (function(){
+		function lcm(n1, n2) {
+			//Find the smallest and biggest number from both the numbers
+			let lar = Math.max(n1, n2);
+			let small = Math.min(n1, n2);
+			
+			//Loop till you find a number by adding the largest number which is divisble by the smallest number
+			let i = lar;
+			while(i % small !== 0){
+			  i += lar;
+			}
+			
+			//return the number
+			return i;
+		}
+
+		function cycles(array, base = 0) {
+			let result = []
+			let temp = [...array]
+			for (var i = base; i < base + temp.length; i++) {
+				if (temp[i - base] == -1) continue;
+				let cycle = []
+				let current = i 
+				do {
+					cycle.push(current)
+					let prev = current
+					current = temp[current - base]
+					if (current === undefined) throw "Array has indexes outside of the array"
+					temp[prev - base] = -1
+				} while (current != cycle[0])
+				if (cycle.length > 1) {
+					result.push(cycle)
+				}
+			}
+			return result;
+		}
+
 		class Permutation {
 			// visual studio code doesn't recognize '#'...
 			constructor(array) {
-				this.array = array || Array.from({length: 54}, (_, i) => i);
-			}
-
-			static faces(U, L, F, R, B, D) {
-				return new Permutation([U, L, F, R, B, D].map(f => f.toArray()).flat())
+				if (array === undefined) this.array = Array.from({length: 54}, (_, i) => i);
+				else if (typeof(array[0]) === 'number') this.array = array
+				else this.array = array.map(f => f.toArray()).flat()
 			}
 
 			get inverted() {
@@ -37,7 +98,7 @@ algos = (function ($) {
 				return true;
 			}
 
-			addFollowing(other) {
+			composeWith(other) { // applying other first then tself
 				for (var i = 0; i < this.array.length; i++) {
 					this.array[i] = other.array[this.array[i]];
 				}
@@ -45,105 +106,98 @@ algos = (function ($) {
 			}
 
 			then(other) {
-				return this.clone().addFollowing(other)
+				return other.clone().composeWith(this)
 			}
 
-			lcm(n1, n2) {
-				//Find the smallest and biggest number from both the numbers
-				let lar = Math.max(n1, n2);
-				let small = Math.min(n1, n2);
-				
-				//Loop till you find a number by adding the largest number which is divisble by the smallest number
-				let i = lar;
-				while(i % small !== 0){
-				  i += lar;
-				}
-				
-				//return the number
-				return i;
-			}
 
 			get order() {
-				let lcm = 1
-				let temp = [...this.array]
-				for (var i = 0; i < temp.length; i++) {
-					if (temp[i] == -1) continue;
-					let start = i
-					let current = temp[i]
-					temp[i] = -1
-					let count = 1
-					while(current != start) {
-						let prev = current
-						current = temp[current]
-						temp[prev] = -1
-						count++
-					}
-					lcm = this.lcm(lcm, count)
-				}
-				return lcm;
+				return this.cycles.reduce((lcm, cycle) => this.lcm(lcm, cycle.length))
 			}
 
+			get cycles() {return cycles(this.array)}
 
-
+			static faceOrder = "ULFRBD".split("")
 		}
 
+		
+
 		class Face {
-			constructor(arr) {
-				if (!Array.isArray(arr)) arr = arguments;
+			constructor(name, arr) {
+				this.name = name;
+				if (arr === undefined) {
+					arr = Array.from({length: 9}, (_, j) => j + this.base)
+				}
 				([this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br] = arr)
 			}
 
 			get clockwise() {
-				return new Face(this.bl, this.el, this.tl, this.bm, this.em, this.tm, this.br, this.er, this.tr)
+				return new Face(this.name, [this.bl, this.el, this.tl, this.bm, this.em, this.tm, this.br, this.er, this.tr])
 			}
 
 			get counter() {
-				return new Face(this.tr, this.er, this.br, this.tm, this.em, this.bm, this.tl, this.el, this.bl)
+				return new Face(this.name, [this.tr, this.er, this.br, this.tm, this.em, this.bm, this.tl, this.el, this.bl])
 			}
 
-			get reverse() {
-				return new Face(this.br, this.bm, this.bl, this.er, this.em, this.el, this.tr, this.tm, this.tl)
+			get double() {// two clockwise
+				return new Face(this.name, [this.br, this.bm, this.bl, this.er, this.em, this.el, this.tr, this.tm, this.tl])
 			}
 
-			top(idxs) {return idxs == undefined ? [this.tl, this.tm, this.tr] : new Face(...idxs, this.el, this.em, this.er, this.bl, this.bm, this.br) }
-			equator(idxs) {return idxs == undefined ? [this.el, this.em, this.er] : new Face(this.tl, this.tm, this.tr, ...idxs, this.bl, this.bm, this.br)}
-			bottom(idxs) {return idxs == undefined ? [this.bl, this.bm, this.br] : new Face(this.tl, this.tm, this.tr, this.el, this.em, this.er, ...idxs)}
-			left(idxs) {return idxs == undefined ? [this.tl, this.el, this.bl] : new Face(idxs[0], this.tm, this.tr, idxs[1], this.em, this.er, idxs[2], this.bm, this.br)}
-			middle(idxs) {return idxs == undefined ? [this.tm, this.em, this.bm] : new Face(this.tl, idxs[0], this.tr, this.el, idxs[1], this.er, this.bl, idxs[2], this.br)}
-			right(idxs) {return idxs == undefined ? [this.tr, this.er, this.br] : new Face(this.tl, this.tm, idxs[0], this.el, this.em, idxs[1], this.bl, this.bm, idxs[2])}
+			top(idxs) {return idxs == undefined ? [this.tl, this.tm, this.tr] : new Face(this.name, [...idxs, this.el, this.em, this.er, this.bl, this.bm, this.br]) }
+			equator(idxs) {return idxs == undefined ? [this.el, this.em, this.er] : new Face(this.name, [this.tl, this.tm, this.tr, ...idxs, this.bl, this.bm, this.br])}
+			bottom(idxs) {return idxs == undefined ? [this.bl, this.bm, this.br] : new Face(this.name, [this.tl, this.tm, this.tr, this.el, this.em, this.er, ...idxs])}
+			left(idxs) {return idxs == undefined ? [this.tl, this.el, this.bl] : new Face(this.name, [idxs[0], this.tm, this.tr, idxs[1], this.em, this.er, idxs[2], this.bm, this.br])}
+			middle(idxs) {return idxs == undefined ? [this.tm, this.em, this.bm] : new Face(this.name, [this.tl, idxs[0], this.tr, this.el, idxs[1], this.er, this.bl, idxs[2], this.br])}
+			right(idxs) {return idxs == undefined ? [this.tr, this.er, this.br] : new Face(this.name, [this.tl, this.tm, idxs[0], this.el, this.em, idxs[1], this.bl, this.bm, idxs[2]])}
 
 
-			toArray() {
-				return [this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br]
+			get base() {
+				return Permutation.faceOrder.indexOf(this.name) * 9
 			}
 
-			static from(start) {
-				return new Face(Array.from({length: 9}, (_, i) => i + start))
+			toArray(normalize=false) {
+				var result = [this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br]
+				if (normalize) {
+					result = result.map(i => i - this.base);
+				}
+				return result
+			}
+
+			cycles(normalize = false) { // makes sense only for permutations that don't insert other face's indexes 
+				return cycles(this.toArray(normalize), normalize ? 0 : this.base)
+			} 
+
+			get clockwiseOrbit() {
+				return this.counter.remap(Face.U.clockwise.toArray())
+			}
+
+			get counterOrbit() {
+				return this.clockwise.remap(Face.U.counter.toArray())
+			}
+
+			get oppositeOrbit() {
+				return this.double.remap(Face.U.double.toArray())
+			}
+
+			remap(map) {
+				return new Face(this.name, this.toArray().map(i => map[i]))
 			}
 		}
 
-		Face.U = Face.from(0)
-		Face.L = Face.from(9)
-		Face.F = Face.from(18)
-		Face.R = Face.from(27)
-		Face.B = Face.from(36)
-		Face.D = Face.from(45)
+		Permutation.faceOrder.forEach((f, i) => {
+			Face[f] = new Face(f)
+			Object.defineProperty(Permutation.prototype, "face" + f, {
+				get: function() {
+					return new Face(f, this.array.slice(i*9, (i+1) * 9), i*9)
+				}
+			}) 
+		})
 
 		Permutation.identity = new Permutation();
 		with (Face) {
-			Permutation.x = Permutation.faces(F, L.counter, D, R.clockwise, U.reverse, B.reverse)
-			Permutation.y = Permutation.faces(U.clockwise, F, R, B, L, D.counter)
-	/*	Permutation.z = {with (Face) {Permutation.faces(U.left(L.bottom()).middle(L.equator()).right(L.top()), 
-															L.left(B.bottom()).middle(B.equator()).right(B.top()),
-															F.clockwise,
-															R.left(U.bottom()).middle(U.equator()).right(U.top()),
-															B.counter,
-															D.left(R.bottom()).middle(R.equator).bottom(R.top()))
-															}}*/
-
-
-			Permutation.U = Permutation.faces(U.clockwise, L.top(F.top()), F.top(R.top()), R.top(B.top()), B.top(L.top()), D)
-			Permutation.u = Permutation.U.then(Permutation.faces(U, L.equator(F.equator()), F.equator(R.equator()), R.equator(B.equator()), B.equator(L.equator()), D))
+			Permutation.x = new Permutation([F, L.counter, D, R.clockwise, U.double, B.double])
+			Permutation.y = new Permutation([U.clockwise, F, R, B, L, D.counter])
+			Permutation.U = new Permutation([U.clockwise, L.top(F.top()), F.top(R.top()), R.top(B.top()), B.top(L.top()), D])
+			Permutation.u = Permutation.U.then(new Permutation([U, L.equator(F.equator()), F.equator(R.equator()), R.equator(B.equator()), B.equator(L.equator()), D]))
 		}
 
 		with (Permutation) {
@@ -158,6 +212,9 @@ algos = (function ($) {
 			Permutation.b = x.inverted.then(u).then(x)
 			Permutation.D = x.then(x).then(U).then(x).then(x)
 			Permutation.d = x.then(x).then(u).then(x).then(x)
+			Permutation.M = r.inverted.then(R)
+			Permutation.E = z.inverted.then(M)
+			Permutation.S = y.then(M)
 		}
 
 		'ULFRBDulfrbd'.split('').forEach(p => Permutation[`{$p}2`] = Permutation[p].then(Permutation[p]))
@@ -215,7 +272,7 @@ algos = (function ($) {
 
 			get permutation() {
 				let containedArray = this.amount == 0 ? [] : this.containedArray(this.amount < 0, {})
-				let p = containedArray.reduce((permutation, val) => permutation.addFollowing(val.permutation), new Permutation())
+				let p = containedArray.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
 				for(let i = 1; i < Math.abs(this.amount); i++) {
 					p = p.then(p)
 				}
@@ -321,14 +378,40 @@ algos = (function ($) {
 				return this.sub.map(s => s.inverted).reverse()
 			}
 
-			toString(noparen) {
+			toString(clean = true) {
 				var str = `${this.sub.map(s => s.toString()).join(" ")}`
-				if (noparen && this.amount == 1) {
+				if (clean && this.amount == 1) {
 					return str;
 				}
 				return `(${str})${this.stringAmount}`
 			}
 
+		}
+
+		class Tag extends RepeatedUnit {
+			constructor(name, sequence) {
+				super(sequence.order)
+				this.name = name
+				this.sequence = sequence
+			}
+
+			get inverted() {
+				return this.sequence.inverted;
+			}
+
+			isContainer(options) {
+				return this.sequence.isContainer(options);
+			}
+
+			containedArray(invert, options) {
+				return this.sequence.containedArray(invert, options)
+			}
+
+			toString(clean = false) {
+				let substr = this.sequence.toString(clean)
+				if (clean) return substr;
+				return `<${this.name}>${substr}</${this.name}>`
+			}
 		}
 
 		class Conjugate extends RepeatedUnit {
@@ -399,6 +482,7 @@ algos = (function ($) {
 		return {
 			Atomic: Atomic,
 			Trigger: Trigger,
+			Tag: Tag,
 			Sequence: Sequence,
 			Conjugate: Conjugate,
 			Commutator: Commutator,
@@ -412,8 +496,9 @@ algos = (function ($) {
 
 	notationpeg.done(data => {
 		let parser = PEG.buildParser(data, {classes: classes});
-		
+		let cache = new LRU(200);
 		parse = function(algo) {
+
 			algo = Array.isArray(algo) ? algo.join(' ') : algo
 			return parser.parse(algo, {classes: classes});
 		}
@@ -457,7 +542,8 @@ algos = (function ($) {
 	function formatURL(base, parameters) {
 		return `${base}?` + Object.entries(parameters).reduce((result, [key, value]) => {
 			value = isFunction(value) ? value.apply(null, [parameters]) : value
-			return `${result}${key}=${encodeURIComponent(value)}&`
+			if (value === undefined) return result
+			return result + `${key}=${value}&` // not sure why encodeURIComponent is not required...
 		}, '')
 	}
 
@@ -479,7 +565,6 @@ algos = (function ($) {
 		var $formula = $j('#canvas_formula')
 		$formula.html(formula);
 
-		formula = cleanMarkup(formula)
 		formula = algos.parse(formula)
 
 		$formula.data('formula', formula)
@@ -500,10 +585,16 @@ algos = (function ($) {
 		</li>
 	*/
 	function renderItem(default_stage, items, $container) {
-		var VISUAL_CUBE_PATH = 'https://cube.crider.co.uk/visualcube.php';
+		var VISUAL_CUBE_PATH = '//cube.crider.co.uk/visualcube.php';
 		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
 		const triggersPattern = new RegExp(Object.keys(algos.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
+
+		function renderCycle(arr) {
+			console.log('render', arr)
+			return arr.reduce((acc, val, i) => `${acc},U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'},`, '')
+		}
+
 		function renderImageAndMoves($container, { image, moves, comment }) {
 			var formula = Array.isArray(moves) ? moves[0] : moves;
 			function check_and_set(key, renderer)  {
@@ -515,24 +606,37 @@ algos = (function ($) {
 				localStorage.setItem(key, value);
 				return value;
 			}
-			var img_url = check_and_set(JSON.stringify([formula, image]), _ => {
-				formula = cleanMarkup(formula);
-				formula = algos.parse(formula).toMoves({string: true})
-				var parameters = $.extend({
-					stage: default_stage,
-					view: p => (p.stage == 'f2l' ? '' : 'plan'),
-					case: formula,
-					bg: 't',
-					ac: 'black',
-					size: 100,
-					fmt: 'svg'
-				}, image)
-				return formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
-			});
-			$image = $(`<div class="image"></div>`).appendTo($container);
-			$image.html(`<img src="${img_url}" loading="lazy" width="100" height="100"/>`).click(function () {
-				setDemoAlgo(formula, $(this));
-			});
+			const turns = ((image && image.stage) || default_stage) == 'pll' ? ["", "y' ", "y2 ", "y "] : [""]
+			var img_urls = check_and_set(JSON.stringify([formula, image]), _ => {
+				let algo = algos.parse(formula)
+				let face = algo.inverted.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
+				formula = algo.toMoves({string: true})
+				return turns.map(turn =>  {
+					console.log('face', face, face.cycles())
+					let parameters = $.extend({
+						stage: default_stage,
+						view: p => (p.stage == 'f2l' || p.stage == 'pll' ? '' : 'plan'),
+						fd: p => (p.stage == 'pll' ? 'uuuuuuuuurrroooooofffooooooooooooooollloooooobbboooooo' : ''),
+						case: (turn + formula),
+						bg: 't',
+						ac: 'black',
+						size: 100,
+						fmt: 'svg',
+						arw: p => p.stage == 'pll' ? face.cycles().map(renderCycle).join(',') : ''
+					}, image)
+
+					let url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
+					face = face.counterOrbit;
+					return url
+				}).join("|");
+			})
+			img_urls = turns.length == 1 ? [img_urls] : img_urls.split("|");
+			img_urls.forEach((url, i) => {
+				$image = $(`<div class="image"></div>`).appendTo($container);
+				$image.html(`<img src="${url}" loading="lazy" width="100" height="100"/>`).click(function () {
+					setDemoAlgo(turns[i] + formula, $(this));
+				});
+			})
 			var known = 'known';
 			[].concat(moves).forEach(move => {
 				// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
@@ -566,8 +670,8 @@ algos = (function ($) {
 	}
 
 	return {
-		cleanMarkup: cleanMarkup,
 		data: data,
-		parse: parse
+		parse: parse,
+		cleanMarkup: cleanMarkup
 	}
 })(jQuery)

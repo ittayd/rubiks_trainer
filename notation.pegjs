@@ -17,11 +17,15 @@ TRIGGER = character:[_A-Za-z] characters:[_A-Za-z]+ { return new options.classes
 BLOCK_MOVE = trigger:TRIGGER { return trigger; }
            / atomic:ATOMIC { return atomic; }
            
+TAG_NAME = character:[_A-Za-z] characters:[_A-Za-z]* { return [character].concat(characters).join(""); }
+
+MARKUP_SEQUENCE = "<" name:TAG_NAME ">" sequence:SEQUENCE "</" name2:TAG_NAME ">" { if (name != name2) throw 'tag names do not match'; return new options.classes.Tag(name, sequence); }
 
 REPEATABLE_UNIT = BLOCK_MOVE
                 // We parse commutators/conjugates together to reduce branching.
                 / "[" a:SEQUENCE separator:[,:] b:SEQUENCE "]" { return (separator === "," ? new options.classes.Commutator(a, b) : new options.classes.Conjugate(a,b)); }
                 / [(\[{}] nestedSequence:SEQUENCE [)\]}] { return nestedSequence; }
+                / MARKUP_SEQUENCE
 
 REPEATED_UNIT = repeatable_unit:REPEATABLE_UNIT amount:AMOUNT { repeatable_unit.amount = amount; return repeatable_unit; }
               / repeatable_unit:REPEATABLE_UNIT { repeatable_unit.amount = 1; return repeatable_unit; }
