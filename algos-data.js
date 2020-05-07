@@ -297,7 +297,7 @@
 	   { "type": "pll", "name": "Y", "imageFileName": "pll21.gif", "moves": "(F R U') (BackMatch U) (R' F') (R U R' U') (R' F R F')", "comments": "This is very quick and can be performed without any adjustments of where the fingers are. It is just a combination of two quick orientations." }
    ] */
 
-	// 3B - 3bar (full bar), 3C - 3 colors, HL - headlights, O2B - outer 2bar, I2B - inner 2bar, scramble - 3 colors, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
+	// 3B - 3bar (full bar), 3C - 3 colors, HL - headlights, O2B - outer 2bar, I2B - inner 2bar, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
 	algos.pll = [
 		{
 			name: "Edge Permutations Only",
@@ -311,33 +311,33 @@
 		{
 			name: "Corner Permutations Only",
 			algs: [
-				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", comment: "O2B(opp), scramble: 4 colors | HL(adj), scramble | O2B + HL: 4 colors | I2B, I2B: BE" },
-				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", comment: "O2B(opp), scramble: 4 colors | HL(adj), scramble | O2B + HL: 4 colors | I2B, I2B: BE" },
+				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
+				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
 				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", comment: ": NBE, opp middle"},
 			]
 		},
 		{
 			name: "Corner & Edge Swap",
 			algs: [
-				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", comment: "O2B(adj), scramble: 4 colors | I2B, HL: 3 colors" },
+				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", comment: "O2B(adj), 3C: 4 colors | I2B, HL: 3 colors" },
 				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", comment: "3B, 2B | O2B, I2B : BE"},
 				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", comment: "3B, 2B | O2B, I2B : BE" },
 				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external" },
 				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", comment: "HL, 3C : checkers | HL, I2B: 4 colors | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice"},
 				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", comment: "HL, 3C : checkers | HL, I2B: 4 colors | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice" },
-				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F]", name: "V" },
-				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F]", name: "F" },
-				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na" },
-				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb" },
+				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F] y'", name: "V", comment: "O2B: NBE | I2B, I2B: NBE | 4checkers: NBE"},
+				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'", name: "F", comment: "4checkers: BE | 3B, 3C: 4 colors"},
+				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na", comment: "I2B, O2B: NBE" },
+				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb", comment: "I2B, O2B: NBE" },
 			]
 		},
 		{
 			name: "Corner & Edge Cycle Permutations (G perms)",
 			algs: [
-				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot]", name: "Ga" },
-				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2", name: "Gb" },
-				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot]", name: "Gc" },
-				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2", name: "Gd" },
+				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot] y", name: "Ga", comment: "I2B: BE adj | BE, opp *2 | O2B, HL: 4 col" },
+				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2 y'", name: "Gb", comment: "I2B: BE opp | HL, 3C : inside opp | O2B : opp * 2" },
+				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot] y'", name: "Gc", comment: "I2B: BE adj | BE, opp *2 | O2B, HL: 4 col" },
+				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2 y", name: "Gd", comment: "I2B: BE opp | HL, 3C : inside opp | O2B : opp * 2"  },
 			]
 		}
 	]
