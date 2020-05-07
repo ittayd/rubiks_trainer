@@ -111,7 +111,7 @@ algos = (function ($) {
 
 
 			get order() {
-				return this.cycles.reduce((lcm, cycle) => this.lcm(lcm, cycle.length))
+				return this.cycles.reduce((lcma, cycle) => lcm(lcma, cycle.length), 1)
 			}
 
 			get cycles() {return cycles(this.array)}
@@ -154,16 +154,19 @@ algos = (function ($) {
 				return Permutation.faceOrder.indexOf(this.name) * 9
 			}
 
-			toArray(normalize=false) {
+			toArray({rebase = false, named = false} = {}) {
 				var result = [this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br]
-				if (normalize) {
+				if (named) {
+					result = result.map(i => Permutation.faceOrder[Math.floor(i/9)] + (i % 9))
+				}
+				if (rebase) {
 					result = result.map(i => i - this.base);
 				}
 				return result
 			}
 
-			cycles(normalize = false) { // makes sense only for permutations that don't insert other face's indexes 
-				return cycles(this.toArray(normalize), normalize ? 0 : this.base)
+			cycles({rebase = false} = {}) { // makes sense only for permutations that don't insert other face's indexes 
+				return cycles(this.toArray(rebase), rebase ? 0 : this.base)
 			} 
 
 			get clockwiseOrbit() {
@@ -180,6 +183,11 @@ algos = (function ($) {
 
 			remap(map) {
 				return new Face(this.name, this.toArray().map(i => map[i]))
+			}
+
+			toString() {
+				let arr = this.toArray({named: true})
+				return `${arr[0]} ${arr[1]} ${arr[2]}\n${arr[3]} ${arr[4]} ${arr[5]}\n${arr[6]} ${arr[7]} ${arr[8]}\n`
 			}
 		}
 
