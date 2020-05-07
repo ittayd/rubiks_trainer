@@ -334,10 +334,10 @@
 		{
 			name: "Corner & Edge Cycle Permutations (G perms)",
 			algs: [
-				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot] y", name: "Ga", comment: "I2B: BE adj | BE, opp *2 | O2B, HL: 4 col" },
-				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2 y'", name: "Gb", comment: "I2B: BE opp | HL, 3C : inside opp | O2B : opp * 2" },
-				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot] y'", name: "Gc", comment: "I2B: BE adj | BE, opp *2 | O2B, HL: 4 col" },
-				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2 y", name: "Gd", comment: "I2B: BE opp | HL, 3C : inside opp | O2B : opp * 2"  },
+				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot] y", name: "Ga", comment: "I2B(adj): BE  | BE + opp *2 | O2B, HL: 4 col | 4 checker" },
+				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2 y'", name: "Gb", comment: "I2B(opp): BE  | HL(opp), 3C | O2B(opp) : opp * 2" },
+				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot] y'", name: "Gc", comment: "I2B: BE adj | BE, opp *2 | O2B, HL: 4 col | 4 checker" },
+				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2 y", name: "Gd", comment: "I2B(opp): BE  | HL(opp), 3C | O2B(opp) : opp * 2" },
 			]
 		}
 	]
