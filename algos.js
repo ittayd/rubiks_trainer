@@ -201,7 +201,7 @@ algos = (function ($) {
 		}
 
 		with (Permutation) {
-			Permutation.z = x.then(y)
+			Permutation.z = y.then(x.inverted).then(y.inverted)
 			Permutation.L = z.then(U).then(z.inverted)
 			Permutation.l = z.then(u).then(z.inverted)
 			Permutation.F = x.then(U).then(x.inverted)
@@ -540,7 +540,7 @@ algos = (function ($) {
 	const isFunction = value => value && (Object.prototype.toString.call(value) === "[object Function]" || "function" === typeof value || value instanceof Function);
 
 	function formatURL(base, parameters) {
-		return `${base}?` + Object.entries(parameters).reduce((result, [key, value]) => {
+		return `${base}` + Object.entries(parameters).reduce((result, [key, value]) => {
 			value = isFunction(value) ? value.apply(null, [parameters]) : value
 			if (value === undefined) return result
 			return result + `${key}=${value}&` // not sure why encodeURIComponent is not required...
@@ -585,13 +585,13 @@ algos = (function ($) {
 		</li>
 	*/
 	function renderItem(default_stage, items, $container) {
-		var VISUAL_CUBE_PATH = '//cube.crider.co.uk/visualcube.php';
+		//var VISUAL_CUBE_PATH = '//cube.crider.co.uk/visualcube.png';
+		var VISUAL_CUBE_PATH = '//www.speedcubingtips.eu/visualcube/visualcube.php?fmt=gif&'
 		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
 		const triggersPattern = new RegExp(Object.keys(algos.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
 
 		function renderCycle(arr) {
-			console.log('render', arr)
 			return arr.reduce((acc, val, i) => `${acc},U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'},`, '')
 		}
 
@@ -606,22 +606,20 @@ algos = (function ($) {
 				localStorage.setItem(key, value);
 				return value;
 			}
-			const turns = ((image && image.stage) || default_stage) == 'pll' ? ["", "y' ", "y2 ", "y "] : [""]
+			const turns = ((image && image.stage) || default_stage) == 'pll' ? ["", " y", " y2", " y'"] : [""]
 			var img_urls = check_and_set(JSON.stringify([formula, image]), _ => {
-				let algo = algos.parse(formula)
-				let face = algo.inverted.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
+				let algo = algos.parse(formula).inverted
+				let face = algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
 				formula = algo.toMoves({string: true})
 				return turns.map(turn =>  {
-					console.log('face', face, face.cycles())
 					let parameters = $.extend({
 						stage: default_stage,
 						view: p => (p.stage == 'f2l' || p.stage == 'pll' ? '' : 'plan'),
 						fd: p => (p.stage == 'pll' ? 'uuuuuuuuurrroooooofffooooooooooooooollloooooobbboooooo' : ''),
-						case: (turn + formula),
+						alg: (formula + turn),
 						bg: 't',
 						ac: 'black',
 						size: 100,
-						fmt: 'svg',
 						arw: p => p.stage == 'pll' ? face.cycles().map(renderCycle).join(',') : ''
 					}, image)
 
