@@ -575,6 +575,8 @@ algos = (function ($) {
 		$j('#div_canvas').show('fast').css('top', y_pos);
 	}
 
+	const ignoreLocalStorage = (new URL(document.location)).searchParams.has("clean")
+
 
 	/*
 		<li class="title">white on the top</li>
@@ -599,7 +601,7 @@ algos = (function ($) {
 			var formula = Array.isArray(moves) ? moves[0] : moves;
 			function check_and_set(key, renderer)  {
 				var value = localStorage.getItem(key);
-				if (value !== null) {
+				if (value !== null && !ignoreLocalStorage ) {
 					return value;
 				}
 				value = renderer();

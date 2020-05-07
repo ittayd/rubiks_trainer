@@ -297,29 +297,29 @@
 	   { "type": "pll", "name": "Y", "imageFileName": "pll21.gif", "moves": "(F R U') (BackMatch U) (R' F') (R U R' U') (R' F R F')", "comments": "This is very quick and can be performed without any adjustments of where the fingers are. It is just a combination of two quick orientations." }
    ] */
 
-	/* http://badmephisto.com/pll.html */
+	// 3B - 3bar (full bar), HL - headlights, O2B - outer 2bar, I2B - inner 2bar, scramble - 3 colors, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
 	algos.pll = [
 		{
 			name: "Edge Permutations Only",
 			algs: [
-				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", comment: "3bar+headlights | 3color checkers"}, // R2 U [Sexy] (R' U') (Pull)
-				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", comment: "3bar+headlights | 3color checkers" }, // [R U'] [R U] [R U] [R U'] R' U' R2
-				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", comment: "2xHeadlights + opp colors" },
-				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", comment: "Checkers | 2xHeadlights, adj colors" },
+				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", comment: "3B, HL | HL, HL: 3 colors"}, // R2 U [Sexy] (R' U') (Pull)
+				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", comment: "3B, HL | HL, HL: 3 colors" }, // [R U'] [R U] [R U] [R U'] R' U' R2
+				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", comment: "HL, HL: opp edges" },
+				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", comment: "HL, HL: checkers | HL(adj), HL(adj): 4 colors" },
 			]
 		},
 		{
 			name: "Corner Permutations Only",
 			algs: [
-				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", comment: "out 2bar, 4 colors | 1headlights + adj | out 2bar + 4-checkers  bookends + 2x2bar" },
-				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", comment: "out 2bar, 4 colors | 1headlights + adj | out 2bar + 4-checkers | bookends + 2x2bar"  },
-				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", comment: "narrow bookend + headlights"},
+				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", comment: "O2B(opp), scramble: 4 colors | HL(adj), scramble | O2B + HL: 4 colors | I2B, I2B: BE" },
+				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", comment: "O2B(opp), scramble: 4 colors | HL(adj), scramble | O2B + HL: 4 colors | I2B, I2B: BE" },
+				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", comment: ": NBE, opp middle"},
 			]
 		},
 		{
 			name: "Corner & Edge Swap",
 			algs: [
-				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T" },
+				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", comment: "O2B(adj), scramble: 4 colors | I2B, HL: 3 colors" },
 				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja"},
 				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb" },
 				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y" },
