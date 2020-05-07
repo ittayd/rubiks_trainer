@@ -297,7 +297,7 @@
 	   { "type": "pll", "name": "Y", "imageFileName": "pll21.gif", "moves": "(F R U') (BackMatch U) (R' F') (R U R' U') (R' F R F')", "comments": "This is very quick and can be performed without any adjustments of where the fingers are. It is just a combination of two quick orientations." }
    ] */
 
-	// 3B - 3bar (full bar), HL - headlights, O2B - outer 2bar, I2B - inner 2bar, scramble - 3 colors, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
+	// 3B - 3bar (full bar), 3C - 3 colors, HL - headlights, O2B - outer 2bar, I2B - inner 2bar, scramble - 3 colors, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
 	algos.pll = [
 		{
 			name: "Edge Permutations Only",
@@ -320,11 +320,11 @@
 			name: "Corner & Edge Swap",
 			algs: [
 				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", comment: "O2B(adj), scramble: 4 colors | I2B, HL: 3 colors" },
-				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja"},
-				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb" },
-				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y" },
-				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra" },
-				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb" },
+				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", comment: "3B, 2B | O2B, I2B : BE"},
+				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", comment: "3B, 2B | O2B, I2B : BE" },
+				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external" },
+				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", comment: "HL, 3C : checkers | HL, I2B: 4 colors | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice"},
+				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", comment: "HL, 3C : checkers | HL, I2B: 4 colors | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice" },
 				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F]", name: "V" },
 				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F]", name: "F" },
 				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na" },
