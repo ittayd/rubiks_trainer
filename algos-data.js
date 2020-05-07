@@ -304,16 +304,16 @@
 			algs: [
 				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", comment: "3bar+headlights | 3color checkers"}, // R2 U [Sexy] (R' U') (Pull)
 				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", comment: "3bar+headlights | 3color checkers" }, // [R U'] [R U] [R U] [R U'] R' U' R2
-				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H" },
-				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z" },
+				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", comment: "2xHeadlights + opp colors" },
+				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", comment: "Checkers | 2xHeadlights, adj colors" },
 			]
 		},
 		{
 			name: "Corner Permutations Only",
 			algs: [
-				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa" },
-				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab" },
-				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E" },
+				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", comment: "out 2bar, 4 colors | 1headlights + adj | out 2bar + 4-checkers  bookends + 2x2bar" },
+				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", comment: "out 2bar, 4 colors | 1headlights + adj | out 2bar + 4-checkers | bookends + 2x2bar"  },
+				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", comment: "narrow bookend + headlights"},
 			]
 		},
 		{
