@@ -29,7 +29,7 @@ algos = (function ($) {
 		}
 	}
 
-	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://raw.githubusercontent.com/ittayd/rubiks_cube_html5/master/algos-data.js' //'https://cdn.jsdelivr.net/gh/ittayd/rubiks_cube_html5/algos-data.js'
+	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://ittayd.github.io/rubiks_cube_html5/algos-data.js' //'https://cdn.jsdelivr.net/gh/ittayd/rubiks_cube_html5/algos-data.js'
 	var notationpeg = $.ajax('notation.pegjs')
 	var data = $.when($.getScript(dataSrc), notationpeg)
 
