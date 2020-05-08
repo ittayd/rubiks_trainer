@@ -639,7 +639,6 @@ algos = (function ($) {
 				}).join("|");
 			})
 			img_urls = turns.length == 1 ? [img_urls] : img_urls.split("|");
-			console.log(img_urls)
 			img_comments = (image_comment || '').split("|")
 			img_urls.forEach((url, i) => {
 				$image = $(`<div class="image"></div>`).appendTo($container);
