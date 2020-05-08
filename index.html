@@ -210,9 +210,8 @@
 
         var train_moves = pre_moves + algo 
 
-        var moves = train_moves
+        var moves = train_moves + random([' U', " U'", ' U2', ''])
 
-        moves = moves
         $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
         all_moves = algos.cleanMarkup(moves, {braces: false});
         advance({reset: true})

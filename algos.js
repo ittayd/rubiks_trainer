@@ -259,7 +259,7 @@ algos = (function ($) {
 				if (this.isContainer(options)) {
 					let containedArray = this.containedArray(this.amount < 0, options)
 					if (options.string) {
-						return containedArray.reduce((acc, val) => `${acc} ${val.toMoves(options)}`, "").repeat(Math.abs(this.amount))
+						return containedArray.reduce((acc, val) => acc.concat(val.toMoves(options)), []).join(" ").repeat(Math.abs(this.amount))
 					}
 					let op = options.nested ? 'map' : 'flatMap'
 					let result = new Array(Math.abs(this.amount)).fill(containedArray[op](s => s.toMoves(options)))
@@ -596,7 +596,7 @@ algos = (function ($) {
 	*/
 	function renderItem(default_stage, items, $container) {
 		//var VISUAL_CUBE_PATH = '//cube.crider.co.uk/visualcube.png';
-		var VISUAL_CUBE_PATH = '//www.speedcubingtips.eu/visualcube/visualcube.php?fmt=gif&'
+		var VISUAL_CUBE_PATH = '//www.speedcubingtips.eu/visualcube/visualcube.php?fmt=svg&'
 		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
 		const triggersPattern = new RegExp(Object.keys(algos.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
@@ -605,7 +605,7 @@ algos = (function ($) {
 			return arr.reduce((acc, val, i) => `${acc},U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'},`, '')
 		}
 
-		function renderImageAndMoves($container, { image, moves, comment }) {
+		function renderImageAndMoves($container, { image, moves, image_comment, comment }) {
 			var formula = Array.isArray(moves) ? moves[0] : moves;
 			function check_and_set(key, renderer)  {
 				var value = localStorage.getItem(key);
@@ -639,9 +639,13 @@ algos = (function ($) {
 				}).join("|");
 			})
 			img_urls = turns.length == 1 ? [img_urls] : img_urls.split("|");
+			console.log(img_urls)
+			img_comments = image_comment.split("|")
 			img_urls.forEach((url, i) => {
 				$image = $(`<div class="image"></div>`).appendTo($container);
-				$image.html(`<img src="${url}" loading="lazy" width="100" height="100"/>`).click(function () {
+				$image.append($(`<img src="${url}" loading="lazy" width="100" height="100">${(img_comments[i] || '').trim()}</img>`))
+				$image.append($(`<br>${img_comments[i]}`))
+				$image.click(function () {
 					setDemoAlgo(turns[i] + formula, $(this));
 				});
 			})

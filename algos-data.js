@@ -302,42 +302,42 @@
 		{
 			name: "Edge Permutations Only",
 			algs: [
-				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", comment: "3B, HL | HL, HL: 3 colors"}, // R2 U [Sexy] (R' U') (Pull)
-				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", comment: "3B, HL | HL, HL: 3 colors" }, // [R U'] [R U] [R U] [R U'] R' U' R2
-				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", comment: "HL, HL: opp edges" },
-				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", comment: "HL, HL: checkers | HL(adj), HL(adj): 4 colors" },
+				{ type: "pll", moves: "<bl>M2 U <r>[M U2 M']</r> U M2</bl>", name: "Ua", image_comment: "HL, HL: 3 colors | 3B, HL | 3B, HL | HL, HL: 3 colors "}, // R2 U [Sexy] (R' U') (Pull)
+				{ type: "pll", moves: "<bl>M2 U' <r>[M U2 M']</r> U' M2</bl>", name: "Ub", image_comment: "HL, HL: 3 colors | 3B, HL | 3B, HL | HL, HL: 3 colors" }, // [R U'] [R U] [R U] [R U'] R' U' R2
+				{ type: "pll", moves: "<bl>M2 U <r>M2 U2 M2'</r> U M2</bl>", name: "H", image_comment: "HL(opp), HL(opp) | HL(opp), HL(opp) | HL(opp), HL(opp) | HL(opp), HL(opp) |" },
+				{ type: "pll", moves: "{(<bl>M2 U</bl>) (<bl>M2 U</bl>)} {(<g>M' U2</g>) (<bl>M2 U2</bl>) (<g>M' U2</g>)}", name: "Z", image_comment: "HL, HL: checkers | HL(adj), HL(adj): 4 colors | HL, HL: checkers | HL(adj), HL(adj): 4 colors" },
 			]
 		},
 		{
 			name: "Corner Permutations Only",
 			algs: [
-				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
-				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
-				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", comment: ": NBE, opp middle"},
+				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", image_comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
+				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", image_comment: " HL(adj), 3C | O2B(opp), 3C: 4 colors | I2B, I2B: BE | O2B + HL: 4 colors" },
+				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", image_comment: "NBE, opp middle | NBE, opp middle | NBE, opp middle | NBE, opp middle"},
 			]
 		},
 		{
 			name: "Corner & Edge Swap",
 			algs: [
-				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", comment: "O2B(adj), 3C: 4 colors | I2B, HL: 3 colors" },
-				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", comment: "3B, 2B | O2B, I2B : BE"},
-				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", comment: "3B, 2B | O2B, I2B : BE" },
-				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external" },
-				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", comment: "HL, 3C : checkers | HL, I2B: 4 colors | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice"},
-				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", comment: "HL, 3C : checkers | HL, I2B: 4 colors | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice" },
-				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F] y'", name: "V", comment: "O2B: NBE | I2B, I2B: NBE | 4checkers: NBE"},
-				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'", name: "F", comment: "4checkers: BE | 3B, 3C: 4 colors"},
-				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na", comment: "I2B, O2B: NBE" },
-				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb", comment: "I2B, O2B: NBE" },
+				{ type: "pll", moves: "[Sexy] [R' F] [R2 U' R'] U' [Match F']", name: "T", image_comment: "O2B(adj), 3C: 4 colors | O2B(adj), 3C: 4 colors | I2B, HL: 3 colors | I2B, HL: 3 colors" },
+				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", image_comment: "3B, 2B | O2B, I2B : BE | O2B, I2B : BE | 3B, 2B"},
+				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", image_comment: "O2B, I2B : BE | O2B, I2B : BE | 3B, 2B | 3B, 2B" },
+				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", image_comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external | I2B: NBE" },
+				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", image_comment: "HL, I2B: 4 colors | O2B(adj), 3C: adj twice | 3C, 3C: BE adj twice | HL, 3C : checkers "},
+				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
+				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F] y'", name: "V", image_comment: "O2B: NBE | 4checkers: NBE | O2B: NBE | I2B, I2B: NBE"},
+				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'", name: "F", image_comment: "4checkers: BE | 3B, 3C: 4 colors | 3B, 3C: 4 colors | 4checkers: BE"},
+				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
+				{ type: "pll", moves: "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'", name: "Nb", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
 			]
 		},
 		{
 			name: "Corner & Edge Cycle Permutations (G perms)",
 			algs: [
-				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot] y", name: "Ga", comment: "I2B(adj): BE  | BE + opp *2 | O2B, HL: 4 col | 4 checker" },
-				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2 y'", name: "Gb", comment: "I2B(opp): BE  | HL(opp), 3C | O2B(opp) : opp * 2" },
-				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot] y'", name: "Gc", comment: "I2B: BE adj | BE, opp *2 | O2B, HL: 4 col | 4 checker" },
-				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2 y", name: "Gd", comment: "I2B(opp): BE  | HL(opp), 3C | O2B(opp) : opp * 2" },
+				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' BackSlot] y", name: "Ga", image_comment: "I2B(adj): BE  | BE + opp *2  | 4 checker | O2B, HL: 4 col" },
+				{ type: "pll", moves: "[BackMatch] y R2 u R' U Push u' R2 y'", name: "Gb", image_comment: "O2B(opp) : opp * 2 | I2B(opp): BE | HL(opp), 3C | HL(opp), 3C" },
+				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot] y'", name: "Gc", image_comment: "BE, opp *2 | I2B: BE adj | O2B, HL: 4 col | 4 checker" },
+				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2 y", name: "Gd", image_comment: "I2B(opp): BE | O2B(opp) : opp * 2 | HL(opp), 3C | HL(opp), 3C" },
 			]
 		}
 	]

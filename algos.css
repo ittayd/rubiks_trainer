@@ -48,12 +48,14 @@ li.title{
 
 .name{
 	float:left;
-	width:250px;
+	width:180px;
 }	
 .image{
 	float:left;
 	width:100px;
-	height:100px;
+	height:130px;
+	font-size: 12;
+	text-align: center;
 }	
 .formula{
 	float:left;
