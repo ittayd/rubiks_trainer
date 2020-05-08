@@ -640,7 +640,7 @@ algos = (function ($) {
 			})
 			img_urls = turns.length == 1 ? [img_urls] : img_urls.split("|");
 			console.log(img_urls)
-			img_comments = image_comment.split("|")
+			img_comments = (image_comment || '').split("|")
 			img_urls.forEach((url, i) => {
 				$image = $(`<div class="image"></div>`).appendTo($container);
 				$image.append($(`<img src="${url}" loading="lazy" width="100" height="100">${(img_comments[i] || '').trim()}</img>`))
