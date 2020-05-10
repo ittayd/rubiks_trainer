@@ -3,267 +3,32 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Rubik's Cube algos</title>
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css"
-		crossorigin="anonymous">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+
 	<link rel="stylesheet" href="algos.css">
+
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" crossorigin="anonymous"></script>
 	<link href="//cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 	<script src="//cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 
-	<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-		crossorigin="anonymous"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"
-		crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.js" crossorigin="anonymous"></script>	<script src="algos.js"></script>
-	<script src="pre3d.modified.js"></script>
-	<script src="pre3d_shape_utils.js"></script>
-	<script src="pre3d_demo_utils.js"></script>
-	<script src="pre3dCube.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.js" crossorigin="anonymous"></script>
+
+	<script src="lib/virtualcube.js" crossorigin="anonymous"></script>	
+
+	<script src="algos.js"></script>
+	<script src="train.js"></script>
+	<script src="control.js"></script>
 	<script src="keyboard.js"></script>
+	
 	<script>
 		var $j = jQuery.noConflict();
 		var $ = $j;
-		var rubik_cube;
-		var rubik_cube3;
-
 		
-	function random(max) {
-        if (Array.isArray(max)) {
-           var arr = max;
-           max = arr.length;
-        }
-        max = Math.floor(max);
-        var i = Math.floor(Math.random() * max);
-        if (arr) {
-            return arr[i]
-        }
-        return i;
-    }
-
-    var cube;
-	
-	var $move_idx
-	var $algo;
-
-    var all_moves;
-
-    var current_idx;
-
-    function advance({to = 0, delta = undefined, jump = false, reset = false} = {}) {
-        var all_moves_arr = algos.cleanMarkup(all_moves, {tags: false}).split(' ')
-
-        if (reset) {
-            current_idx = all_moves_arr.length
-            jump = true
-        }
-
-        if (delta !== undefined) {
-           to = current_idx + delta
-        }
-
-        if (to < 0) to = 0
-        if (to >= all_moves_arr.length) to = all_moves_arr.length
-
-        if (delta === undefined) {
-            delta = to - current_idx
-        }
-
-        if (to < 0) to = 0
-        if (to >= all_moves_arr.length) to = all_moves_arr.length
-
-        if (reset) {
-             cube.reset();
-        }
-
-        $move_idx.val(to)
-
-		var partial = all_moves_arr.slice(Math.min(current_idx, to), Math.max(current_idx, to))
-		partial = algos.parse(partial)
-		if(delta < 0)
-			partial = partial.inverted
-
-        cube.move(partial.toMoves(), jump ? true : false);
-
-        current_idx = to;
-
-        $(this).blur()
-
-    }
-
-	function random_alg(group, $tip) {
-    	var alg = random(random(group).algs)
-		tip(alg, $tip)
-		return alg.moves
-    }
-
-	function tip(alg, elem) {
-		elem = $(elem)
-		if (!alg) {
-			elem.val('')
-			return
-		}
-		if (!alg.name) {
-			return;
-		}
-		var val = elem.val();
-		if (val && val.length > 0) {
-			val += ", "
-		} else {
-			val = ''
-		}
-		val += alg.name
-		elem.val(val)
-	}
-
-    function oll_scramble(algo) {
-		tip(undefined, '#oll-tips')
-        var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
-
-        if (algo === undefined) {
-			let selected = $('#oll-group').val();
-			if (selected.length == 0) {
-				throw "No OLL selected"
-			}
-			switch(selected[0]) {
-                case '-3': {
-					let first = random(algos.oll1look.algs)
-					tip(first, '#oll-tips')
-                    if (first.type === "none") {
-                        pre_moves = ' '
-                    }
-					let second = random(algos.oll[0].algs)
-				  	tip(second, '#oll-tips')
-                    let interim_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
-                    algo = first.moves + " " + interim_moves + "/*" + second.name + "*/ " + second.moves
-                    break;
-                }
-                case '-2':
-                    algo = $algo.val();
-                    break;
-                case '-1':
-                    algo = random_alg(algos.oll, '#oll-tips');
-                    break;
-                case NaN:
-                    alert("could not parse selection");
-                    break;
-                default: {
-					let algs = selected.flatMap(s => {
-						let [group, alg] = s.split('.')
-						return algos.oll[group].algs.slice(alg, alg === undefined ? alg : 1);
-					})
-					algo = random(algs)					
-					tip(algo, '#oll-tips')
-                    algo = algo.moves
-                }
-            }
-        }
-
-        var train_moves = pre_moves + algo 
-
-        var moves = train_moves
-
-        moves = moves + " " + pll_scramble();
-        $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
-        all_moves = algos.cleanMarkup(moves, {braces: false});
-        advance({reset: true})
-        console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
-        return all_moves;
-    }
-
-    function pll_scramble(algo) {
-		tip(undefined, '#pll-tips')
-        var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
-
-        if (algo === undefined) {
-			let selected = $('#pll-group').val();
-			if (selected.length == 0) {
-				return
-			}
-            switch(selected[0]) {
-                case '-3': { // 2look
-					let first = random(algos.pll[0].algs)
-					tip(first, '#pll-tips')
-					let second = random(algos.pll[1].algs)
-					tip(second, '#pll-tips')
-                    let interim_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
-                    algo = first.moves + " " + interim_moves + second.moves
-                    break;
-                }
-                case '-2':
-                    algo = $algo.val();
-                    break;
-                case '-1':
-                    algo = random_alg(algos.pll, '#pll-tips');
-                    break;
-                default: {
-					let algs = selected.flatMap(s => {
-						let [group, alg] = s.split('.')
-						return algos.pll[group].algs.slice(alg, alg === undefined ? alg : 1);
-					})
-                    algo = random(algs)
-					tip(algo, '#pll-tips')
-                    algo = algo.moves
-                }
-            }
-        }
-
-        var train_moves = pre_moves + algo 
-
-        var moves = train_moves + random([' U', " U'", ' U2', ''])
-
-        $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
-        all_moves = algos.cleanMarkup(moves, {braces: false});
-        advance({reset: true})
-        console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
-        return all_moves;
-    }
-
-    function f2l_scramble(algo) {
-        var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
-
-        if (algo === undefined) {
-            let groupIdx = parseInt($('#f2l-group').find(":selected").val());
-            switch(groupIdx) {
-                case -2:
-                    algo = $algo.val();
-                    break;
-                case -1:
-                    algo = random_alg(algos.f2l, '#f2l-tips');
-                    break;
-                case NaN:
-                    alert("could not parse selection");
-                    break;
-                default: {
-                    let group = algos.f2l[groupIdx];
-                    let i = random(group.algs.length)
-                    algo = group.algs[i].moves
-                }
-            }
-		}
-		
-		algo = algos.cleanMarkup(algo)
-
-        var train_moves = pre_moves + algo
-
-        var moves = train_moves + ' y '
-        for (var i = 0; i < 3; i++) {
-            if (true) {
-                moves = moves + '/*f2l*/ ' + random_alg(algos.f2l, '#f2l-tips')
-            };
-            moves = moves + " y "
-        }
-        moves = moves + " " + oll_scramble()
-        $algo.val(algos.cleanMarkup(train_moves, {braces: false}));
-        all_moves = algos.cleanMarkup(moves, {braces: false});
-        advance({reset: true})
-        console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + all_moves);
-        return all_moves;
-    }
-
    
 		$j(function () {
-
+/*
 			rubik_cube = new RubikCube('canvas', 3, null, null, 600);
 			rubik_cube.reset();
 
@@ -281,114 +46,20 @@
 		});
 			*/
 
-			cube = rubik_cube3
-			$move_idx = $('#move_idx') 
-			$algo = $('#rubik_cube3_algo')
+//			cube = rubik_cube3
 
-			$algo.change(function(){
-				all_moves = $algo.val();
-				advance({reset: true});
-			})
+			var control = new Control()
+			var train = new Train(control)
+			var keybaord = new Keyboard(train, control)
 
-			function move(algo, {invert = false, fast = false} = {}) {
-				algo = algos.parse(algo)
-				algo = invert ? algo.inverted : algo
-				algo = algo.toMoves()
-				cube.move(algo, fast)
-			}
+			
 
 			if (window.location.hash != '') {
 				$j('#rubik_cube3_algo').val(window.location.hash.substr(1));
-				move(window.location.hash.substr(1), {fast: true});
+				control.move(window.location.hash.substr(1), {fast: true});
 			}
 
-
-			$('#do-btn').click(_ => move($algo.val()));
-			$('#undo-btn').click(_ => move($algo.val(), {invert: true}));
-			$('#reset-btn').click(_ => cube.reset());
-
-
-			$('#f2l-btn').click(_ => f2l_scramble())
-
-			$('#oll-btn').click(_ => oll_scramble())
-	
-			algos.data.done(_ => {
-				function renderSelect($select, coll) {
-					$select = $($select)
-					coll.forEach((group, gidx) => {
-						$select.append($('<option>').val(gidx).text(group.name).addClass('opt-l1'));
-						group.algs.forEach((alg, aidx) => {
-							$select.append($('<option>').val(`${gidx}.${aidx}`).text(alg.name).addClass('opt-l2'));
-						})
-					})
-					$select.select2({
-						templateResult: function (data) {    
-							// We only really care if there is an element to pull classes from
-							if (!data.element) {
-							return data.text;
-							}
-
-							var $element = $(data.element);
-
-							var $wrapper = $('<span></span>');
-							$wrapper.addClass($element[0].className);
-
-							$wrapper.text(data.text);
-
-							return $wrapper;
-						}
-					});
-					$select.on('select2:select', function (e) {
-						var data = e.params.data;
-						if (data.id < 0) {
-							$select.val(data.id).trigger('change')
-							$select.children().filter((i, e) => e.id != data.id).attr('disabled', 'disabled')
-						}
-					});
-
-					$select.on('select2:unselect', function (e) {
-						var data = e.params.data;
-						if (data.id < 0) {
-							$select.children().removeAttr('disabled')
-						}
-					});
-				}
-				renderSelect('#pll-group', algos.pll);
-				renderSelect('#oll-group', algos.oll)
-			})
-			$('#pll-btn').click(_ => pll_scramble())
-
-			$('#full-btn').click(function(){
-				$algo.val(all_moves);
-			})
-
-			$('#start-btn').click(function () {
-				advance({ reset: true });
-
-			})
-
-			$('#back-btn').click(function () {
-				advance({ delta: -1 })
-			})
-
-			$move_idx.change(function (event) {
-				advance({ to: $(this).val(), jump: true })
-			})
-
-			$('#forward-btn').click(function () {
-				advance({ delta: 1 })
-
-			})
-
-			$('#end-btn').click(function () {
-				advance({ to: ($algo.val().split(' ').length), jump: true })
-			})
-
-			var reverseEleme = $('#reverse-text')
-			$('#reverse-btn').click(function () {
-				reverseElem.val(reverse($algo.val()))
-			})
-
+			$(':button').mouseup(function() { this.blur() })
 
 			var tbl_body = document.createElement("tbody");
 			var odd_even = false;
@@ -418,7 +89,7 @@
 </head>
 
 <body>
-
+<!--
 	<div>
 		<div id="div_canvas">
 			<div>
@@ -466,7 +137,7 @@
 		</div>
 		<br />
 	</div>
-
+-->
 
 	<div>
 		<div id="div_menu" class="was-navbar">
@@ -500,9 +171,10 @@
 					<br />
 
 					<div>
-						<canvas id="canvas3" width="500" height="500">
+						<div class="virtualcube" kind="RubiksCube" width="500" height="500" facelist="f,r,u,b,l,d" script="U"></div>
+						<!--<canvas id="canvas3" width="500" height="500">
 							Sorry, this demo requires a web browser which supports HTML5 canvas!
-						</canvas>
+						</canvas>-->
 						<table id="named-moves" class="table-sm text-left table-bordered w-auto">
 							<thead>
 							  <tr>
@@ -514,38 +186,6 @@
 						</table>
 					</div>
 					
-					<div style="font-size:14px;">
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('U');">U</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('U\'');">U'</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('B');">B</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('B\'');">B'</a>
-						<br />
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('R');">R</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('R\'');">R'</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('L');">L</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('L\'');">L'</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('F\'');">F'</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('F');">F</a>
-						<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('D\'');">D'</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('D');">D</a>
-						<br />
-						<br />
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('x');">x</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('x\'');">x'</a>
-						|
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('y');">y</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('y\'');">y'</a>
-						|
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('z');">z</a>
-						<a href="javascript:void(0)" onclick="rubik_cube3.move('z\'');">z'</a>
-					</div>
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col mx-1">

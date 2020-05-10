@@ -76,6 +76,19 @@ li.title{
 #named-moves {
 	float: right;
 }
+
+div.virtualcube {
+	display: inline-block;
+}
+
+.virtualcube canvas {
+	position: relative;
+	top: -50px;
+}
+
+.virtualcube .button-toolbar {
+	display: none;
+}
 /*
 fieldset>legend {
 	cursor:pointer;
