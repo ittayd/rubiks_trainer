@@ -79,12 +79,22 @@ li.title{
 
 div.virtualcube {
 	display: inline-block;
+	height: 500px;
+	width: 500px;
 }
 
+.virtualcube .cube-canvas {
+	width:460px;
+	height:374px;
+	object-fit:contain;
+	/* border:1px solid #CCCCCC; */
+  }
+  
+/*
 .virtualcube canvas {
 	position: relative;
 	top: -50px;
-}
+}*/
 
 .virtualcube .button-toolbar {
 	display: none;
