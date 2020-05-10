@@ -67,7 +67,7 @@ Control = (function() {
             constructor() {
                 const myFunc = async () => {
                     await waitFor(() => {
-                        let $canvas = $('.virtualcube').find('canvas');
+                        let $canvas = $('.virtualcube')
                         
                         return ($canvas.length > 0 && 
                             $canvas[0].virtualcube && 
@@ -75,7 +75,7 @@ Control = (function() {
                             $canvas[0].virtualcube.canvas3d.cube) 
                     });
 
-                    this.canvas3d = $('.virtualcube').find('canvas')[0].virtualcube.canvas3d
+                    this.canvas3d = $('.virtualcube')[0].virtualcube.canvas3d
                     this.canvas3d.wobble = function() {}
                 };
 
