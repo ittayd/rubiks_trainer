@@ -33,20 +33,7 @@
 			rubik_cube.reset();
 
 			rubik_cube3 = new RubikCube('canvas3', 3, null, null, 600);
-			rubik_cube3.reset();
-
-			/*
-		$j('#div_menu ul>li').click( function (e) {
-			
-			$j('.tab_body_item').removeClass('active');
-			$j('#div_menu ul>li').removeClass('active');
-			var class_name = $j(this).attr('class');
-			$j('.tab_body_item.' + class_name).addClass('active');
-			$j(this).addClass('active');
-		});
-			*/
-
-//			cube = rubik_cube3
+			rubik_cube3.reset();*/
 
 			var control = new Control()
 			var train = new Train(control)
@@ -55,7 +42,7 @@
 			
 
 			if (window.location.hash != '') {
-				$j('#rubik_cube3_algo').val(window.location.hash.substr(1));
+				$j('#algo').val(window.location.hash.substr(1));
 				control.move(window.location.hash.substr(1), {fast: true});
 			}
 
@@ -101,56 +88,6 @@
 </head>
 
 <body>
-<!--
-	<div>
-		<div id="div_canvas">
-			<div>
-				<div style="float:left; width:200px;">
-					<canvas id="canvas" width="200" height="200">
-						Sorry, this demo requires a web browser which supports HTML5 canvas!
-					</canvas>
-				</div>
-				<div id="canva_sidebar" style="float:left; width:60px; ">
-					<a href="javascript:void(0)" onclick="$j('#div_canvas').hide('fast');">close</a>
-					<br />
-					<a href="javascript:void(0)"
-						onclick="rubik_cube.reset(); rubik_cube.move($j('#canvas_formula').data('formula').inverted.toMoves(), true);">reset</a>
-					<br />
-					<a href="javascript:void(0)" onclick="rubik_cube.move($j('#canvas_formula').data('formula').toMoves());">solve</a>
-					<a href="javascript:void(0)"
-						onclick="rubik_cube.move($j('#canvas_formula').data('formula').inverted.toMoves(), false);">unsolve</a>
-					<br /><br /><br /><br />
-					<div style="font-size:11px; padding-left:2px;">
-						<a href="javascript:void(0)" onclick="rubik_cube.move('U');">U</a>
-						<a href="javascript:void(0)" onclick="rubik_cube.move('U\'');">U'</a>
-						|
-						<a href="javascript:void(0)" onclick="rubik_cube.move('D');">D</a>
-						<a href="javascript:void(0)" onclick="rubik_cube.move('D\'');">D'</a>
-						<br />
-						<a href="javascript:void(0)" onclick="rubik_cube.move('R');">R</a>
-						<a href="javascript:void(0)" onclick="rubik_cube.move('R\'');">R'</a>
-						|
-						<a href="javascript:void(0)" onclick="rubik_cube.move('L');">L</a>
-						<a href="javascript:void(0)" onclick="rubik_cube.move('L\'');">L'</a>
-						<br />
-						<a href="javascript:void(0)" onclick="rubik_cube.move('F');">F</a>
-						<a href="javascript:void(0)" onclick="rubik_cube.move('F\'');">F'</a>
-						|
-						<a href="javascript:void(0)" onclick="rubik_cube.move('B');">B</a>
-						<a href="javascript:void(0)" onclick="rubik_cube.move('B\'');">B'</a>
-					</div>
-
-				</div>
-				<div style="clear:both;"></div>
-			</div>
-			<div id="canva_bottombar" style="">
-				<span id="canvas_formula" style="font-size:13px;">solved</span>
-			</div>
-		</div>
-		<br />
-	</div>
--->
-
 	<div>
 		<div id="div_menu" class="was-navbar">
 			<nav>
@@ -208,7 +145,8 @@
 						
 						<div class="row">
 							<div class="col mx-1">
-								<div class="row form-group"> <input class="form-control-sm col-6" type="text" value="M2 y M2 z M2 z" id="rubik_cube3_algo">
+								<div class="row form-group"> 
+									<input class="form-control-sm col-6" type="text" id="algo" value="M2 y M2 z M2 z">
 									<input class="form-control-sm col-2" type="button" id="do-btn" value="Do">
 									<input class="form-control-sm col-2" type="button" id="undo-btn" value="Undo">
 									<input class="form-control-sm col-2" type="button" id="reset-btn" value="Reset">
@@ -220,7 +158,7 @@
 									<input id="full-btn" class="form-control-sm col-2" type="button" value="Full">
 									<input id="start-btn" class="form-control-sm col-2" type="button" value="↞">
 									<input id="back-btn" class="form-control-sm col-2" type="button" value="←">
-									<input id="rubik_cube3_move_idx" class="form-control-sm col-2" type="text" value="0" style="width: 30px;">
+									<input id="move_idx" class="form-control-sm col-2" type="text" value="0" style="width: 30px;">
 									<input id="forward-btn" class="form-control-sm col-2" type="button" value="→">
 									<input id="end-btn" class="form-control-sm col-2" type="button" value="↠">
 									<input id="reverse-btn" class="form-control-sm col-2" type="button" value="Reverse">

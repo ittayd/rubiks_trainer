@@ -44,7 +44,7 @@ Train = (function() {
         constructor(control) {
             this.control = control;
             this.$move_idx = $('#move_idx') 
-            this.$algo = $('#rubik_cube3_algo')
+            this.$algo = $('#algo')
             this.current_idx = 0;
         
             let self = this;
@@ -306,9 +306,9 @@ Train = (function() {
                 }
             }
 
-            var train_moves = pre_moves + algo 
+            var train_moves = pre_moves + algo  + random([' U', " U'", ' U2', ''])
 
-            var moves = train_moves + random([' U', " U'", ' U2', ''])
+            var moves = train_moves
 
             this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
             this.all_moves = algos.cleanMarkup(moves, {braces: false});
@@ -362,6 +362,7 @@ Train = (function() {
         doAlgo() {
             let algo = algos.parse(this.$algo.val())
             algo = algo.toMoves()
+            console.log('do', algo)
             this.control.move(algo)
         }
 
