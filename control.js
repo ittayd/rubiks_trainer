@@ -88,6 +88,16 @@ Control = (function() {
                 this.canvas3d.reset();
             }
 
+            reposition() {
+                let c = this.canvas3d;
+                c.currentAngle = 0;
+                c.xRot = c.cube3d.attributes.xRot;
+                c.yRot = c.cube3d.attributes.yRot;
+                c.rotationMatrix.makeIdentity();
+                c.smoothRotationFunction = null;
+                c.repaint();
+            }
+
             move(moves, quiet = false) {
                 var self = this.canvas3d
                 if (quiet) {

@@ -136,6 +136,7 @@ Train = (function() {
             $('#do-btn').click(_ => self.doAlgo());
 			$('#undo-btn').click(_ => self.undoAlgo());
 			$('#reset-btn').click(_ => control.reset());
+			$('#reposition-btn').click(_ => control.reposition());
 
 
         }
