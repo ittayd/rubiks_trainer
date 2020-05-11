@@ -61,23 +61,35 @@
 
 			$(':button').mouseup(function() { this.blur() })
 
-			var tbl_body = document.createElement("tbody");
+			var tbl_body = $('<tbody>');
 			var odd_even = false;
 			algos.data.done(_ => {
 				$.each(algos.triggers, function(k, v) {
-					var tbl_row = tbl_body.insertRow();
-					tbl_row.className = odd_even ? "odd" : "even";
-					var cell = tbl_row.insertCell();
-					cell.appendChild(document.createTextNode(k));
-					cell = tbl_row.insertCell();
-					cell.appendChild(document.createTextNode(v.moves));
-					cell = tbl_row.insertCell();
-					cell.appendChild(document.createTextNode(v.inverse || ""));
-							
+					var tbl_row = $('<tr>').appendTo(tbl_body);						
+					tbl_row.addClass(odd_even ? "odd" : "even");
 					odd_even = !odd_even;               
+
+					$('<td>').append($('<button>').text(k)).appendTo(tbl_row);
+					$('<td>').text(v.moves).appendTo(tbl_row);
+					$('<td>').text(v.inverse || "").appendTo(tbl_row);
+							
 				});
-				$("#named-moves").append(tbl_body);   //DOM table doesn't have .appendChild
+				$("#triggers").append(tbl_body).find('button').click(e => control.move(algos.parse($(e.target).text()).toMoves()))
+				
 			})
+
+			let render_moves = (base, lower) => {
+				let a = move => $('<button>').text(move)[0]
+				let row = base => [a(base), a(base + "'"), a(base + "2")]
+				return [row(base)].concat(lower ? [row(base.toLowerCase())] : [])
+			}
+			let array = "ULFRBD".split("").flatMap(move => render_moves(move, true)).
+				 concat("MESxyz".split("").flatMap(move => render_moves(move, false)))
+			array = array[0].map((col, i) => array.map(row => row[i]));
+			array = array.reduce((tbody, row) => tbody.append(row.reduce((tr, move) => tr.append($('<td>').append(move)), $('<tr>'))), $('<tbody>'))
+			$("#moves").append(array).click(e => {
+				control.move([$(e.target).text()])
+			})	
 		});
 
 
@@ -170,12 +182,12 @@
 					</div>
 					<br />
 
-					<div>
-						<div class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d"></div>
+					<div id="cube-container">
+						<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
 						<!--<canvas id="canvas3" width="500" height="500">
 							Sorry, this demo requires a web browser which supports HTML5 canvas!
 						</canvas>-->
-						<table id="named-moves" class="table-sm text-left table-bordered w-auto">
+						<table id="triggers" class="table-sm text-left table-bordered w-auto">
 							<thead>
 							  <tr>
 								<th>Name</th>
@@ -185,6 +197,7 @@
 							</thead>	
 						</table>
 					</div>
+					<table id="moves" class="table-sm text-left table-bordered w-auto"></table>
 					
 					<div class="container-fluid">
 						<div class="row">

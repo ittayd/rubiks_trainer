@@ -73,22 +73,34 @@ li.title{
 	margin-left:50px;
 }
 
-#named-moves {
-	float: right;
+#triggers {
+	float: left;
 }
 
+#moves {
+	margin: 20px;
+}
+
+#cube-container {
+	display: flex;
+}
+
+/*
 div.virtualcube {
 	display: inline-block;
 	height: 500px;
 	width: 500px;
 }
-
-.virtualcube .cube-canvas {
-	width:460px;
-	height:374px;
-	object-fit:contain;
+*/
+.virtualcube {
+	float: left;
+	position: relative;
+	top: -50px;
+	width:500px;
+	height:550px;
+	object-fit:contain; /* required for mobile */
 	/* border:1px solid #CCCCCC; */
-  }
+}
   
 /*
 .virtualcube canvas {
