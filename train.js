@@ -64,7 +64,9 @@ Train = (function() {
 						group.algs.forEach((alg, aidx) => {
 							$select.append($('<option>').val(`${gidx}.${aidx}`).text(alg.name).addClass('opt-l2'));
 						})
-					})
+                    })
+                    let id = $select.attr('id')
+
 					$select.select2({
 						templateResult: function (data) {    
 							// We only really care if there is an element to pull classes from
@@ -80,8 +82,26 @@ Train = (function() {
 							$wrapper.text(data.text);
 
 							return $wrapper;
-						}
-					});
+                        }
+                    }).on('select2:select select2:unselect', function(e) {
+                        let data = e.params.data
+                        // checking if we have anyting stored in local storage
+                        let s2options = localStorage.getItem(id) 
+                        s2options = s2options ? JSON.parse(s2options) : [];
+                     
+                        // add / remove options
+                        if (data.selected) {
+                            s2options.push(data.id);
+                        } else {
+                            s2options = s2options.filter(id => id != data.id);
+                        }
+                         
+                         // save selections to local storage
+                         localStorage.setItem(id, JSON.stringify(s2options));
+                     });
+
+
+                    
 					$select.on('select2:select', function (e) {
 						var data = e.params.data;
 						if (data.id < 0) {
@@ -95,7 +115,13 @@ Train = (function() {
 						if (data.id < 0) {
 							$select.children().removeAttr('disabled')
 						}
-					});
+                    });
+                    
+                    let init = localStorage.getItem(id);
+                    if (init != null) {
+                        $select.val(JSON.parse(init))
+                        $select.trigger('change')
+                    }
 				}
 				renderSelect('#pll-group', algos.pll);
 				renderSelect('#oll-group', algos.oll)
