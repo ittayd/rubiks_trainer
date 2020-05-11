@@ -81,7 +81,7 @@
 			let render_moves = (base, lower) => {
 				let a = move => $('<button>').text(move)[0]
 				let row = base => [a(base), a(base + "'"), a(base + "2")]
-				return [row(base)].concat(lower ? [row(base.toLowerCase())] : [])
+				return [row(base).concat(lower ? row(base.toLowerCase()) : [])]
 			}
 			let array = "ULFRBD".split("").flatMap(move => render_moves(move, true)).
 				 concat("MESxyz".split("").flatMap(move => render_moves(move, false)))
