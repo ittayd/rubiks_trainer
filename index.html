@@ -182,24 +182,30 @@
 					</div>
 					<br />
 
-					<div id="cube-container">
-						<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
-						<!--<canvas id="canvas3" width="500" height="500">
-							Sorry, this demo requires a web browser which supports HTML5 canvas!
-						</canvas>-->
-						<table id="triggers" class="table-sm text-left table-bordered w-auto">
-							<thead>
-							  <tr>
-								<th>Name</th>
-								<th>Moves</th>
-								<th>Inverse</th>
-							  </tr>
-							</thead>	
-						</table>
-					</div>
-					<table id="moves" class="table-sm text-left table-bordered w-auto"></table>
-					
 					<div class="container-fluid">
+						<div class="row">
+							<div id="cube-container" class="col mx-1">
+								<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
+								<!--<canvas id="canvas3" width="500" height="500">
+									Sorry, this demo requires a web browser which supports HTML5 canvas!
+								</canvas>-->
+							</div>
+							<div class="col mx-1">
+								<table id="triggers" class="table-sm text-left table-bordered w-auto">
+									<thead>
+									<tr>
+										<th>Name</th>
+										<th>Moves</th>
+										<th>Inverse</th>
+									</tr>
+									</thead>	
+								</table>
+							</div>
+						</div>
+						<div class="row">
+							<table id="moves" class="table-sm text-left table-bordered w-auto"></table>
+						</div>
+						
 						<div class="row">
 							<div class="col mx-1">
 								<div class="row form-group"> <input class="form-control-sm col-6" type="text" value="M2 y M2 z M2 z" id="rubik_cube3_algo">
@@ -209,6 +215,19 @@
 									<input class="form-control-sm col-3" type="button" id="reposition-btn" value="Reposition">
 								</div>
 							</div>
+							<div class="col mx-1">
+								<div class="row form-group">
+									<input id="full-btn" class="form-control-sm col-2" type="button" value="Full">
+									<input id="start-btn" class="form-control-sm col-2" type="button" value="↞">
+									<input id="back-btn" class="form-control-sm col-2" type="button" value="←">
+									<input id="rubik_cube3_move_idx" class="form-control-sm col-2" type="text" value="0" style="width: 30px;">
+									<input id="forward-btn" class="form-control-sm col-2" type="button" value="→">
+									<input id="end-btn" class="form-control-sm col-2" type="button" value="↠">
+									<input id="reverse-btn" class="form-control-sm col-2" type="button" value="Reverse">
+									<input id="reverse-text" class="form-control-sm col-10" type="text" value="" style="width: 300px;">									
+								</div>
+							</div>
+							<div class="w-100 d-xl-none"></div>
 							<div class="col mx-1">
 								<div class="row form-group">							
 										<input id="f2l-btn" type="button" value="F2L" class="form-control-sm col-2"></input>
@@ -245,18 +264,6 @@
 										<option value="-2">-- algo --</option>
 									</select>
 									<input id="pll-tips" class="form-control-sm col-10 offset-2" type="text" value="">
-								</div>
-							</div>
-							<div class="col mx-1">
-								<div class="row form-group">
-									<input id="full-btn" class="form-control-sm col-2" type="button" value="Full">
-									<input id="start-btn" class="form-control-sm col-2" type="button" value="↞">
-									<input id="back-btn" class="form-control-sm col-2" type="button" value="←">
-									<input id="rubik_cube3_move_idx" class="form-control-sm col-2" type="text" value="0" style="width: 30px;">
-									<input id="forward-btn" class="form-control-sm col-2" type="button" value="→">
-									<input id="end-btn" class="form-control-sm col-2" type="button" value="↠">
-									<input id="reverse-btn" class="form-control-sm col-2" type="button" value="Reverse">
-									<input id="reverse-text" class="form-control-sm col-10" type="text" value="" style="width: 300px;">									
 								</div>
 							</div>
 						</div>
