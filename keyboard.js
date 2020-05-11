@@ -31,9 +31,9 @@ Keyboard = (function ($) {
                 "Control": nop,
                 " ": event => {
                     switch (this.move) {
-                        case "P": train.pll_scramble(); move = ''; break;
-                        case "O": train.oll_scramble(); move = ''; break;
-                        case "T": train.f2l_scramble(); move = ''; break;
+                        case "P": train.pll_scramble(); this.move = ''; break;
+                        case "O": train.oll_scramble(); this.move = ''; break;
+                        case "T": train.f2l_scramble(); this.move = ''; break;
                     }
                     if (this.move.length > 0) {
                         let move = this.move

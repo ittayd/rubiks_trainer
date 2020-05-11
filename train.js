@@ -220,8 +220,8 @@ Train = (function() {
                         break;
                     default: {
                         let algs = selected.flatMap(s => {
-                            let [group, alg] = s.split('.')
-                            return algos.oll[group].algs.slice(alg, alg === undefined ? alg : 1);
+                            let [group, alg] = s.split('.').map(x => parseInt(x))
+                            return algos.oll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
                         algo = random(algs)					
                         tip(algo, '#oll-tips')
@@ -269,8 +269,8 @@ Train = (function() {
                         break;
                     default: {
                         let algs = selected.flatMap(s => {
-                            let [group, alg] = s.split('.')
-                            return algos.pll[group].algs.slice(alg, alg === undefined ? alg : 1);
+                            let [group, alg] = s.split('.').map(x => parseInt(x))
+                            return algos.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
                         algo = random(algs)
                         tip(algo, '#pll-tips')
