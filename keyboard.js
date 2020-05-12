@@ -26,7 +26,7 @@ Keyboard = (function ($) {
         
         
             $.extend(handlers, {
-                "Escape": event => move = '',
+                "Escape": event => this.move = '',
                 "Shift": nop,
                 "Control": nop,
                 " ": event => {
@@ -56,7 +56,10 @@ Keyboard = (function ($) {
                 if (event.target.nodeName == 'INPUT') {
                     return true;
                 }
-                // console.log(`key is _${event.key}_`)
+
+                if (typeof(handlers[event.key]) !== "function") {
+                    console.log('handlers', event.key, handlers[event.key]);
+                }
                 var result = handlers[event.key].call(self, event)
                 if ((typeof result) == "boolean") {
                     return result
