@@ -1,15 +1,40 @@
 Train = (function() {
-    function random(max) {
-        if (Array.isArray(max)) {
-        var arr = max;
-        max = arr.length;
-        }
-        max = Math.floor(max);
-        var i = Math.floor(Math.random() * max);
-        if (arr) {
+    function random(arr, probabilities) {
+        if (! probabilities) {
+            let i = Math.floor(Math.random() * arr.length);
             return arr[i]
         }
-        return i;
+
+        var num = Math.random(),
+            s = 0,
+            lastIndex = probabilities.length - 1;
+
+        for (var i = 0; i < lastIndex; ++i) {
+            s += probabilities[i];
+            if (num < s) {
+                break;
+            }
+        }
+
+        return arr[i];
+    }
+
+    function random_weight(algs, weight) {
+        /* kludgy probability definition */
+        let power = weight / 2.5  - 2
+        let add = Math.pow(10, power)
+        let weights = algs.map((a, i) => {
+            i = algs.length - i - 1
+            return 1/(i * add + 1)
+        });
+        let sum = weights.reduce((a,b) => a+b, 0)
+        let last = weights[weights.length - 1]
+        weights = weights.map(w => {
+            return w * ((1*(sum + weights.length -1) - 1)/last) + 1
+        })
+        sum = weights.reduce((a,b) => a+b, 0)
+        weights = weights.map(w => w / sum)
+        return random(algs, weights)
     }
 
     function random_alg(group, $tip) {
@@ -116,6 +141,13 @@ Train = (function() {
 							$select.children().removeAttr('disabled')
 						}
                     });
+
+                    $select.on('select2:select', function(e){
+                        var id = e.params.data.id;
+                        var option = $(e.target).children(`[value="${id}"]`);
+                        option.detach();
+                        $(e.target).append(option).change();
+                    });
                     
                     let init = localStorage.getItem(id);
                     if (init != null) {
@@ -216,7 +248,7 @@ Train = (function() {
 
         oll_scramble(algo) {
             tip(undefined, '#oll-tips')
-            var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
+            var pre_moves = random(['U ', "U' ", 'U2 ', ''])
 
             if (algo === undefined) {
                 let selected = $('#oll-group').val();
@@ -232,7 +264,7 @@ Train = (function() {
                         }
                         let second = random(algos.oll[0].algs)
                         tip(second, '#oll-tips')
-                        let interim_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
+                        let interim_moves = random(['U ', "U' ", 'U2 ', ''])
                         algo = first.moves + " " + interim_moves + "/*" + second.name + "*/ " + second.moves
                         break;
                     }
@@ -250,7 +282,8 @@ Train = (function() {
                             let [group, alg] = s.split('.').map(x => parseInt(x))
                             return algos.oll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
-                        algo = random(algs)					
+                        let weight = parseInt($('#oll-weight').val())
+                        algo = random_weight(algs, weight)
                         tip(algo, '#oll-tips')
                         algo = algo.moves
                     }
@@ -271,7 +304,7 @@ Train = (function() {
 
         pll_scramble(algo) {
             tip(undefined, '#pll-tips')
-            var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
+            var pre_moves = random(['U ', "U' ", 'U2 ', ''])
 
             if (algo === undefined) {
                 let selected = $('#pll-group').val();
@@ -284,7 +317,7 @@ Train = (function() {
                         tip(first, '#pll-tips')
                         let second = random(algos.pll[1].algs)
                         tip(second, '#pll-tips')
-                        let interim_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
+                        let interim_moves = random(['U ', "U' ", 'U2 ', ''])
                         algo = first.moves + " " + interim_moves + second.moves
                         break;
                     }
@@ -299,7 +332,9 @@ Train = (function() {
                             let [group, alg] = s.split('.').map(x => parseInt(x))
                             return algos.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
-                        algo = random(algs)
+
+                        let weight = parseInt($('#pll-weight').val())
+                        algo = random_weight(algs, weight)
                         tip(algo, '#pll-tips')
                         algo = algo.moves
                     }
@@ -318,7 +353,7 @@ Train = (function() {
         }
 
         f2l_scramble(algo) {
-            var pre_moves = ['U ', "U' ", 'U2 ', ''][random(4)]
+            var pre_moves = random(['U ', "U' ", 'U2 ', ''])
 
             if (algo === undefined) {
                 let groupIdx = parseInt($('#f2l-group').find(":selected").val());
@@ -334,8 +369,7 @@ Train = (function() {
                         break;
                     default: {
                         let group = algos.f2l[groupIdx];
-                        let i = random(group.algs.length)
-                        algo = group.algs[i].moves
+                        algo = random(group.algs).moves
                     }
                 }
             }
