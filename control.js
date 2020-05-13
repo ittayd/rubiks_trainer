@@ -103,7 +103,7 @@ Control = (function() {
                     moves = algos.parse(moves)                    
                 }
 
-                if (typeof moves == "object") {
+                if (typeof moves == "object" && ! Array.isArray(moves)) {
                     moves = moves.toMoves() // assuming parsed algorithm tree
                 }
 
