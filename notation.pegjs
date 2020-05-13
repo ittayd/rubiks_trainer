@@ -3,6 +3,7 @@ start = SEQUENCE
 NUMBER = characters:[0-9]+ { return parseInt(characters.join(""), 10); }
 
 AMOUNT = "'" amount:AMOUNT { return -amount; }
+       / number:NUMBER "'" { return -number; }
        / number:NUMBER { return number; }
        / "'" { return -1; }
 
