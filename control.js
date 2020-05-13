@@ -99,6 +99,14 @@ Control = (function() {
             }
 
             move(moves, quiet = false) {
+                if (typeof moves == "string") {
+                    moves = algos.parse(moves)                    
+                }
+
+                if (typeof moves == "object") {
+                    moves = moves.toMoves() // assuming parsed algorithm tree
+                }
+
                 var self = this.canvas3d
                 if (quiet) {
                     let f = function () {

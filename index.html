@@ -42,10 +42,15 @@
 			
 
 			if (window.location.hash != '') {
-				$j('#algo').val(window.location.hash.substr(1));
-				control.move(window.location.hash.substr(1), {fast: true});
+				$j(window.location.hash + "-tab").show()
 			}
 
+			let sp = new URLSearchParams(window.location.search)
+			let algo = sp.get('algo')
+			if (algo !== null) {
+				$j('#algo').val(algo);
+                control.move(algo, {fast: true});
+			}
 			$(':button').mouseup(function() { this.blur() })
 
 			var tbl_body = $('<tbody>');
@@ -92,18 +97,12 @@
 		<div id="div_menu" class="was-navbar">
 			<nav>
 				<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-					<a class="nav-item nav-link active show" id="nav-intro-tab" data-toggle="tab" href="#nav-intro"
-						role="tab" aria-controls="nav-intro" aria-selected="true">Intro</a>
-					<a class="nav-item nav-link" id="nav-f2l-tab" data-toggle="tab" href="#nav-f2l" role="tab"
-						aria-controls="nav-f2l" aria-selected="false">F2L</a>
-					<a class="nav-item nav-link" id="nav-oll2-tab" data-toggle="tab" href="#nav-oll2" role="tab"
-						aria-controls="nav-oll2" aria-selected="false">OLL (2 looks)</a>
-					<a class="nav-item nav-link" id="nav-oll-tab" data-toggle="tab" href="#nav-oll" role="tab"
-						aria-controls="nav-oll" aria-selected="false">OLL</a>
-					<a class="nav-item nav-link" id="nav-pll2-tab" data-toggle="tab" href="#nav-pll2" role="tab"
-						aria-controls="nav-pll2" aria-selected="false">PLL (basics)</a>
-					<a class="nav-item nav-link" id="nav-pll-tab" data-toggle="tab" href="#nav-pll" role="tab"
-						aria-controls="nav-pll" aria-selected="false">PLL</a>
+					<a class="nav-item nav-link active show" id="nav-intro-tab" data-toggle="tab" href="#nav-intro" role="tab" aria-controls="nav-intro" aria-selected="true">Intro</a>
+					<a class="nav-item nav-link" id="nav-f2l-tab" data-toggle="tab" href="#nav-f2l-tab" role="tab" aria-controls="nav-f2l" aria-selected="false">F2L</a>
+					<a class="nav-item nav-link" id="nav-oll2-tab" data-toggle="tab" href="#nav-oll2" role="tab" aria-controls="nav-oll2" aria-selected="false">OLL (2 looks)</a>
+					<a class="nav-item nav-link" id="nav-oll-tab" data-toggle="tab" href="#nav-oll" role="tab" aria-controls="nav-oll" aria-selected="false">OLL</a>
+					<a class="nav-item nav-link" id="nav-pll2-tab" data-toggle="tab" href="#nav-pll2" role="tab" aria-controls="nav-pll2" aria-selected="false">PLL (2 look)</a>
+					<a class="nav-item nav-link" id="nav-pll-tab" data-toggle="tab" href="#nav-pll" role="tab" aria-controls="nav-pll" aria-selected="false">PLL</a>
 				</div>
 			</nav>
 			<!--<div style="clear:both"></div>-->
@@ -289,8 +288,9 @@
 					</fieldset>
 				</div>
 				<div style="clear:both;">
-					<a href="https://sites.google.com/site/piauscubingsite/3x3x3/pll" target="_blank">Antoine Piau's
-						PLL</a>
+					<a href="http://cubing.pt/wp-content/uploads/2017/03/pll2side-20140531.pdf" target="_blank">Mark49152’s Two-Sided PLL Recognition Guide</a>
+					<br />
+					<a href="https://sites.google.com/site/piauscubingsite/3x3x3/pll" target="_blank">Antoine Piau's PLL</a>
 					<br />
 					<a href="https://www.speedsolving.com/wiki/index.php/PLL" target="_blank">speedsolving.com PLL</a>
 					<br />

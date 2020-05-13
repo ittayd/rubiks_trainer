@@ -7,7 +7,7 @@
 				{ type: "f2l", moves: "U' R U R' U2 (R U' R')" },
 				{ type: "f2l", moves: "d BackMatch U2' (BackSlot) y" },
 				{ type: "f2l", moves: "U' R U2' R' U2 (R U' R')" },
-				{ type: "f2l", moves: "d R' U2 R U2' (BackSlot) y" },
+				{ type: "f2l", moves: "d BackLeftSlot U2' (BackSlot) y" },
 				{ type: "f2l", moves: "y' BackSlot U' d' (R U R')" },
 				{ type: "f2l", moves: "R U' R' U d (BackMatch) y" }]
 		},
@@ -27,13 +27,13 @@
 			name: "Corner on top, FL color facing up",
 			algs: [
 				{ type: "f2l", moves: "R U2' R' U' (R U R')" },
-				{ type: "f2l", moves: "y' R' U2 R U (BackMatch) y" },
+				{ type: "f2l", moves: "y' BackLeftSlot U (BackMatch) y" },
 				{ type: "f2l", moves: "U R U2 R' U (R U' R')" },
-				{ type: "f2l", moves: "y' U' R' U2 R U' (BackSlot) y" },
+				{ type: "f2l", moves: "y' U' BackLeftSlot U' (BackSlot) y" },
 				{ type: "f2l", moves: "U2 R U R' U (R U' R')" },
 				{ type: "f2l", moves: "y' U2 BackMatch U' (BackSlot) y" },
-				{ type: "f2l", moves: "y' U R' U2 R y R U2 BackSlot U' R'" },
-				{ type: "f2l", moves: "U' R U2' R' y' R' U2 R U' BackSlot y" }]
+				{ type: "f2l", moves: "y' U BackLeftSlot y R U2 BackSlot U' R'" },
+				{ type: "f2l", moves: "U' R U2' R' y' BackLeftSlot U' BackSlot y" }]
 		},
 		{
 			name: "Corner down, edge on top",
@@ -59,10 +59,10 @@
 			name: "Corner down, edge down",
 			algs: [
 				{ type: "f2l", moves: "R U' BackMatch U R' U2 (R U' R')" },
-				{ type: "f2l", moves: "R U R' U2 R U' R' U (R U R')" },
+				{ type: "f2l", moves: "R U BackLeftSlot U' R' U (R U R')" },
 				{ type: "f2l", moves: "R U' R' d BackMatch U' (BackMatch) y" },
 				{ type: "f2l", moves: "R U BackMatch U' R' U2 y' (BackMatch) y" },
-				{ type: "f2l", moves: "R U' R' U y' R' U2 R U2' (BackSlot) y" }]
+				{ type: "f2l", moves: "R U' R' U y' BackLeftSlot U2' (BackSlot) y" }]
 		}
 	]
 
@@ -141,7 +141,7 @@
 			name: "All Edges Correctly Oriented",
 			algs: [ /* http://badmephisto.com/2LookOLL.pdf */
 				{ type: "oll", moves: "Match U (LeftSlot)", name: "27-Sune" },
-				{ type: "oll", moves: "(BackMatch) U' (R' U2 R)", name: "26-AntiSune" },
+				{ type: "oll", moves: "(BackMatch) U' (BackLeftSlot)", name: "26-AntiSune" },
 				{ type: "oll", moves: "F Sexy3 F'", name: "21-Car" },
 				{ type: "oll", moves: "[f (Sexy) f'] [F (Sexy) F']", name: "22-Blinker" },
 				{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },
@@ -313,7 +313,7 @@
 			algs: [
 				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", image_comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
 				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", image_comment: " HL(adj), 3C | O2B(opp), 3C: 4 colors | I2B, I2B: BE | O2B + HL: 4 colors" },
-				{ type: "pll", moves: "x' (Slot) D (Match) D' (Match) D (Slot) D' x", name: "E", image_comment: "NBE, opp middle | NBE, opp middle | NBE, opp middle | NBE, opp middle"},
+				{ type: "pll", moves: ["x' (Slot) D (Match) D' (Match) D (Slot) D' x", "x' [Slot, D] [Match, D] x"], name: "E", image_comment: "NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle"},
 			]
 		},
 		{
@@ -324,7 +324,7 @@
 				{ type: "pll", moves: "[Match F'] {[Sexy] [R' F] [R2 U' R'] U'}", name: "Jb", image_comment: "O2B, I2B : BE | O2B, I2B : BE | 3B, 2B | 3B, 2B" },
 				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", image_comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external | I2B: NBE" },
 				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", image_comment: "HL, I2B: 4 colors | O2B(adj), 3C: adj twice | 3C, 3C: BE adj twice | HL, 3C : checkers "},
-				{ type: "pll", moves: "[R' U2 R U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
+				{ type: "pll", moves: "[BackLeftSlot U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
 				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F] y'", name: "V", image_comment: "O2B: NBE | 4checkers: NBE | O2B: NBE | I2B, I2B: NBE"},
 				{ type: "pll", moves: "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'", name: "F", image_comment: "4checkers: BE | 3B, 3C: 4 colors | 3B, 3C: 4 colors | 4checkers: BE"},
 				{ type: "pll", moves: "{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U", name: "Na", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
@@ -366,10 +366,10 @@
 	add("FatSexy", "r U R' U'", 12)
 	add("Sledge", "R' F R F'", 6, "Hedge")
 	add("FatSledge", "r' F R F'", 12)
-//	add("Su", "R U R' U", 5)
 	add("Match", "R U R'", 4, "Slot");
 	add("BackMatch", "R' U' R", 4, "BackSlot")
 	add("LeftSlot", "R U2 R'", 2, "LeftSlot")
 	add("Push", "R U' R", 30, "Pull")
+	add("BackLeftSlot", "R' U2 R", 2, "BackLeftSlot")
 
 })(jQuery)

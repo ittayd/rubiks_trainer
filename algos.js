@@ -361,7 +361,7 @@ algos = (function ($) {
 			}
 
 			toString() {
-				return `${name}${stringAmount}`
+				return `${this.name}${this.stringAmount}`
 			}
 		}
 
@@ -430,7 +430,7 @@ algos = (function ($) {
 			}
 
 			get inverted() {
-				return new Conjugate(this.a, this.b.inverted())
+				return new Conjugate(this.a, this.b.inverted)
 			}
 
 			isContainer(options) {
@@ -438,11 +438,11 @@ algos = (function ($) {
 			}
 
 			containedArray(invert, options) {
-				return [a, invert ? b.inverted : b, a.inverted]
+				return [this.a, invert ? this.b.inverted : this.b, this.a.inverted]
 			}
 
 			toString() {
-				return `[${a.toString()}:${b.toString()}]`
+				return `[${this.a.toString()}:${this.b.toString()}]`
 			}
 		}
 
@@ -462,13 +462,13 @@ algos = (function ($) {
 			}
 
 			containedArray(invert, options) {
-				a = invert ? this.b : this.a
-				b = invert ? this.a : this.b
+				let a = invert ? this.b : this.a
+				let b = invert ? this.a : this.b
 				return [a, b, a.inverted, b.inverted]
 			}
 
 			toString() {
-				return `[${a.toString()},${b.toString()}]`
+				return `[${this.a.toString()},${this.b.toString()}]`
 			}
 		}
 
@@ -567,7 +567,7 @@ algos = (function ($) {
 		return algo;
 	}
 
-
+/*
 	function setDemoAlgo(formula, obj) {
 		rubik_cube.reset();
 		var $formula = $j('#canvas_formula')
@@ -582,7 +582,7 @@ algos = (function ($) {
 		var y_pos = obj.offset().top - 50;
 		$j('#div_canvas').show('fast').css('top', y_pos);
 	}
-
+*/
 	const ignoreLocalStorage = (new URL(document.location)).searchParams.has("clean")
 
 
@@ -644,9 +644,9 @@ algos = (function ($) {
 				$image = $(`<div class="image"></div>`).appendTo($container);
 				$image.append($(`<img src="${url}" loading="lazy" width="100" height="100">${(img_comments[i] || '').trim()}</img>`))
 				$image.append($(`<br>${img_comments[i]}`))
-				$image.click(function () {
+				/*$image.click(function () {
 					setDemoAlgo(turns[i] + formula, $(this));
-				});
+				});*/
 			})
 			var known = 'known';
 			[].concat(moves).forEach(move => {
@@ -656,9 +656,9 @@ algos = (function ($) {
 				$move.find('[data-toggle="tooltip"]').tooltip();
 				$div = $(`<div class="formula ${known}"></div>`)
 				$div.append($move)
-				$div.appendTo($container).click(function () {
+				$div.appendTo($container)/*.click(function () {
 					setDemoAlgo(formula, $(this));
-				});
+				});*/
 				known = '';
 			})
 			if (comment) {
