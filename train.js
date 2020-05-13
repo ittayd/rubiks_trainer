@@ -37,10 +37,15 @@ Train = (function() {
         return random(algs, weights)
     }
 
+    function alg_move(alg) {
+        let moves = alg.moves
+        return 	Array.isArray(moves) ? moves[0] : moves;
+    }
+    
     function random_alg(group, $tip) {
         var alg = random(random(group).algs)
         tip(alg, $tip)
-        return alg.moves
+        return alg
     }
 
     function tip(alg, elem) {
@@ -63,8 +68,6 @@ Train = (function() {
     }
 
 
-    
-    
     class Train {
         constructor(control) {
             this.control = control;
@@ -265,14 +268,14 @@ Train = (function() {
                         let second = random(algos.oll[0].algs)
                         tip(second, '#oll-tips')
                         let interim_moves = random(['U ', "U' ", 'U2 ', ''])
-                        algo = first.moves + " " + interim_moves + "/*" + second.name + "*/ " + second.moves
+                        algo = alg_move(first) + " " + interim_moves + "/*" + second.name + "*/ " + alg_move(second)
                         break;
                     }
                     case '-2':
                         algo = this.$algo.val();
                         break;
                     case '-1':
-                        algo = random_alg(algos.oll, '#oll-tips');
+                        algo = alg_move(random_alg(algos.oll, '#oll-tips'))
                         break;
                     case NaN:
                         alert("could not parse selection");
@@ -285,7 +288,7 @@ Train = (function() {
                         let weight = parseInt($('#oll-weight').val())
                         algo = random_weight(algs, weight)
                         tip(algo, '#oll-tips')
-                        algo = algo.moves
+                        algo = alg_move(algo)
                     }
                 }
             }
@@ -318,14 +321,14 @@ Train = (function() {
                         let second = random(algos.pll[1].algs)
                         tip(second, '#pll-tips')
                         let interim_moves = random(['U ', "U' ", 'U2 ', ''])
-                        algo = first.moves + " " + interim_moves + second.moves
+                        algo = alg_move(first) + " " + interim_moves + alg_move(second)
                         break;
                     }
                     case '-2':
                         algo = this.$algo.val();
                         break;
                     case '-1':
-                        algo = random_alg(algos.pll, '#pll-tips');
+                        algo = alg_move(random_alg(algos.pll, '#pll-tips'))
                         break;
                     default: {
                         let algs = selected.flatMap(s => {
@@ -336,7 +339,7 @@ Train = (function() {
                         let weight = parseInt($('#pll-weight').val())
                         algo = random_weight(algs, weight)
                         tip(algo, '#pll-tips')
-                        algo = algo.moves
+                        algo = alg_move(algo)
                     }
                 }
             }
@@ -362,14 +365,14 @@ Train = (function() {
                         algo = this.$algo.val();
                         break;
                     case -1:
-                        algo = random_alg(algos.f2l, '#f2l-tips');
+                        algo = alg_move(random_alg(algos.f2l, '#f2l-tips'))
                         break;
                     case NaN:
                         alert("could not parse selection");
                         break;
                     default: {
                         let group = algos.f2l[groupIdx];
-                        algo = random(group.algs).moves
+                        algo = alg_move(random(group.algs))
                     }
                 }
             }
