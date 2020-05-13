@@ -508,7 +508,12 @@ algos = (function ($) {
 		parse = function(algo) {
 
 			algo = Array.isArray(algo) ? algo.join(' ') : algo
-			return parser.parse(algo, {classes: classes});
+			try {
+				return parser.parse(algo, {classes: classes});
+			} catch(err) {
+				console.log('algo', algo)
+				throw err;
+			}
 		}
 
 		algos.parse = parse;
@@ -584,6 +589,7 @@ algos = (function ($) {
 	}
 */
 	const ignoreLocalStorage = (new URL(document.location)).searchParams.has("clean")
+	const externalImages = (new URL(document.location)).searchParams.has("external-images")
 
 
 	/*
@@ -595,7 +601,7 @@ algos = (function ($) {
 		</li>
 	*/
 	function renderItem(default_stage, items, $container) {
-		//var VISUAL_CUBE_PATH = '//cube.crider.co.uk/visualcube.png';
+		//var VISUAL_CUBE_PATH = '//cube.crider.co.uk/visualcube.php?fmt=svg&';
 		var VISUAL_CUBE_PATH = '//www.speedcubingtips.eu/visualcube/visualcube.php?fmt=svg&'
 		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
@@ -605,23 +611,60 @@ algos = (function ($) {
 			return arr.reduce((acc, val, i) => `${acc},U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'},`, '')
 		}
 
+		async function img_blob(url) {
+			let response = await fetch('https://cors-anywhere.herokuapp.com/https:' + url)
+			let blob = await response.blob()
+			return blob; //URL.createObjectURL(blob);
+		}
+
+		async function convert_to_data(blob) {
+			let fr = new FileReader();
+			let result = new Promise((resolve, reject) => {
+				fr.onload = evt => {
+					resolve(evt.target.result)
+				}
+				fr.onerror = evt => {
+					reject(evt)
+				}
+			})
+			
+			fr.readAsDataURL(blob)
+			return result;
+		}
+
 		function renderImageAndMoves($container, { image, moves, image_comment, comment }) {
 			var formula = Array.isArray(moves) ? moves[0] : moves;
-			function check_and_set(key, renderer)  {
+			async function check_and_set(key, renderer)  {
 				var value = localStorage.getItem(key);
 				if (value !== null && !ignoreLocalStorage ) {
 					return value;
 				}
-				value = renderer();
+				value = await renderer(key);
 				localStorage.setItem(key, value);
 				return value;
 			}
+			
 			const turns = ((image && image.stage) || default_stage) == 'pll' ? ["", " y", " y2", " y'"] : [""]
-			var img_urls = check_and_set(JSON.stringify([formula, image]), _ => {
-				let algo = algos.parse(formula).inverted
-				let face = algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
-				formula = algo.toMoves({string: true})
-				return turns.map(turn =>  {
+			img_comments = (image_comment || '').split("|")
+			let images = turns.map((_, i) => {
+				let $div = $(`<div class="image"></div>`).appendTo($container);
+				let $image = $(`<img width="100" height="100">${(img_comments[i] || '').trim()}</img>`)
+				$div.append($image)
+				$div.append($(`<br>${img_comments[i]}`))
+				/*$image.click(function () {
+					setDemoAlgo(turns[i] + formula, $(this));
+				});*/
+				return $image[0];
+			})
+			let algo;
+			let face; 
+			let orbited = 0;
+
+			turns.forEach((turn, i) => {
+				let url = check_and_set(formula  + turn, async function() {
+					algo = algo || algos.parse(formula).inverted
+					face = face || algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
+					formula = algo.toMoves({string: true})
 					let parameters = $.extend({
 						stage: default_stage,
 						view: p => (p.stage == 'f2l' || p.stage == 'pll' ? '' : 'plan'),
@@ -634,19 +677,19 @@ algos = (function ($) {
 					}, image)
 
 					let url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
-					face = face.counterOrbit;
-					return url
-				}).join("|");
-			})
-			img_urls = turns.length == 1 ? [img_urls] : img_urls.split("|");
-			img_comments = (image_comment || '').split("|")
-			img_urls.forEach((url, i) => {
-				$image = $(`<div class="image"></div>`).appendTo($container);
-				$image.append($(`<img src="${url}" loading="lazy" width="100" height="100">${(img_comments[i] || '').trim()}</img>`))
-				$image.append($(`<br>${img_comments[i]}`))
-				/*$image.click(function () {
-					setDemoAlgo(turns[i] + formula, $(this));
-				});*/
+					for (let j = orbited; j < i; j++)
+						face = face.counterOrbit;
+					orbited = i;
+					if (!externalImages) {
+						let blob = await img_blob(url)
+						url = await convert_to_data(blob)
+
+					}
+					return url;
+				})
+				url.then(url => {
+					images[i].src = url
+				})
 			})
 			var known = 'known';
 			[].concat(moves).forEach(move => {
