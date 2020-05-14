@@ -311,9 +311,9 @@
 		{
 			name: "Corner Permutations Only",
 			algs: [
-				{ type: "pll", moves: "x [(Pull) D2] [(Slot) D2] R2 x'", name: "Aa", image_comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
-				{ type: "pll", moves: "x' [(Push) D2] [(BackSlot) D2] R2 x", name: "Ab", image_comment: " HL(adj), 3C | O2B(opp), 3C: 4 colors | I2B, I2B: BE | O2B + HL: 4 colors" },
-				{ type: "pll", moves: ["x' (Slot) D (Match) D' (Match) D (Slot) D' x", "x' [Slot, D] [Match, D] x"], name: "E", image_comment: "NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle"},
+				{ type: "pll", moves: "x [Pull D2] [Slot D2] R2 x'", name: "Aa", image_comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
+				{ type: "pll", moves: "x' [Push D2] [BackSlot D2] R2 x", name: "Ab", image_comment: " HL(adj), 3C | O2B(opp), 3C: 4 colors | I2B, I2B: BE | O2B + HL: 4 colors" },
+				{ type: "pll", moves: ["x' [Slot D] [Match D'] [Match D] [Slot D'] x", "x' [Slot, D] [Match, D] x"], name: "E", image_comment: "NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle"},
 			]
 		},
 		{
