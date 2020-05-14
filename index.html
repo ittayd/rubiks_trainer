@@ -140,11 +140,11 @@
 						<div class="row">
 							<div class="col mx-1">
 								<div class="row form-group"> 
-									<input class="form-control-sm col-6" type="text" id="algo" value="M2 y M2 z M2 z">
-									<input class="form-control-sm col-2" type="button" id="do-btn" value="Do">
-									<input class="form-control-sm col-2" type="button" id="undo-btn" value="Undo">
-									<input class="form-control-sm col-2" type="button" id="reset-btn" value="Reset">
-									<input class="form-control-sm col-3" type="button" id="reposition-btn" value="Reposition">
+									<input class="form-control-sm col-12" type="text" id="algo" value="M2 y M2 z M2 z">
+									<input class="form-control-sm col" type="button" id="do-btn" value="Do">
+									<input class="form-control-sm col" type="button" id="undo-btn" value="Undo">
+									<input class="form-control-sm col" type="button" id="reset-btn" value="Reset">
+									<input class="form-control-sm col" type="button" id="reposition-btn" value="Reposition">
 								</div>
 							</div>
 							<div class="col mx-1">
@@ -186,7 +186,8 @@
 									</select>
 									<label class="col-6" for="oll-weight">weight of latest</label>
 									<input class="form-control-sm col-6" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="10">								  
-									<input id="oll-tips" class="form-control-sm col-10 offset-2" type="text">
+									<input id="oll-tips-btn" type="button" class="col-2" value="tip">
+									<div id="oll-tips" class="col-10" type="text"></div>
 								</div>
 							</div>
 							<div class="col mx-1">
@@ -199,7 +200,8 @@
 									</select>
 									<label class="col-6" for="pll-weight">weight of latest</label>
 									<input class="form-control-sm col-6" type="range" id="pll-weight" name="oll-weight" min="0" max="10" step="1" value="10">								  
-									<input id="pll-tips" class="form-control-sm col-10 offset-2" type="text" value="">
+									<input id="pll-tips-btn" type="button" class="col-2" value="tip">
+									<div id="pll-tips" class="col-10" ></div>
 								</div>
 							</div>
 						</div>

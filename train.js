@@ -19,6 +19,12 @@ Train = (function() {
         return arr[i];
     }
 
+    function random_turn() {
+        const turns = ['', 'U ', 'U2 ', "U' "]
+        var turn = random(turns)
+        return [turn, turns.indexOf(turn)]
+    }
+
     function random_weight(algs, weight) {
         /* kludgy probability definition */
         let power = weight / 2.5  - 2
@@ -48,23 +54,24 @@ Train = (function() {
         return alg
     }
 
-    function tip(alg, elem) {
+    function tip(alg, elem, i) {
         elem = $(elem)
         if (!alg) {
-            elem.val('')
+            elem.text('')
+            elem.toggle(false)
             return
         }
         if (!alg.name) {
             return;
         }
-        var val = elem.val();
+        var val = elem.text();
         if (val && val.length > 0) {
             val += ", "
         } else {
             val = ''
         }
-        val += alg.name
-        elem.val(val)
+        val += alg.name + ((typeof i == "number") && alg.image_comment ? (' (' + alg.image_comment.split('|')[i].trim() + ')') : '')
+        elem.text(val)
     }
 
 
@@ -197,7 +204,10 @@ Train = (function() {
             $('#do-btn').click(_ => self.doAlgo());
 			$('#undo-btn').click(_ => self.undoAlgo());
 			$('#reset-btn').click(_ => control.reset());
-			$('#reposition-btn').click(_ => control.reposition());
+            $('#reposition-btn').click(_ => control.reposition());
+            
+            $('#oll-tips-btn').click(_ => $('#oll-tips').toggle(true))
+            $('#pll-tips-btn').click(_ => $('#pll-tips').toggle(true))
 
 
         }
@@ -307,7 +317,7 @@ Train = (function() {
 
         pll_scramble(algo) {
             tip(undefined, '#pll-tips')
-            var pre_moves = random(['U ', "U' ", 'U2 ', ''])
+            var [pre_moves, pre_move_i] = random_turn();
 
             if (algo === undefined) {
                 let selected = $('#pll-group').val();
@@ -338,7 +348,7 @@ Train = (function() {
 
                         let weight = parseInt($('#pll-weight').val())
                         algo = random_weight(algs, weight)
-                        tip(algo, '#pll-tips')
+                        tip(algo, '#pll-tips', pre_move_i)
                         algo = alg_move(algo)
                     }
                 }
