@@ -6,4 +6,4 @@ using html5/javascript and Randelshofer's cube model: https://www.randelshofer.c
 
 See it live: https://ittayd.github.io/rubiks_cube_html5/index.html
 
-(Note: originally based on http://cube.vipe.re/ but sinde then completely rewritten)
+(Note: originally based on http://cube.vipe.re/ but completely rewritten since then)
