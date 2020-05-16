@@ -365,7 +365,12 @@ algos = (function ($) {
 		class Atomic extends RepeatedUnit {
 			constructor(character, inner, outer, amount) {
 				super(4, amount)
-				this.character = character.toUpperCase();
+				switch(character) {
+					case 'x': this.character = 'R'; this.outer = 3; break;
+					case 'y': this.character = 'U'; this.outer = 3; break;
+					case 'z': this.character = 'F'; this.outer = 3; break;
+					default: this.character = character.toUpperCase();
+				}
 				this.inner = inner;
 				this.outer = outer;
 				if (this.character != character) {
@@ -381,15 +386,30 @@ algos = (function ($) {
 				return false;
 			}
 
-			toString() {
-				if (this.outer == 2 && !this.inner) {
-					return `${this.character.toLowerCase()}${this.stringAmount}`
+			get notationCharacter() {
+				if (!this.inner) {
+					switch(this.outer) {
+						case 2: return this.character.toLowerCase();
+						case 3: {
+							switch(this.character) {
+								case 'R': return 'x'
+								case 'U': return 'y'
+								case 'F': return 'z'
+							}
+						}
+					}
 				}
+				return this.character
+			}
+
+			toString() {
+				let character = this.notationCharacter
+				if (this.character != character) return `${character}${this.stringAmount}`
 				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}${this.stringAmount}`
 			}
 
 			get permutation() {
-				let p = Permutation[this.character]
+				let p = Permutation[this.notationCharacter]
 				switch(this.amount) {
 					case 1: return p
 					case 2: return p.then(p)
@@ -758,9 +778,10 @@ algos = (function ($) {
 				});*/
 				return $image[0];
 			})
+
 			let algo;
 			let face; 
-			let orbited = 0;
+			let orbited = -1;
 
 			turns.forEach((turn, i) => {
 				let url = check_and_set(formula  + turn, async function() {
@@ -779,8 +800,9 @@ algos = (function ($) {
 					}, image)
 
 					let url = formatURL(VISUAL_CUBE_PATH, parameters);// + "?fmt=svg&size=100&ac=black&view=" + view + "&stage=" + stage + "&bg=t&case=" + encodeURIComponent(formula) + "&arw=" + encodeURIComponent(arrows);
-					for (let j = orbited; j < i; j++)
+					for (let j = orbited; j < i; j++) {
 						face = face.counterOrbit;
+					}
 					orbited = i;
 					if (!externalImages) {
 						let blob = await img_blob(url)
