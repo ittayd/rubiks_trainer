@@ -239,7 +239,9 @@ algos = (function ($) {
 		  };
 
 		class Axis {
-			constructor(cycle, faces) {
+			constructor(axis, cycle, faces, neutral) {
+				this.axis = axis
+				this.neutral = neutral;
 				this.faces = faces.split('')
 				this.permutation = cycle.split('').reduce((acc, face, i) => {
 							acc[face] = cycle[(i + 1) % cycle.length]
@@ -248,9 +250,13 @@ algos = (function ($) {
 			}
 
 			mirror(atomic) {
-				let found = this.faces.indexOf(atomic.character)
+				if (atomic.character == this.axis) return atomic
+				if (atomic.character == this.neutral) return atomic
+				let face = atomic.character.toUpperCase();
+				let found = this.faces.indexOf(face)
 				if (found != -1) {
 					let other = this.faces[(found + 1) % 2]
+					if (atomic.character != face) other = other.toLowerCase();
 					return new Atomic(other, atomic.inner, atomic.outer, -atomic.amount)
 				}
 				return atomic.inverted;
@@ -261,15 +267,17 @@ algos = (function ($) {
 					atomic = atomic.inverted
 				}
 
-				let face = atomic.character;
+				let face = atomic.character.toUpperCase();
+				let lower = (face != atomic.character)
 				((amount + 4) % 4).times(_ => face = this.permutation[face])
+				if (lower) face = face.toLowerCase();
 				return new Atomic(face, atomic.inner, atomic.outer, (face == "E" ? -atomic.amount : atomic.amount))
 			}
 		}
 
-		Axis.x = new Axis('FUBD', 'RL')
-		Axis.y = new Axis('FLBR', 'UD')
-		Axis.z = new Axis('LURD', 'FB')
+		Axis.x = new Axis('x', 'FUBD', 'RL', 'M')
+		Axis.y = new Axis('y', 'FLBR', 'UD', 'E')
+		Axis.z = new Axis('z', 'LURD', 'FB', 'S')
 
 		class RepeatedUnit {
 			_amount = 1
@@ -365,17 +373,9 @@ algos = (function ($) {
 		class Atomic extends RepeatedUnit {
 			constructor(character, inner, outer, amount) {
 				super(4, amount)
-				switch(character) {
-					case 'x': this.character = 'R'; this.outer = 3; break;
-					case 'y': this.character = 'U'; this.outer = 3; break;
-					case 'z': this.character = 'F'; this.outer = 3; break;
-					default: this.character = character.toUpperCase();
-				}
+				this.character = character;
 				this.inner = inner;
 				this.outer = outer;
-				if (this.character != character) {
-					this.outer = 2
-				}
 			}
 
 			get inverted() {
@@ -386,30 +386,12 @@ algos = (function ($) {
 				return false;
 			}
 
-			get notationCharacter() {
-				if (!this.inner) {
-					switch(this.outer) {
-						case 2: return this.character.toLowerCase();
-						case 3: {
-							switch(this.character) {
-								case 'R': return 'x'
-								case 'U': return 'y'
-								case 'F': return 'z'
-							}
-						}
-					}
-				}
-				return this.character
-			}
-
 			toString() {
-				let character = this.notationCharacter
-				if (this.character != character) return `${character}${this.stringAmount}`
 				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}${this.stringAmount}`
 			}
 
 			get permutation() {
-				let p = Permutation[this.notationCharacter]
+				let p = Permutation[this.character]
 				switch(this.amount) {
 					case 1: return p
 					case 2: return p.then(p)
