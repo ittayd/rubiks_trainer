@@ -196,11 +196,22 @@ Train = (function() {
 				self.advance({ to: (self.$algo.val().split(' ').length), jump: true })
 			})
 
-			var reverseEleme = $('#reverse-text')
+			var $manipulation = $('#manipulation-text')
 			$('#reverse-btn').click(function () {
-				reverseElem.val(reverse(self.$algo.val()))
-			})
-
+				$manipulation.val(algos.parse($manipulation.val()).inverted.toMoves({string: true}))
+            })
+            
+            'xyz'.split('').forEach(axis => {
+                $(`#mirror-${axis}-btn`).click(function () {
+                    $manipulation.val(algos.parse($manipulation.val()).mirror(axis))
+                })
+                $(`#clockwise-${axis}-btn`).click(function () {
+                    $manipulation.val(algos.parse($manipulation.val()).rotate(axis))
+                })
+                $(`#counter-${axis}-btn`).click(function () {
+                    $manipulation.val(algos.parse($manipulation.val()).rotate(axis, -1))
+                })
+            })
             $('#do-btn').click(_ => self.doAlgo());
 			$('#undo-btn').click(_ => self.undoAlgo());
 			$('#reset-btn').click(_ => control.reset());

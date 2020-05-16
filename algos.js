@@ -227,6 +227,49 @@ algos = (function ($) {
 
 		'ULFRBDulfrbd'.split('').forEach(p => Permutation[`{$p}2`] = Permutation[p].then(Permutation[p]))
 		
+		Number.prototype.times = function(callback) {
+			if (typeof callback !== "function" ) {
+			  throw new TypeError("Callback is not a function");
+			} else if( isNaN(parseInt(Number(this.valueOf()))) ) {
+			  throw new TypeError("Object is not a valid number");
+			}
+			for (var i = 0; i < Number(this.valueOf()); i++) {
+			  callback(i);
+			}
+		  };
+
+		class Axis {
+			constructor(cycle, faces) {
+				this.faces = faces.split('')
+				this.permutation = cycle.split('').reduce((acc, face, i) => {
+							acc[face] = cycle[(i + 1) % cycle.length]
+							return acc
+						}, {})
+			}
+
+			mirror(atomic) {
+				let found = this.faces.indexOf(atomic.character)
+				if (found != -1) {
+					let other = this.faces[(found + 1) % 2]
+					return new Atomic(other, atomic.inner, atomic.outer, -atomic.amount)
+				}
+				return atomic.inverted;
+			}	
+
+			rotate(atomic, amount = 1) {
+				if (atomic.character == 'E') { // E is a special case
+					atomic = atomic.inverted
+				}
+
+				let face = atomic.character;
+				((amount + 4) % 4).times(_ => face = this.permutation[face])
+				return new Atomic(face, atomic.inner, atomic.outer, (face == "E" ? -atomic.amount : atomic.amount))
+			}
+		}
+
+		Axis.x = new Axis('FUBD', 'RL')
+		Axis.y = new Axis('FLBR', 'UD')
+		Axis.z = new Axis('LURD', 'FB')
 
 		class RepeatedUnit {
 			_amount = 1
@@ -262,11 +305,12 @@ algos = (function ($) {
 						return containedArray.reduce((acc, val) => acc.concat(val.toMoves(options)), []).join(" ").repeat(Math.abs(this.amount))
 					}
 					let op = options.nested ? 'map' : 'flatMap'
-					let result = new Array(Math.abs(this.amount)).fill(containedArray[op](s => s.toMoves(options)))
-					return options.nested ? result : result.flat(Infinity)
+					let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(containedArray[op](s => s.toMoves(options)))
+					result = options.nested ? result : result.flat(Infinity)
+					return options.sequence ? new Sequence(result, this.amount) : result
 				 } 
 				 
-				 return [this.toString()] 
+				 return options.sequence ? new Sequence([this.toAtomic]) : [this.toString()] 
 			}
 
 			get stringAmount() {
@@ -287,6 +331,15 @@ algos = (function ($) {
 				return p
 
 			}
+
+			mirror(axis) {
+				return this.cascade(s => s.mirror(axis))
+			}
+
+			rotate(axis, amount = 1) {
+				return this.cascade(s => s.rotate(axis, amount))
+			}
+
 		}
 
 		class Nop {
@@ -302,14 +355,22 @@ algos = (function ($) {
 			get permutation() {
 				return Permutation.identity
 			}
+
+			cascade(f) {
+				return this;
+			}
+
 		}
 
 		class Atomic extends RepeatedUnit {
 			constructor(character, inner, outer, amount) {
 				super(4, amount)
-				this.character = character;
+				this.character = character.toUpperCase();
 				this.inner = inner;
 				this.outer = outer;
+				if (this.character != character) {
+					this.outer = 2
+				}
 			}
 
 			get inverted() {
@@ -321,6 +382,9 @@ algos = (function ($) {
 			}
 
 			toString() {
+				if (this.outer == 2 && !this.inner) {
+					return `${this.character.toLowerCase()}${this.stringAmount}`
+				}
 				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}${this.stringAmount}`
 			}
 
@@ -331,6 +395,18 @@ algos = (function ($) {
 					case 2: return p.then(p)
 					case -1: return p.inverted
 				}
+			}
+
+			toAtomic() {
+				return this;
+			}
+
+			mirror(axis) {
+				return Axis[axis].mirror(this)
+			}
+
+			rotate(axis, amount = 1) {
+				return Axis[axis].rotate(this, amount)
 			}
 		}
 
@@ -356,13 +432,22 @@ algos = (function ($) {
 				return !options.skipTriggers;
 			}
 			
+			toSequence() {
+				return parse(algos.triggers[this.name].moves)
+			}
+
 			containedArray(invert, options) {
-				return parse(algos.triggers[this.name].moves).containedArray(invert, options)
+				return this.toSequence().containedArray(invert, options)
 			}
 
 			toString() {
 				return `${this.name}${this.stringAmount}`
 			}
+
+			cascade(f) {
+				return f(this.toSequence())
+			}
+
 		}
 
 		class Sequence extends RepeatedUnit {
@@ -394,6 +479,10 @@ algos = (function ($) {
 				return `(${str})${this.stringAmount}`
 			}
 
+			cascade(f) {
+				return new Sequence(this.sub.map(f), this.amount)
+			}
+
 		}
 
 		class Tag extends RepeatedUnit {
@@ -420,6 +509,10 @@ algos = (function ($) {
 				if (clean) return substr;
 				return `<${this.name}>${substr}</${this.name}>`
 			}
+
+			cascade(f) {
+				return new Tag(this.name, f(this.sequence))
+			}			
 		}
 
 		class Conjugate extends RepeatedUnit {
@@ -444,6 +537,11 @@ algos = (function ($) {
 			toString() {
 				return `[${this.a.toString()}:${this.b.toString()}]`
 			}
+
+			cascade(f) {
+				return new Conjugate(f(this.a), f(this.b))
+			}
+
 		}
 
 		class Commutator extends RepeatedUnit {
@@ -469,6 +567,10 @@ algos = (function ($) {
 
 			toString() {
 				return `[${this.a.toString()},${this.b.toString()}]`
+			}
+
+			cascade(f) {
+				return new Commutator(f(this.a), f(this.b))
 			}
 		}
 
