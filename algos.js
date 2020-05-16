@@ -769,12 +769,12 @@ algos = (function ($) {
 				let url = check_and_set(formula  + turn, async function() {
 					algo = algo || algos.parse(formula).inverted
 					face = face || algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
-					formula = algo.toMoves({string: true})
+					//formula = algo.toMoves({string: true})
 					let parameters = $.extend({
 						stage: default_stage,
 						view: p => (p.stage == 'f2l' || p.stage == 'pll' ? '' : 'plan'),
 						fd: p => (p.stage == 'pll' ? 'uuuuuuuuurrroooooofffooooooooooooooollloooooobbboooooo' : ''),
-						alg: (formula + turn),
+						alg: (algo.toMoves({string: true}) + turn),
 						bg: 't',
 						ac: 'black',
 						size: 100,
