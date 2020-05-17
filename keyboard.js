@@ -44,8 +44,8 @@ Keyboard = (function ($) {
                     return !(event.target == document.body);
                 },
                 "Enter": " ",
-                "ArrowLeft": event => train.advance(event.shiftKey ? { reset: true } : { delta: -1 }),
-                "ArrowRight": event => train.advance(event.shiftKey ? { to: (this.$algo.val().split(' ').length), jump: true } : { delta: 1 }),
+                "ArrowLeft": event => {if (!event.altKey) train.advance(event.shiftKey ? { reset: true } : { delta: -1 })},
+                "ArrowRight": event => {if (!event.altKey) train.advance(event.shiftKey ? { to: (this.$algo.val().split(' ').length), jump: true } : { delta: 1 })},
         
                 "__default__": event => this.move += event.key
             })

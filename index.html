@@ -13,6 +13,7 @@
 
 	<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jquery-stickytabs@1.2.4/jquery.stickytabs.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.js" crossorigin="anonymous"></script>
 
 	<script src="lib/virtualcube.js" crossorigin="anonymous"></script>	
@@ -41,9 +42,8 @@
 
 			
 
-			if (window.location.hash != '') {
-				$j(window.location.hash + "-tab").show()
-			}
+			$('.nav-tabs').stickyTabs();
+
 
 			let sp = new URLSearchParams(window.location.search)
 			let algo = sp.get('algo')

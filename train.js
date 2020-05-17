@@ -270,6 +270,47 @@ Train = (function() {
 
         }
 
+        f2l_scramble(algo) {
+            var pre_moves = random(['U ', "U' ", 'U2 ', ''])
+
+            if (algo === undefined) {
+                let groupIdx = parseInt($('#f2l-group').find(":selected").val());
+                switch(groupIdx) {
+                    case -2:
+                        algo = this.$algo.val();
+                        break;
+                    case -1:
+                        algo = alg_move(random_alg(algos.f2l, '#f2l-tips'))
+                        break;
+                    case NaN:
+                        alert("could not parse selection");
+                        break;
+                    default: {
+                        let group = algos.f2l[groupIdx];
+                        algo = alg_move(random(group.algs))
+                    }
+                }
+            }
+            
+            algo = algos.cleanMarkup(algo)
+
+            var train_moves = pre_moves + algo
+
+            var moves = train_moves + ' y '
+            for (var i = 0; i < 3; i++) {
+                if (true) {
+                    moves = moves + '/*f2l*/ ' + random_alg(algos.f2l, '#f2l-tips')
+                };
+                moves = moves + " y "
+            }
+            moves = moves + " " + this.oll_scramble()
+            this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+            this.all_moves = algos.cleanMarkup(moves, {braces: false});
+            this.advance({reset: true})
+            console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + this.all_moves);
+            return this.all_moves;
+        }
+
         oll_scramble(algo) {
             tip(undefined, '#oll-tips')
             var pre_moves = random(['U ', "U' ", 'U2 ', ''])
@@ -359,7 +400,7 @@ Train = (function() {
 
                         let weight = parseInt($('#pll-weight').val())
                         algo = random_weight(algs, weight)
-                        tip(algo, '#pll-tips', pre_move_i)
+                        tip(algo, '#pll-tips', (-pre_move_i + 4)) // the comments are when moves are in reverse
                         algo = alg_move(algo)
                     }
                 }
@@ -369,47 +410,6 @@ Train = (function() {
 
             var moves = train_moves
 
-            this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
-            this.all_moves = algos.cleanMarkup(moves, {braces: false});
-            this.advance({reset: true})
-            console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + this.all_moves);
-            return this.all_moves;
-        }
-
-        f2l_scramble(algo) {
-            var pre_moves = random(['U ', "U' ", 'U2 ', ''])
-
-            if (algo === undefined) {
-                let groupIdx = parseInt($('#f2l-group').find(":selected").val());
-                switch(groupIdx) {
-                    case -2:
-                        algo = this.$algo.val();
-                        break;
-                    case -1:
-                        algo = alg_move(random_alg(algos.f2l, '#f2l-tips'))
-                        break;
-                    case NaN:
-                        alert("could not parse selection");
-                        break;
-                    default: {
-                        let group = algos.f2l[groupIdx];
-                        algo = alg_move(random(group.algs))
-                    }
-                }
-            }
-            
-            algo = algos.cleanMarkup(algo)
-
-            var train_moves = pre_moves + algo
-
-            var moves = train_moves + ' y '
-            for (var i = 0; i < 3; i++) {
-                if (true) {
-                    moves = moves + '/*f2l*/ ' + random_alg(algos.f2l, '#f2l-tips')
-                };
-                moves = moves + " y "
-            }
-            moves = moves + " " + this.oll_scramble()
             this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
             this.all_moves = algos.cleanMarkup(moves, {braces: false});
             this.advance({reset: true})
