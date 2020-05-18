@@ -192,33 +192,40 @@ Train = (function() {
 
 			})
 
+            
 			$('#end-btn').click(function () {
-				self.advance({ to: (self.$algo.val().split(' ').length), jump: true })
+				self.advance({ to: (self.train_moves.split(' ').length), jump: true })
 			})
 
-			var $manipulation = $('#manipulation-text')
-			$('#reverse-btn').click(function () {
-				$manipulation.val(algos.parse($manipulation.val()).inverted.toMoves({string: true}))
-            })
-            
-            'xyz'.split('').forEach(axis => {
-                $(`#mirror-${axis}-btn`).click(function () {
-                    $manipulation.val(algos.parse($manipulation.val()).mirror(axis))
-                })
-                $(`#clockwise-${axis}-btn`).click(function () {
-                    $manipulation.val(algos.parse($manipulation.val()).rotate(axis))
-                })
-                $(`#counter-${axis}-btn`).click(function () {
-                    $manipulation.val(algos.parse($manipulation.val()).rotate(axis, -1))
-                })
-            })
             $('#do-btn').click(_ => self.doAlgo());
 			$('#undo-btn').click(_ => self.undoAlgo());
 			$('#reset-btn').click(_ => control.reset());
             $('#reposition-btn').click(_ => control.reposition());
+
+            let $result = $('#result')
+            $('#reverse-btn').click(_ => {
+				$result.text(algos.parse(self.$algo.val()).inverted.toMoves({string: true}))
+            })
             
-            $('#oll-tips-btn').click(_ => $('#oll-tips').toggle(true))
-            $('#pll-tips-btn').click(_ => $('#pll-tips').toggle(true))
+            'xyz'.split('').forEach(axis => {
+                $(`#mirror-${axis}-btn`).click(_ => {
+                    $result.text(algos.parse(self.$algo.val()).mirror(axis))
+                })
+                $(`#clockwise-${axis}-btn`).click(_ => {
+                    $result.text(algos.parse(self.$algo.val()).rotate(axis))
+                })
+                $(`#counter-${axis}-btn`).click(_ => {
+                    $result.text(algos.parse(self.$algo.val()).rotate(axis, -1))
+                })
+            })
+
+            $('#copy-btn').click(_ => {
+                self.$algo.val($result.text())
+            })
+
+            $('#f2l-tips-btn').click(_ => {$('#f2l-tips').toggle(true); self.$algo.val(self.train_moves)})
+            $('#oll-tips-btn').click(_ => {$('#oll-tips').toggle(true); self.$algo.val(self.train_moves)})
+            $('#pll-tips-btn').click(_ => {$('#pll-tips').toggle(true); self.$algo.val(self.train_moves)})
 
 
         }
@@ -271,6 +278,7 @@ Train = (function() {
         }
 
         f2l_scramble(algo) {
+            tip(undefined, '#f2l-tips')
             var pre_moves = random(['U ', "U' ", 'U2 ', ''])
 
             if (algo === undefined) {
@@ -299,12 +307,12 @@ Train = (function() {
             var moves = train_moves + ' y '
             for (var i = 0; i < 3; i++) {
                 if (true) {
-                    moves = moves + '/*f2l*/ ' + random_alg(algos.f2l, '#f2l-tips')
+                    moves = moves + '/*f2l*/ ' + alg_move(random_alg(algos.f2l, '#f2l-tips'))
                 };
                 moves = moves + " y "
             }
             moves = moves + " " + this.oll_scramble()
-            this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+            this.train_moves = algos.cleanMarkup(train_moves, {braces: false});
             this.all_moves = algos.cleanMarkup(moves, {braces: false});
             this.advance({reset: true})
             console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + this.all_moves);
@@ -360,7 +368,7 @@ Train = (function() {
             var moves = train_moves
 
             moves = moves + " " + this.pll_scramble();
-            this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+            this.train_moves = algos.cleanMarkup(train_moves, {braces: false});
             this.all_moves = algos.cleanMarkup(moves, {braces: false});
             this.advance({reset: true})
             console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + this.all_moves);
@@ -400,7 +408,7 @@ Train = (function() {
 
                         let weight = parseInt($('#pll-weight').val())
                         algo = random_weight(algs, weight)
-                        tip(algo, '#pll-tips', (-pre_move_i + 4)) // the comments are when moves are in reverse
+                        tip(algo, '#pll-tips', ((-pre_move_i + 4) % 4)) // the comments are when moves are in reverse
                         algo = alg_move(algo)
                     }
                 }
@@ -410,7 +418,7 @@ Train = (function() {
 
             var moves = train_moves
 
-            this.$algo.val(algos.cleanMarkup(train_moves, {braces: false}));
+            this.train_moves = algos.cleanMarkup(train_moves, {braces: false});
             this.all_moves = algos.cleanMarkup(moves, {braces: false});
             this.advance({reset: true})
             console.log('algo: ' + algo + ',train: ' + train_moves + ', all: ' + this.all_moves);
