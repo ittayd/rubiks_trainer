@@ -1,5 +1,5 @@
-(function($){
-    	algos.f2l = [ /* http://www.rubiksplace.com/speedcubing/F2L-algorithms/ */
+data = (function($){
+    var f2l = [ /* http://www.rubiksplace.com/speedcubing/F2L-algorithms/ */
 		{
 			name: "Corner on top, FL color facing side, edge colors match",
 			algs: [// {type: "f2l", moves: "U (R U' R')"},
@@ -127,7 +127,7 @@
         { "type": "oll", "name": "29", "imageFileName": "oll29.gif", "moves": "(L2 U' L B) (L' U) (L2 U') (r' U' r)", "comments": "This is just the mirror of OLL #30." },
     ]*/
 
-	algos.oll1look = {
+	var oll1look = {
 		name: "Align Edges",
 		algs: [
 			{ moves: "F (Sexy) F'", name: "opposite", image: {stage: 'oell'} },
@@ -136,7 +136,7 @@
 		]}
 	
 
-	algos.oll = [
+	var oll = [
 		{
 			name: "All Edges Correctly Oriented",
 			algs: [ /* http://badmephisto.com/2LookOLL.pdf */
@@ -298,7 +298,7 @@
    ] */
 
 	// 3B - 3bar (full bar), 3C - 3 colors, HL - headlights, O2B - outer 2bar, I2B - inner 2bar, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
-	algos.pll = [
+	var pll = [
 		{
 			name: "Edge Permutations Only",
 			algs: [
@@ -320,7 +320,7 @@
 			name: "Corner & Edge Swap",
 			algs: [
 				{ type: "pll", moves: "<r>{[Sexy] [R' F] [R2 U' R'] U'}</r> <bl>[Match F']</bl>", name: "T", image_comment: "O2B(adj), 3C: 4 colors | O2B(adj), 3C: 4 colors | I2B, HL: 3 colors | I2B, HL: 3 colors" },
-				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R r x' U']", name: "Ja", image_comment: "3B, 2B | O2B, I2B : BE | O2B, I2B : BE | 3B, 2B"},
+				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", image_comment: "3B, 2B | O2B, I2B : BE | O2B, I2B : BE | 3B, 2B"},
 				{ type: "pll", moves: "<bl>[Match F']</bl> <r>{[Sexy] [R' F] [R2 U' R'] U'}</r>", name: "Jb", image_comment: "O2B, I2B : BE | O2B, I2B : BE | 3B, 2B | 3B, 2B" },
 				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", image_comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external | I2B: NBE" },
 				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", image_comment: "HL, I2B: 4 colors | O2B(adj), 3C: adj twice | 3C, 3C: BE adj twice | HL, 3C : checkers "},
@@ -352,13 +352,13 @@
 		}).reverse().join(" ");
 	}
 
-	algos.triggers = {
+	var triggers = {
 	}
 
 	function add(name, moves, order, inverse) {
-		algos.triggers[name] = {moves: moves, inverse: inverse, order: order}
+		triggers[name] = {moves: moves, inverse: inverse, order: order}
 		if (inverse && inverse != name) {
-			algos.triggers[inverse] = {moves: invert(moves), inverse: name, order: order}
+			triggers[inverse] = {moves: invert(moves), inverse: name, order: order}
 		}
 	}
 
@@ -372,4 +372,11 @@
 	add("Pull", "R' U R'", 30, "BackPull")
 	add("BackLeftSlot", "R' U2 R", 2, "BackLeftSlot")
 
+	return {
+		f2l: f2l,
+		oll1look: oll1look,
+		oll: oll,
+		pll: pll,
+		triggers: triggers
+	}
 })(jQuery)

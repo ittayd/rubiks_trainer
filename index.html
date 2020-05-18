@@ -18,6 +18,7 @@
 
 	<script src="lib/virtualcube.js" crossorigin="anonymous"></script>	
 
+	<script src="algos-data.js"></script>
 	<script src="algos.js"></script>
 	<script src="train.js"></script>
 	<script src="control.js"></script>
@@ -55,20 +56,17 @@
 
 			var tbl_body = $('<tbody>');
 			var odd_even = false;
-			algos.data.done(_ => {
-				$.each(algos.triggers, function(k, v) {
-					var tbl_row = $('<tr>').appendTo(tbl_body);						
-					tbl_row.addClass(odd_even ? "odd" : "even");
-					odd_even = !odd_even;               
+			$.each(data.triggers, function(k, v) {
+				var tbl_row = $('<tr>').appendTo(tbl_body);						
+				tbl_row.addClass(odd_even ? "odd" : "even");
+				odd_even = !odd_even;               
 
-					$('<td>').append($('<button>').text(k)).appendTo(tbl_row);
-					$('<td>').text(v.moves).appendTo(tbl_row);
-					$('<td>').text(v.inverse || "").appendTo(tbl_row);
-							
-				});
-				$("#triggers").append(tbl_body).find('button').click(e => control.move(algos.parse($(e.target).text()).toMoves()))
-				
-			})
+				$('<td>').append($('<button>').text(k)).appendTo(tbl_row);
+				$('<td>').text(v.moves).appendTo(tbl_row);
+				$('<td>').text(v.inverse || "").appendTo(tbl_row);
+						
+			});
+			$("#triggers").append(tbl_body).find('button').click(e => control.move(algos.parse($(e.target).text()).toMoves()))
 
 			let render_moves = (base, lower) => {
 				let a = move => $('<button>').text(move)[0]
@@ -313,6 +311,7 @@
 			</div>
 		</div>
 	</div>
+
 </body>
 
 </html>

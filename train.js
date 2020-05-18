@@ -91,7 +91,7 @@ Train = (function() {
 
 			$('#oll-btn').click(_ => self.oll_scramble())
 	
-			algos.data.done(_ => {
+			algos.ready.then(_ => {
 				function renderSelect($select, coll) {
 					$select = $($select)
 					coll.forEach((group, gidx) => {
@@ -165,8 +165,8 @@ Train = (function() {
                         $select.trigger('change')
                     }
 				}
-				renderSelect('#pll-group', algos.pll);
-				renderSelect('#oll-group', algos.oll)
+				renderSelect('#pll-group', data.pll);
+				renderSelect('#oll-group', data.oll)
 			})
 			$('#pll-btn').click(_ => self.pll_scramble())
 
@@ -288,13 +288,13 @@ Train = (function() {
                         algo = this.$algo.val();
                         break;
                     case -1:
-                        algo = alg_move(random_alg(algos.f2l, '#f2l-tips'))
+                        algo = alg_move(random_alg(data.f2l, '#f2l-tips'))
                         break;
                     case NaN:
                         alert("could not parse selection");
                         break;
                     default: {
-                        let group = algos.f2l[groupIdx];
+                        let group = data.f2l[groupIdx];
                         algo = alg_move(random(group.algs))
                     }
                 }
@@ -307,7 +307,7 @@ Train = (function() {
             var moves = train_moves + ' y '
             for (var i = 0; i < 3; i++) {
                 if (true) {
-                    moves = moves + '/*f2l*/ ' + alg_move(random_alg(algos.f2l, '#f2l-tips'))
+                    moves = moves + '/*f2l*/ ' + alg_move(random_alg(data.f2l, '#f2l-tips'))
                 };
                 moves = moves + " y "
             }
@@ -330,12 +330,12 @@ Train = (function() {
                 }
                 switch(selected[0]) {
                     case '-3': {
-                        let first = random(algos.oll1look.algs)
+                        let first = random(data.oll1look.algs)
                         tip(first, '#oll-tips')
                         if (first.type === "none") {
                             pre_moves = ' '
                         }
-                        let second = random(algos.oll[0].algs)
+                        let second = random(data.oll[0].algs)
                         tip(second, '#oll-tips')
                         let interim_moves = random(['U ', "U' ", 'U2 ', ''])
                         algo = alg_move(first) + " " + interim_moves + "/*" + second.name + "*/ " + alg_move(second)
@@ -345,7 +345,7 @@ Train = (function() {
                         algo = this.$algo.val();
                         break;
                     case '-1':
-                        algo = alg_move(random_alg(algos.oll, '#oll-tips'))
+                        algo = alg_move(random_alg(data.oll, '#oll-tips'))
                         break;
                     case NaN:
                         alert("could not parse selection");
@@ -353,7 +353,7 @@ Train = (function() {
                     default: {
                         let algs = selected.flatMap(s => {
                             let [group, alg] = s.split('.').map(x => parseInt(x))
-                            return algos.oll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
+                            return data.oll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
                         let weight = parseInt($('#oll-weight').val())
                         algo = random_weight(algs, weight)
@@ -386,9 +386,9 @@ Train = (function() {
                 }
                 switch(selected[0]) {
                     case '-3': { // 2look
-                        let first = random(algos.pll[0].algs)
+                        let first = random(data.pll[0].algs)
                         tip(first, '#pll-tips')
-                        let second = random(algos.pll[1].algs)
+                        let second = random(data.pll[1].algs)
                         tip(second, '#pll-tips')
                         let interim_moves = random(['U ', "U' ", 'U2 ', ''])
                         algo = alg_move(first) + " " + interim_moves + alg_move(second)
@@ -398,12 +398,12 @@ Train = (function() {
                         algo = this.$algo.val();
                         break;
                     case '-1':
-                        algo = alg_move(random_alg(algos.pll, '#pll-tips'))
+                        algo = alg_move(random_alg(data.pll, '#pll-tips'))
                         break;
                     default: {
                         let algs = selected.flatMap(s => {
                             let [group, alg] = s.split('.').map(x => parseInt(x))
-                            return algos.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
+                            return data.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
 
                         let weight = parseInt($('#pll-weight').val())

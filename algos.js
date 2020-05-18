@@ -29,11 +29,11 @@ algos = (function ($) {
 		}
 	}
 
-	var dataSrc = window.location.hostname == 'localhost' ? (window.location.href.replace(window.location.pathname, '/algos-data.js')) : 'https://ittayd.github.io/rubiks_cube_html5/algos-data.js' //'https://cdn.jsdelivr.net/gh/ittayd/rubiks_cube_html5/algos-data.js'
-	var notationpeg = $.ajax('notation.pegjs')
-	var data = $.when($.getScript(dataSrc), notationpeg)
 
 	var parse;
+
+	var notationpeg = $.ajax('notation.pegjs')
+
 	var classes = (function(){
 		function lcm(n1, n2) {
 			//Find the smallest and biggest number from both the numbers
@@ -414,14 +414,14 @@ algos = (function ($) {
 
 		class Trigger extends RepeatedUnit {
 			constructor(name, amount) {
-				if (!algos.triggers[name]) throw `Trigger ${name} is not registered`
-				super(algos.triggers[name].order, amount)
+				if (!data.triggers[name]) throw `Trigger ${name} is not registered`
+				super(data.triggers[name].order, amount)
 				this.name = name;
 			}
 
 			get inverted() {
 				var amount = -this.amount
-				var name = algos.triggers[this.name].inverse
+				var name = data.triggers[this.name].inverse
 				if (amount > 0 || name === undefined) {
 					name = this.name
 				} else {
@@ -435,7 +435,7 @@ algos = (function ($) {
 			}
 			
 			toSequence() {
-				return parse(algos.triggers[this.name].moves)
+				return algos.parse(data.triggers[this.name].moves)
 			}
 
 			containedArray(invert, options) {
@@ -606,33 +606,17 @@ algos = (function ($) {
 		}
 	})()
 
-	notationpeg.done(data => {
-		let parser = PEG.buildParser(data, {classes: classes});
-		let cache = new LRU(200);
-		parse = function(algo) {
-
-			algo = Array.isArray(algo) ? algo.join(' ') : algo
-			try {
-				return parser.parse(algo, {classes: classes});
-			} catch(err) {
-				console.log('algo', algo)
-				throw err;
-			}
-		}
-
-		algos.parse = parse;
-	})
 
 	
-	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => renderItem('f2l', algos.f2l, $('#nav-f2l ul.f2l')))
+	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => renderItem('f2l', data.f2l, $('#nav-f2l ul.f2l')))
 
-	$(document).one('show.bs.tab', '#nav-oll2-tab', _ => renderItem('oll', [algos.oll1look, algos.oll[0]], $('#nav-oll2 ul.oll')))
+	$(document).one('show.bs.tab', '#nav-oll2-tab', _ => renderItem('oll', [data.oll1look, data.oll[0]], $('#nav-oll2 ul.oll')))
 
-	$(document).one('show.bs.tab', '#nav-oll-tab', _ =>  renderItem('oll', algos.oll, $('#nav-oll ul.oll')))
+	$(document).one('show.bs.tab', '#nav-oll-tab', _ =>  renderItem('oll', data.oll, $('#nav-oll ul.oll')))
 
-	$(document).one('show.bs.tab', '#nav-pll-tab', _ => renderItem('pll', algos.pll, $('#nav-pll ul.pll')));
+	$(document).one('show.bs.tab', '#nav-pll-tab', _ => renderItem('pll', data.pll, $('#nav-pll ul.pll')));
 
-	$(document).one('show.bs.tab', '#nav-pll2-tab', _ => renderItem('pll', [algos.pll[0], algos.pll[1]], $('#nav-pll2 ul.pll')));
+	$(document).one('show.bs.tab', '#nav-pll2-tab', _ => renderItem('pll', [data.pll[0], data.pll[1]], $('#nav-pll2 ul.pll')));
 
 	(function (old) {
 		$.fn.attr = function () {
@@ -709,7 +693,7 @@ algos = (function ($) {
 		var VISUAL_CUBE_PATH = '//www.speedcubingtips.eu/visualcube/visualcube.php?fmt=svg&'
 		//var VISUAL_CUBE_PATH = 'libs/vcube/visualcube.php';
 
-		const triggersPattern = new RegExp(Object.keys(algos.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
+		const triggersPattern = new RegExp(Object.keys(data.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
 
 		function renderCycle(arr) {
 			return arr.reduce((acc, val, i) => `${acc},U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'},`, '')
@@ -800,7 +784,7 @@ algos = (function ($) {
 			var known = 'known';
 			[].concat(moves).forEach(move => {
 				// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
-				move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${algos.triggers[match].moves}">${match}</span>`)
+				move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${data.triggers[match].moves}">${match}</span>`)
 				let $move = $(`<span>${move}</span>`)
 				$move.find('[data-toggle="tooltip"]').tooltip();
 				$div = $(`<div class="formula ${known}"></div>`)
@@ -829,8 +813,23 @@ algos = (function ($) {
 		});
 	}
 
+	notationpeg.then(data => {
+		let parser = PEG.buildParser(data, {classes: classes});
+		let cache = new LRU(200);
+		parse = algos.parse = function(algo) {
+			algo = Array.isArray(algo) ? algo.join(' ') : algo
+			try {
+				return parser.parse(algo, {classes: classes});
+			} catch(err) {
+				console.log('algo', algo)
+				throw err;
+			}
+		}
+	})
+
+
 	return {
-		data: data,
+		ready: notationpeg,
 		parse: parse,
 		cleanMarkup: cleanMarkup
 	}
