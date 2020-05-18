@@ -73,9 +73,6 @@ li.title{
 	margin-left:50px;
 }
 
-#triggers {
-	float: left;
-}
 
 #moves {
 	margin: 20px;
@@ -92,11 +89,22 @@ div.virtualcube {
 	width: 500px;
 }
 */
+
+#div_menu {
+	z-index: 100;
+	position: relative;
+}
+
+#nav-tabContent {
+	position: relative;
+/*	top: 20px;*/
+}
+
+
 .virtualcube {
-	z-index: -1;
 	float: left;
 	position: relative;
-	top: -50px;
+/*	top: -40px;*/
 	width:500px;
 	height:550px;
 	object-fit:contain; /* required for mobile */
