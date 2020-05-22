@@ -57,6 +57,7 @@ Train = (function() {
     function tip(alg, elem, i) {
         elem = $(elem)
         if (!alg) {
+            $('#algo').val('')
             elem.text('')
             elem.toggle(false)
             return
@@ -207,6 +208,9 @@ Train = (function() {
 				$result.text(algos.parse(self.$algo.val()).inverted.toMoves({string: true}))
             })
             
+            $('#order-btn').click(_ => {
+                $result.text(algos.parse(self.$algo.val()).permutation.order)
+            })
             'xyz'.split('').forEach(axis => {
                 $(`#mirror-${axis}-btn`).click(_ => {
                     $result.text(algos.parse(self.$algo.val()).mirror(axis))
