@@ -239,14 +239,14 @@ algos = (function ($) {
 		  };
 
 		class Axis {
-			constructor(axis, cycle, faces, neutral) {
+			constructor(axis, cycles, faces, neutral) {
 				this.axis = axis
 				this.neutral = neutral;
-				this.faces = faces.split('')
-				this.permutation = cycle.split('').reduce((acc, face, i) => {
+				this.faces = faces
+				this.permutation = cycles.reduce((acc, cycle) => cycle.split('').reduce((acc, face, i) => {
 							acc[face] = cycle[(i + 1) % cycle.length]
 							return acc
-						}, {})
+						}, acc), {})
 			}
 
 			mirror(atomic) {
@@ -263,21 +263,22 @@ algos = (function ($) {
 			}	
 
 			rotate(atomic, amount = 1) {
-				if (atomic.character == 'E') { // E is a special case
+				if (atomic.character == 'M' && this.axis != "x") { // M is a special case
 					atomic = atomic.inverted
 				}
+				if (atomic.character == this.neutral) return atomic
 
 				let face = atomic.character.toUpperCase();
-				let lower = (face != atomic.character)
-				((amount + 4) % 4).times(_ => face = this.permutation[face])
+				let lower = (face != atomic.character);
+				((amount + 4) % 4).times(_ => face = (this.permutation[face] || face));
 				if (lower) face = face.toLowerCase();
-				return new Atomic(face, atomic.inner, atomic.outer, (face == "E" ? -atomic.amount : atomic.amount))
+				return new Atomic(face, atomic.inner, atomic.outer, ((face == "M" && this.axis != "x") ? -atomic.amount : atomic.amount))
 			}
 		}
 
-		Axis.x = new Axis('x', 'FUBD', 'RL', 'M')
-		Axis.y = new Axis('y', 'FLBR', 'UD', 'E')
-		Axis.z = new Axis('z', 'LURD', 'FB', 'S')
+		Axis.x = new Axis('x', ['FUBD', 'SE'], 'RL', 'M')
+		Axis.y = new Axis('y', ['FLBR', 'MS'], 'UD', 'E')
+		Axis.z = new Axis('z', ['LURD', 'ME'], 'FB', 'S')
 
 		class RepeatedUnit {
 			_amount = 1
