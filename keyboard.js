@@ -29,11 +29,13 @@ Keyboard = (function ($) {
                 "Escape": event => this.move = '',
                 "Shift": nop,
                 "Control": nop,
+                "Alt": nop,
                 " ": event => {
                     switch (this.move) {
                         case "P": train.pll_scramble(); this.move = ''; break;
                         case "O": train.oll_scramble(); this.move = ''; break;
                         case "T": train.f2l_scramble(); this.move = ''; break;
+                        case "TP":  $('#pll-tips-btn').click(); this.move = ''; break;
                     }
                     if (this.move.length > 0) {
                         let move = this.move
