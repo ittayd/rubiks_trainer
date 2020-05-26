@@ -605,19 +605,8 @@ algos = (function ($) {
 			Permutation: Permutation,
 			Face: Face
 		}
-	})()
+	})();
 
-
-	
-	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => renderItem('f2l', data.f2l, $('#nav-f2l ul.f2l')))
-
-	$(document).one('show.bs.tab', '#nav-oll2-tab', _ => renderItem('oll', [data.oll1look, data.oll[0]], $('#nav-oll2 ul.oll')))
-
-	$(document).one('show.bs.tab', '#nav-oll-tab', _ =>  renderItem('oll', data.oll, $('#nav-oll ul.oll')))
-
-	$(document).one('show.bs.tab', '#nav-pll-tab', _ => renderItem('pll', data.pll, $('#nav-pll ul.pll')));
-
-	$(document).one('show.bs.tab', '#nav-pll2-tab', _ => renderItem('pll', [data.pll[0], data.pll[1]], $('#nav-pll2 ul.pll')));
 
 	(function (old) {
 		$.fn.attr = function () {
@@ -827,6 +816,20 @@ algos = (function ($) {
 			}
 		}
 	})
+
+	function lazyRender(default_stage, items, $container) {
+		notationpeg.then(_ => renderItem(default_stage, items, $container))
+	}
+
+	$(document).one('show.bs.tab', '#nav-f2l-tab', _ => lazyRender('f2l', data.f2l, $('#nav-f2l ul.f2l')))
+
+	$(document).one('show.bs.tab', '#nav-oll2-tab', _ => lazyRender('oll', [data.oll1look, data.oll[0]], $('#nav-oll2 ul.oll')))
+
+	$(document).one('show.bs.tab', '#nav-oll-tab', _ =>  lazyRender('oll', data.oll, $('#nav-oll ul.oll')))
+
+	$(document).one('show.bs.tab', '#nav-pll-tab', _ => lazyRender('pll', data.pll, $('#nav-pll ul.pll')));
+
+	$(document).one('show.bs.tab', '#nav-pll2-tab', _ => lazyRender('pll', [data.pll[0], data.pll[1]], $('#nav-pll2 ul.pll')));
 
 
 	return {
