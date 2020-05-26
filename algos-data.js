@@ -322,7 +322,7 @@ data = (function($){
 				{ type: "pll", moves: "<r>{[Sexy] [R' F] [R2 U' R'] U'}</r> <bl>[Match F']</bl>", name: "T", image_comment: "O2B(adj), 3C: 4 colors | O2B(adj), 3C: 4 colors | I2B, HL: 3 colors | I2B, HL: 3 colors" },
 				{ type: "pll", moves: "[R' U L'] [U2 Slot U2] [R L U']", name: "Ja", image_comment: "3B, 2B | O2B, I2B : BE | O2B, I2B : BE | 3B, 2B"},
 				{ type: "pll", moves: "<bl>[Match F']</bl> <r>{[Sexy] [R' F] [R2 U' R'] U'}</r>", name: "Jb", image_comment: "O2B, I2B : BE | O2B, I2B : BE | 3B, 2B | 3B, 2B" },
-				{ type: "pll", moves: "F Slot U' [Match F'] {[Sexy] [Sledge]}", name: "Y", image_comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external | I2B: NBE" },
+				{ type: "pll", moves: ["F Slot U' <bl>[Match F']</bl> Sexy Sledge", "[F Slot: U'] Sexy Sledge"], name: "Y", image_comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external | I2B: NBE" },
 				{ type: "pll", moves: "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U", name: "Ra", image_comment: "HL, I2B: 4 colors | O2B(adj), 3C: adj twice | 3C, 3C: BE adj twice | HL, 3C : checkers "},
 				{ type: "pll", moves: "[BackLeftSlot U2] [R' F] [Sexy] [R' F'] R2 U'", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
 				{ type: "pll", moves: "[Pull d'] [R' F'] [R2 U' R' U] [R' F R F] y'", name: "V", image_comment: "O2B: NBE | 4checkers: NBE | O2B: NBE | I2B, I2B: NBE"},
