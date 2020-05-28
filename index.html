@@ -67,7 +67,7 @@
 				$('<td>').text(v.inverse || "").appendTo(tbl_row);
 						
 			});
-			$("#triggers").append(tbl_body).find('button').click(e => control.move(algos.parse($(e.target).text()).toMoves()))
+			$("#triggers").append(tbl_body).click(e => control.move(algos.parse($(e.target).val()).toMoves()))
 
 			let render_moves = (base, lower) => {
 				let a = move => $('<button>').text(move)[0]
