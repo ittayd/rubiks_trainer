@@ -168,4 +168,20 @@ fieldset>div {
 .known {
 	/* background-color:#FFFFCC; 
 	font-weight: 600;
+}
+
+input[type=button] {
+	background-color: #e4e4e4;
+}
+
+button {
+	background-color: #e4e4e4;
 }*/
+.btn-mine {
+	background-color: #e4e4e4;
+	border-bottom: 2px solid #cccccc;
+	border-right: 2px solid #cccccc;
+
+	outline: none;
+
+}

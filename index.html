@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Rubik's Cube algos</title>
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" />
 
-	<link rel="stylesheet" href="algos.css">
+	<link rel="stylesheet" href="algos.css"/>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" crossorigin="anonymous"></script>
 	<link href="//cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
@@ -62,7 +62,7 @@
 				tbl_row.addClass(odd_even ? "odd" : "even");
 				odd_even = !odd_even;               
 
-				$('<td>').append($('<button>').text(k)).appendTo(tbl_row);
+				$('<td>').append($('<input type="button" class="btn btn-mine btn-sm">').val(k)).appendTo(tbl_row);
 				$('<td>').text(v.moves).appendTo(tbl_row);
 				$('<td>').text(v.inverse || "").appendTo(tbl_row);
 						
@@ -139,47 +139,47 @@
 						<div class="row">
 							<div class="col mx-1">
 								<div class="row form-group"> 
-									<input class="form-control-sm col-12" type="text" id="algo" value="M2 y M2 z M2 z">
-									<input class="form-control-sm col" type="button" id="do-btn" value="Do">
-									<input class="form-control-sm col" type="button" id="undo-btn" value="Undo">
-									<input class="form-control-sm col" type="button" id="reset-btn" value="Reset">
-									<input class="form-control-sm col" type="button" id="reposition-btn" value="Reposition">
+									<input class="form-control form-control-sm col-12" type="text" id="algo" value="M2 y M2 z M2 z">
+									<input class="btn btn-mine btn-sm col" type="button" id="do-btn" value="Do">
+									<input class="btn btn-mine btn-sm col" type="button" id="undo-btn" value="Undo">
+									<input class="btn btn-mine btn-sm col" type="button" id="reset-btn" value="Reset">
+									<input class="btn btn-mine btn-sm col" type="button" id="reposition-btn" value="Reposition">
 									<div class="w-100"></div>
-									<input id="reverse-btn" class="form-control-sm col-2" type="button" value="Reverse">
-									<input id="order-btn" class="form-control-sm col-2" type="button" value="Order">
+									<input id="reverse-btn" class="btn btn-mine btn-sm col-2" type="button" value="Reverse">
+									<input id="order-btn" class="btn btn-mine btn-sm col-2" type="button" value="Order">
 									<label class="col-2">mirror</label>
-									<input type="button" id="mirror-x-btn" class="form-control-sm col-1" value="x" >
-									<input type="button" id="mirror-y-btn" class="form-control-sm col-1" value="y" >
-									<input type="button" id="mirror-z-btn" class="form-control-sm col-1" value="z" >
+									<input type="button" id="mirror-x-btn" class="btn btn-mine btn-sm col-1" value="x" >
+									<input type="button" id="mirror-y-btn" class="btn btn-mine btn-sm col-1" value="y" >
+									<input type="button" id="mirror-z-btn" class="btn btn-mine btn-sm col-1" value="z" >
 									<div class="w-100"></div>
 									<label class="col">clockwise</label>
-									<input type="button" id="clockwise-x-btn" class="form-control-sm col-1" value="x" >
-									<input type="button" id="clockwise-y-btn" class="form-control-sm col-1" value="y" >
-									<input type="button" id="clockwise-z-btn" class="form-control-sm col-1" value="z" >
+									<input type="button" id="clockwise-x-btn" class="btn btn-mine btn-sm col-1" value="x" >
+									<input type="button" id="clockwise-y-btn" class="btn btn-mine btn-sm col-1" value="y" >
+									<input type="button" id="clockwise-z-btn" class="btn btn-mine btn-sm col-1" value="z" >
 									<label class="col">counter</label>
-									<input type="button" id="counter-x-btn" class="form-control-sm col-1" value="x" >
-									<input type="button" id="counter-y-btn" class="form-control-sm col-1" value="y" >
-									<input type="button" id="counter-z-btn" class="form-control-sm col-1" value="z" >
+									<input type="button" id="counter-x-btn" class="btn btn-mine btn-sm col-1" value="x" >
+									<input type="button" id="counter-y-btn" class="btn btn-mine btn-sm col-1" value="y" >
+									<input type="button" id="counter-z-btn" class="btn btn-mine btn-sm col-1" value="z" >
 									<div class="w-100"></div>
 									<div id="result" class="col-10"></div>
-									<input type="button" id="copy-btn" class="form-control-sm col-2" value="copy" >
+									<input type="button" id="copy-btn" class="btn btn-mine btn-sm col-2" value="copy" >
 								</div>
 							</div>
 							<div class="col mx-1">
 								<div class="row form-group">
-									<input id="full-btn" class="form-control-sm col-2" type="button" value="Full">
-									<input id="start-btn" class="form-control-sm col-2" type="button" value="↞">
-									<input id="back-btn" class="form-control-sm col-2" type="button" value="←">
-									<input id="move_idx" class="form-control-sm col-2" type="text" value="0" style="width: 30px;">
-									<input id="forward-btn" class="form-control-sm col-2" type="button" value="→">
-									<input id="end-btn" class="form-control-sm col-2" type="button" value="↠">
+									<input id="full-btn" class="btn btn-mine btn-sm col-2" type="button" value="Full">
+									<input id="start-btn" class="btn btn-mine btn-sm col-2" type="button" value="↞">
+									<input id="back-btn" class="btn btn-mine btn-sm col-2" type="button" value="←">
+									<input id="move_idx" class="form-control form-control-sm col-2" type="text" value="0" style="width: 30px;">
+									<input id="forward-btn" class="btn btn-mine btn-sm col-2" type="button" value="→">
+									<input id="end-btn" class="btn btn-mine btn-sm col-2" type="button" value="↠">
 								</div>
 							</div>
 							<div class="w-100 d-xl-none"></div>
 							<div class="col mx-1">
 								<div class="row form-group">							
-										<input id="f2l-btn" type="button" value="F2L" class="form-control-sm col-2"></input>
-										<select id="f2l-group" class="form-control-sm col-10">
+										<input id="f2l-btn" type="button" value="F2L" class="btn btn-mine btn-sm col-2"></input>
+										<select id="f2l-group" class="form-control form-control-sm col-10">
 											<option value="-1">-- random --</option>
 											<option value="-2">-- algo --</option>
 											<option value="0" >Corner on top, FL color facing side, edge colors match</option>
@@ -189,35 +189,35 @@
 											<option value="4">Edge down, corner on top</option>
 											<option value="5">Corner down, edge down</option>
 										</select>
-										<input id="f2l-tips-btn" type="button" class="col-2" value="tip">
-										<div id="f2l-tips" class="form-control-sm col-10"></div>
+										<input id="f2l-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
+										<div id="f2l-tips" class="form-control form-control-sm col-10"></div>
 								</div>
 							</div>
 							<div class="col mx-1">
-								<div class="row form-group">
-									<input id="oll-btn" class="form-control-sm col-2" type="button" value="OLL">
-									<select id="oll-group" class="form-control-sm col-10" multiple="multiple">
+								<div class="d-flex row form-group">
+									<input id="oll-btn" class="btn btn-mine btn-sm align-self-start col-2" type="button" value="OLL">
+									<select id="oll-group" class="form-control form-control-sm col-10" multiple="multiple">
 										<option value="-3" selected>-- 2 look --</option>
 										<option value="-1">-- random --</option>
 										<option value="-2">-- algo --</option>
 									</select>
 									<label class="col-6" for="oll-weight">weight of latest</label>
-									<input class="form-control-sm col-6" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="10">								  
-									<input id="oll-tips-btn" type="button" class="col-2" value="tip">
+									<input class="form-control form-control-sm col-6" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="10">								  
+									<input id="oll-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
 									<div id="oll-tips" class="col-10"></div>
 								</div>
 							</div>
 							<div class="col mx-1">
-								<div class="row form-group">
-									<input id="pll-btn" class="form-control-sm col-2" type="button" value="PLL">
-									<select id="pll-group" class="form-control-sm col-10" multiple="multiple">
+								<div class="d-flex row form-group">
+									<input id="pll-btn" class="btn btn-mine btn-sm align-self-start col-2" type="button" value="PLL">
+									<select id="pll-group" class="form-control form-control-sm col-10" multiple="multiple">
 										<option value="-3" selected>-- 2 look --</option>
 										<option value="-1">-- random --</option>
 										<option value="-2">-- algo --</option>
 									</select>
 									<label class="col-6" for="pll-weight">weight of latest</label>
-									<input class="form-control-sm col-6" type="range" id="pll-weight" name="oll-weight" min="0" max="10" step="1" value="10">								  
-									<input id="pll-tips-btn" type="button" class="col-2" value="tip">
+									<input class="form-control form-control-sm col-6" type="range" id="pll-weight" name="oll-weight" min="0" max="10" step="1" value="10">								  
+									<input id="pll-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
 									<div id="pll-tips" class="col-10" ></div>
 								</div>
 							</div>
