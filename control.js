@@ -75,8 +75,16 @@ Control = (function() {
                             $canvas[0].virtualcube.canvas3d.cube) 
                     });
 
-                    this.canvas3d = $('.virtualcube')[0].virtualcube.canvas3d
+                    this.virtualcube = $('.virtualcube')[0].virtualcube;
+                    this.canvas3d = this.virtualcube.canvas3d
                     this.canvas3d.wobble = function() {}
+                    
+                    let original = this.canvas3d.handler.onMouseMove;
+                    this.canvas3d.handler.onMouseMove = function(event) {
+                      if (this.isCubeSwipe) {
+                        original.call(this, event);
+                      }
+                    }
                 };
 
                 myFunc();
