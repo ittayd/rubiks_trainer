@@ -74,13 +74,6 @@ li.title{
 }
 
 
-#moves {
-	margin: 20px;
-}
-
-#cube-container {
-	display: flex;
-}
 
 /*
 div.virtualcube {

@@ -70,7 +70,7 @@
 			$("#triggers").append(tbl_body).click(e => control.move(algos.parse($(e.target).val()).toMoves()))
 
 			let render_moves = (base, lower) => {
-				let a = move => $('<button>').text(move)[0]
+				let a = move => $('<input type="button" class="btn btn-mine btn-sm">').val(move)[0]
 				let row = base => [a(base), a(base + "'"), a(base + "2")]
 				return [row(base).concat(lower ? row(base.toLowerCase()) : [])]
 			}
@@ -79,7 +79,7 @@
 			array = array[0].map((col, i) => array.map(row => row[i]));
 			array = array.reduce((tbody, row) => tbody.append(row.reduce((tr, move) => tr.append($('<td>').append(move)), $('<tr>'))), $('<tbody>'))
 			$("#moves").append(array).click(e => {
-				control.move([$(e.target).text()])
+				control.move([$(e.target).val()])
 			})	
 		});
 
@@ -113,14 +113,21 @@
 			<div class="tab-pane fade active show" id="nav-intro" role="tabpanel" aria-labelledby="nav-intro-tab">
 				<fieldset>
 					<div class="container-fluid">
-						<div class="row">
-							<div id="cube-container" class="col mx-1 mt-n4">
-								<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
-								<!--<canvas id="canvas3" width="500" height="500">
-									Sorry, this demo requires a web browser which supports HTML5 canvas!
-								</canvas>-->
+						<div class="row mx-1 my-3">
+							<div class="col-xl-4 col-sm-7">
+								<div class="row">
+									<div id="cube-container" class="d-flex mx-1 mt-n4">
+										<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
+										<!--<canvas id="canvas3" width="500" height="500">
+											Sorry, this demo requires a web browser which supports HTML5 canvas!
+										</canvas>-->
+									</div>
+								</div>
+								<div class="row d-xl-none">
+									<table id="moves" class="table-sm text-left table-bordered w-auto"></table>
+								</div>
 							</div>
-							<div class="col mx-1 my-3">
+							<div class="col-xl-4 col-sm-4 ">
 								<table id="triggers" class="table-sm text-left table-bordered w-auto">
 									<thead>
 									<tr>
@@ -131,9 +138,6 @@
 									</thead>	
 								</table>
 							</div>
-						</div>
-						<div class="row d-xl-none">
-							<table id="moves" class="table-sm text-left table-bordered w-auto"></table>
 						</div>
 						
 						<div class="row">
