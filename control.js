@@ -77,6 +77,11 @@ Control = (function() {
 
                     this.virtualcube = $('.virtualcube')[0].virtualcube;
                     this.canvas3d = this.virtualcube.canvas3d
+
+                    let originalWobble = this.canvas3d.wobble;
+                    this.wobble = function() {
+                      originalWobble.call(this.canvas3d, 0.05, 150);
+                    }
                     this.canvas3d.wobble = function() {}
                     
                     let original = this.canvas3d.handler.onMouseMove;
@@ -105,6 +110,8 @@ Control = (function() {
                 c.smoothRotationFunction = null;
                 c.repaint();
             }
+
+           
 
             move(moves, quiet = false) {
                 if (typeof moves == "string") {

@@ -30,6 +30,7 @@ Keyboard = (function ($) {
                 "Shift": nop,
                 "Control": nop,
                 "Alt": nop,
+                "CapsLock": nop,
                 " ": event => {
                     switch (this.move) {
                         case "P": train.pll_scramble(); this.move = ''; break;
@@ -40,7 +41,12 @@ Keyboard = (function ($) {
                     if (this.move.length > 0) {
                         let move = this.move
                         this.move = ''
-                        this.control.move(algos.parse(move).toMoves());
+                        try {
+                            this.control.move(algos.parse(move).toMoves());
+                        } catch (e) {
+                            console.log("Exception ", e);
+                            this.control.wobble();
+                        }
                     }
                     this.move = '';
                     return !(event.target == document.body);
