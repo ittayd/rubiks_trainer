@@ -171,6 +171,10 @@ Control = (function() {
                   self.repaint(f);
             }
 
+            undo() {
+              this.canvas3d.undo();
+            }
+
         }
 
         return Randelshofer

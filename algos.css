@@ -83,6 +83,11 @@ div.virtualcube {
 }
 */
 
+#undo-move-btn {
+	z-index: 100;
+	position: relative;
+}
+
 #div_menu {
 	z-index: 100;
 	position: relative;
