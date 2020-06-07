@@ -104,6 +104,7 @@ Train = (function() {
                     let id = $select.attr('id')
 
 					$select.select2({
+                        /* render items with the css class of the original */
 						templateResult: function (data) {    
 							// We only really care if there is an element to pull classes from
 							if (!data.element) {
@@ -137,22 +138,21 @@ Train = (function() {
                      });
 
 
-                    
+                    /* disable subitems of groups when they are selected and enable when they are unselected */
 					$select.on('select2:select', function (e) {
 						var data = e.params.data;
 						if (data.id < 0) {
 							$select.val(data.id).trigger('change')
 							$select.children().filter((i, e) => e.id != data.id).attr('disabled', 'disabled')
 						}
-					});
-
-					$select.on('select2:unselect', function (e) {
+					}).on('select2:unselect', function (e) {
 						var data = e.params.data;
 						if (data.id < 0) {
 							$select.children().removeAttr('disabled')
 						}
                     });
 
+                    /* append options in the order of their choosing, not the order of appearing in the list */
                     $select.on('select2:select', function(e){
                         var id = e.params.data.id;
                         var option = $(e.target).children(`[value="${id}"]`);
@@ -162,7 +162,14 @@ Train = (function() {
                     
                     let init = localStorage.getItem(id);
                     if (init != null) {
-                        $select.val(JSON.parse(init))
+                        let options = JSON.parse(init);
+                        $select.val(options)
+                        /* options need to come in order of the json since this is how they are rendered (they don't appear in the drop down anyway, since they are selected) */
+                        options.forEach(id => {
+                            let option = $select.children(`[value="${id}"]`);
+                            option.detach();
+                            $select.append(option)
+                        })
                         $select.trigger('change')
                     }
 				}
