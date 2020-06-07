@@ -23,12 +23,29 @@ Control = (function() {
             clockwise: -1,
         }
 
+        class Move {
+          constructor(axis, layersMask, angle) {
+            this.axis = axis;
+            this.layersMask = layersMask;
+            this.angle = angle
+          }
+
+          applyTo(cube) {
+            cube.transform(this.axis, this.layersMask, this.angle)
+          }
+
+          applyInverseTo(cube) {
+            cube.transform(this.axis, this.layersMask, -this.angle)
+
+          }
+        }
+
         function addTranslation(letter, wide, axis, layersMask, angle) {
-            translations[letter] = cube => cube.transform(axis, layersMask, angle)
-            translations[letter + "'"] = cube => cube.transform(axis, layersMask, -angle)
-            translations[letter + "2"] = cube => cube.transform(axis, layersMask, angle * 2)
-            translations[letter + "2'"] = cube => cube.transform(axis, layersMask, -angle * 2)
-            translations[letter + "'2"] = cube => cube.transform(axis, layersMask, -angle * 2)
+            translations[letter] = new Move(axis, layersMask, angle)
+            translations[letter + "'"] = new Move(axis, layersMask, -angle)
+            translations[letter + "2"] = new Move(axis, layersMask, angle * 2)
+            translations[letter + "2'"] = new Move(axis, layersMask, -angle * 2)
+            translations[letter + "'2"] = new Move(axis, layersMask, -angle * 2)
             if (wide) {
                 addTranslation(letter.toLowerCase(), false, axis, layersMask + 2, angle)
             }
@@ -132,7 +149,9 @@ Control = (function() {
                       }
                       self.cube3d.repainter = null;
                       moves.forEach(move => {
-                        translations[move](self.cube)
+                        move = translations[move]
+                        self.pushMove(move);
+                        move.applyTo(self.cube)
                       })
                       self.cube3d.repainter = this;
                       self.cube.cancel = false;
@@ -160,7 +179,9 @@ Control = (function() {
                       next = moves.length;
                     }
                     if (next < moves.length) {
-                      translations[moves[next]](self.cube);
+                      let move = translations[moves[next]];
+                      self.pushMove(move)
+                      move.applyTo(self.cube);
                       next++;
                       self.repaint(f);
                     } else {/*
@@ -173,6 +194,10 @@ Control = (function() {
 
             undo() {
               this.canvas3d.undo();
+            }
+
+            redo() {
+              this.canvas3d.redo();
             }
 
         }

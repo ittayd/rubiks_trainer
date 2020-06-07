@@ -47,6 +47,7 @@
 			$('.nav-tabs').stickyTabs();
 
 			$('#undo-move-btn').click(_ => control.undo())
+			$('#redo-move-btn').click(_ => control.redo())
 
 			let sp = new URLSearchParams(window.location.search)
 			let algo = sp.get('algo')
@@ -116,7 +117,10 @@
 					<div class="container-fluid">
 						<div class="row mx-1 my-3">
 							<div class="col-xl-4 col-sm-7">
-								<input id="undo-move-btn" type="button" class="position-absolute btn btn-lg btn-mine float-left" value="⮌">
+								<div class="row w-100 position-absolute">
+									<input id="undo-move-btn" type="button" class="col-1 btn btn-lg btn-mine" value="↶">
+									<input id="redo-move-btn" type="button" class="col-1 offset-xl-8 offset-md-9 btn btn-lg btn-mine" value="↷">
+								</div>
 								<div class="row">
 									<div id="cube-container" class="d-flex mx-1 mt-n4">
 										<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
