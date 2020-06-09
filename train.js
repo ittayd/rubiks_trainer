@@ -57,7 +57,7 @@ Train = (function() {
     function tip(alg, elem, i) {
         elem = $(elem)
         if (!alg) {
-            $('#algo').val('')
+            $('#algo').html('')
             elem.text('')
             elem.toggle(false)
             return
@@ -85,7 +85,7 @@ Train = (function() {
         
             let self = this;
             this.$algo.keyup(function(){
-                self.all_moves = self.$algo.val();
+                self.all_moves = self.$algo.html();
             })
 
             $('#f2l-btn').click(_ => self.f2l_scramble())
@@ -179,7 +179,7 @@ Train = (function() {
 			$('#pll-btn').click(_ => self.pll_scramble())
 
 			$('#full-btn').click(function(){
-				$algo.val(all_moves);
+				$algo.html(all_moves);
 			})
 
 			$('#start-btn').click(function () {
@@ -212,31 +212,31 @@ Train = (function() {
 
             let $result = $('#result')
             $('#reverse-btn').click(_ => {
-				$result.text(algos.parse(self.$algo.val()).inverted.toMoves({string: true}))
+				$result.html(algos.parse(self.$algo.html()).inverted.toString())
             })
             
             $('#order-btn').click(_ => {
-                $result.text(algos.parse(self.$algo.val()).permutation.order)
+                $result.html(algos.parse(self.$algo.html()).permutation.order)
             })
             'xyz'.split('').forEach(axis => {
                 $(`#mirror-${axis}-btn`).click(_ => {
-                    $result.text(algos.parse(self.$algo.val()).mirror(axis))
+                    $result.html(algos.parse(self.$algo.html()).mirror(axis).toString())
                 })
                 $(`#clockwise-${axis}-btn`).click(_ => {
-                    $result.text(algos.parse(self.$algo.val()).rotate(axis))
+                    $result.html(algos.parse(self.$algo.html()).rotate(axis).toString())
                 })
                 $(`#counter-${axis}-btn`).click(_ => {
-                    $result.text(algos.parse(self.$algo.val()).rotate(axis, -1))
+                    $result.html(algos.parse(self.$algo.html()).rotate(axis, -1).toString())
                 })
             })
 
             $('#copy-btn').click(_ => {
-                self.$algo.val($result.text())
+                self.$algo.html($result.html())
             })
 
-            $('#f2l-tips-btn').click(_ => {$('#f2l-tips').toggle(true); self.$algo.val(self.train_moves)})
-            $('#oll-tips-btn').click(_ => {$('#oll-tips').toggle(true); self.$algo.val(self.train_moves)})
-            $('#pll-tips-btn').click(_ => {$('#pll-tips').toggle(true); self.$algo.val(self.train_moves)})
+            $('#f2l-tips-btn').click(_ => {$('#f2l-tips').toggle(true); self.$algo.html(self.train_moves)})
+            $('#oll-tips-btn').click(_ => {$('#oll-tips').toggle(true); self.$algo.html(self.train_moves)})
+            $('#pll-tips-btn').click(_ => {$('#pll-tips').toggle(true); self.$algo.html(self.train_moves)})
 
 
         }
@@ -296,7 +296,7 @@ Train = (function() {
                 let groupIdx = parseInt($('#f2l-group').find(":selected").val());
                 switch(groupIdx) {
                     case -2:
-                        algo = this.$algo.val();
+                        algo = this.$algo.html();
                         break;
                     case -1:
                         algo = alg_move(random_alg(data.f2l, '#f2l-tips'))
@@ -353,7 +353,7 @@ Train = (function() {
                         break;
                     }
                     case '-2':
-                        algo = this.$algo.val();
+                        algo = this.$algo.html();
                         break;
                     case '-1':
                         algo = alg_move(random_alg(data.oll, '#oll-tips'))
@@ -406,7 +406,7 @@ Train = (function() {
                         break;
                     }
                     case '-2':
-                        algo = this.$algo.val();
+                        algo = this.$algo.html();
                         break;
                     case '-1':
                         algo = alg_move(random_alg(data.pll, '#pll-tips'))
@@ -437,14 +437,14 @@ Train = (function() {
         }
 
         doAlgo() {
-            let algo = algos.parse(this.$algo.val())
+            let algo = algos.parse(this.$algo.html())
             algo = algo.toMoves()
             console.log('do', algo)
             this.control.move(algo)
         }
 
         undoAlgo() {
-            let algo = algos.parse(this.$algo.val()).inverted
+            let algo = algos.parse(this.$algo.html()).inverted
             algo = algo.toMoves()
             this.control.move(algo)
         }

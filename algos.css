@@ -1,16 +1,16 @@
-.algo g {
+#result g, #algo g, .algo g {
 	color: mediumseagreen;
 }
 
-.algo r {
+#result r, #algo r, .algo r {
 	color: orangered;
 }
 
-.algo bl {
+#result bl, #algo bl, .algo bl {
 	color: dodgerblue;
 }
 
-.algo m {
+#result m, #algo m, .algo m {
 	color: magenta;
 }
 

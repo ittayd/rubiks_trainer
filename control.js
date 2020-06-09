@@ -109,7 +109,7 @@ Control = (function() {
                     }
                 };
 
-                myFunc();
+                this.ready = myFunc();
                 
 
             }

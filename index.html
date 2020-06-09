@@ -26,11 +26,10 @@
 	<script src="keyboard.js"></script>
 
 	<script>
-		var $j = jQuery.noConflict();
-		var $ = $j;
+		var $ = jQuery.noConflict();
 		
    
-		$j(function () {
+		$(function () {
 /*
 			rubik_cube = new RubikCube('canvas', 3, null, null, 600);
 			rubik_cube.reset();
@@ -49,12 +48,18 @@
 			$('#undo-move-btn').click(_ => control.undo())
 			$('#redo-move-btn').click(_ => control.redo())
 
+			let $algo = $('#algo')
 			let sp = new URLSearchParams(window.location.search)
 			let algo = sp.get('algo')
 			if (algo !== null) {
-				$j('#algo').val(algo);
-                control.move(algo, {fast: true});
+				$algo.html(algo);
+                Promise.all([algos.ready, control.ready]).then(_ => control.move(algo, {fast: true}))
 			}
+
+			$algo.bind('keydown keypress keyup ', e => e.stopPropagation());
+			$algo.keypress(e =>  e.which != 13);
+
+
 			$(':button').mouseup(function() { this.blur() })
 
 			var tbl_body = $('<tbody>');
@@ -149,7 +154,7 @@
 						<div class="row">
 							<div class="col mx-1">
 								<div class="row form-group"> 
-									<input class="form-control form-control-sm col-12" type="text" id="algo" value="M2 y M2 z M2 z">
+									<div class="form-control form-control-sm col-12" contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
 									<input class="btn btn-mine btn-sm col" type="button" id="do-btn" value="Do">
 									<input class="btn btn-mine btn-sm col" type="button" id="undo-btn" value="Undo">
 									<input class="btn btn-mine btn-sm col" type="button" id="reset-btn" value="Reset">
@@ -172,7 +177,7 @@
 									<input type="button" id="counter-z-btn" class="btn btn-mine btn-sm col-1" value="z" >
 									<div class="w-100"></div>
 									<div id="result" class="col-10"></div>
-									<input type="button" id="copy-btn" class="btn btn-mine btn-sm col-2" value="copy" >
+									<input type="button" id="copy-btn" class="btn btn-mine btn-sm align-self-start col-2" value="copy" >
 								</div>
 							</div>
 							<div class="col mx-1">

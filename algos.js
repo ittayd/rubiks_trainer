@@ -306,6 +306,12 @@ algos = (function ($) {
 				return this._amount;
 			}
 
+			/* options: 
+			   * nested: (mimic object nesting through array nesting) 
+			   * sequence: wrap in a Sequence 
+			   * string: return as string instead of an array
+			   * keepNop: maintain non operations such as comments
+			   */
 			toMoves(options = {}) {
 				if (this.amount == 0) return (options.string ? "" : [])
 				if (this.isContainer(options)) {
@@ -643,6 +649,7 @@ algos = (function ($) {
 	}
 
 	function cleanMarkup(algo, {tags = true, braces = true, spaces = true} = {}) {
+		return algo;
 		const cre = new RegExp("({[]})".split("").map(c => escapeRE(c)).join("|"), "g");
 		algo = tags ? algo.replace(/<\/?[^>]*>/g, '') : algo
 		algo = braces ? algo.replace(cre, ' ') : algo
