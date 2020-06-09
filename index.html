@@ -42,7 +42,7 @@
 			var train = new Train(control)
 			var keybaord = new Keyboard(train, control)
 
-			
+			$(document).click(e => $(e.target).is(':button') && document.activeElement.blur())
 
 			$('.nav-tabs').stickyTabs();
 
@@ -200,7 +200,7 @@
 											<option value="5">Corner down, edge down</option>
 										</select>
 										<input id="f2l-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
-										<div id="f2l-tips" class="form-control form-control-sm col-10"></div>
+										<div id="f2l-tips" class="col-10"></div>
 								</div>
 							</div>
 							<div class="col mx-1">
