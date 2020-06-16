@@ -18,7 +18,7 @@ Keyboard = (function ($) {
                         if (typeof result != "string") {
                             break;
                         }
-                        property = object[result]
+                        property = result
                     }
                     return result;
                 }
