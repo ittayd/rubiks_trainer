@@ -107,7 +107,7 @@ div.virtualcube {
 .virtualcube {
 	float: left;
 	position: relative;
-/*	top: -40px;*/
+	/*top: -10px;*/
 	width:500px;
 	height:550px;
 	object-fit:contain; /* required for mobile */
