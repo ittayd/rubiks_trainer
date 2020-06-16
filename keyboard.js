@@ -54,8 +54,14 @@ Keyboard = (function ($) {
                 "Enter": " ",
                 "ArrowLeft": event => {if (!event.altKey) train.advance(event.shiftKey ? { reset: true } : { delta: -1 })},
                 "ArrowRight": event => {if (!event.altKey) train.advance(event.shiftKey ? { to: (this.$algo.val().split(' ').length), jump: true } : { delta: 1 })},
-        
-                "__default__": event => this.move += event.key
+                "__default__": event => {
+                    if (event.key == 'u' && event.ctrlKey) {
+                        this.move = ''
+                        event.preventDefault()
+                        return;
+                    } 
+                    this.move += event.key
+                }
             })
 
             
