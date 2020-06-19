@@ -243,7 +243,7 @@ Train = (function() {
 
 
         advance({to = 0, delta = undefined, jump = false, reset = false} = {}) {
-            var all_moves_arr = algos.cleanMarkup(this.all_moves, {tags: false}).split(' ')
+            var all_moves_arr = algos.parse(this.all_moves).toMoves({keepTriggers: true})
 
             if (reset) {
                 this.current_idx = all_moves_arr.length

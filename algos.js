@@ -311,6 +311,7 @@ algos = (function ($) {
 			   * sequence: wrap in a Sequence 
 			   * string: return as string instead of an array
 			   * keepNop: maintain non operations such as comments
+			   * keepTriggers: keep triggers as they are. Otherwise resolve to moves 
 			   */
 			toMoves(options = {}) {
 				if (this.amount == 0) return (options.string ? "" : [])
@@ -438,7 +439,7 @@ algos = (function ($) {
 			}
 
 			isContainer(options) {
-				return !options.skipTriggers;
+				return !options.keepTriggers;
 			}
 			
 			toSequence() {
