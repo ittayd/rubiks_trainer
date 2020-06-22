@@ -1,6 +1,6 @@
 Buttons = (function($){
     class Buttons {
-        constructor(contrl) {
+        constructor(control) {
             this.control = control
             $(document).ready(_ => {
                 render_moves()
