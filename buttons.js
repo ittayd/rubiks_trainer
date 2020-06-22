@@ -3,8 +3,8 @@ Buttons = (function($){
         constructor(control) {
             this.control = control
             $(document).ready(_ => {
-                render_moves()
-                render_triggers()
+                this.render_moves()
+                this.render_triggers()
                 $("#triggers").click(e => 
                     this.control.move(algos.parse($(e.target).val()).toMoves())
                 )
