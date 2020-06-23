@@ -26,21 +26,21 @@ Keyboard = (function ($) {
         
         
             $.extend(handlers, {
-                "Escape": event => this.move = '',
+                "Escape": event => this.update_move(),
+                "Backspace": event => this.update_move(this.move.slice(0, -1)),
                 "Shift": nop,
                 "Control": nop,
                 "Alt": nop,
                 "CapsLock": nop,
                 " ": event => {
                     switch (this.move) {
-                        case "P": train.pll_scramble(); this.move = ''; break;
-                        case "O": train.oll_scramble(); this.move = ''; break;
-                        case "T": train.f2l_scramble(); this.move = ''; break;
-                        case "TP":  $('#pll-tips-btn').click(); this.move = ''; break;
+                        case "P": train.pll_scramble(); this.update_move(); break;
+                        case "O": train.oll_scramble(); this.update_move(); break;
+                        case "T": train.f2l_scramble(); this.update_move(); break;
+                        case "TP":  $('#pll-tips-btn').click(); this.update_move(); break;
                     }
                     if (this.move.length > 0) {
                         let move = this.move
-                        this.move = ''
                         try {
                             this.control.move(algos.parse(move).toMoves());
                         } catch (e) {
@@ -48,7 +48,7 @@ Keyboard = (function ($) {
                             this.control.wobble();
                         }
                     }
-                    this.move = '';
+                    this.update_move()
                     return !(event.target == document.body);
                 },
                 "Enter": " ",
@@ -56,11 +56,11 @@ Keyboard = (function ($) {
                 "ArrowRight": event => {if (!event.altKey) train.advance(event.shiftKey ? { to: (this.$algo.val().split(' ').length), jump: true } : { delta: 1 })},
                 "__default__": event => {
                     if (event.key == 'u' && event.ctrlKey) {
-                        this.move = ''
+                        this.update_move()
                         event.preventDefault()
                         return;
                     } 
-                    this.move += event.key
+                    this.update_move(this.move + event.key)
                 }
             })
 
@@ -81,6 +81,11 @@ Keyboard = (function ($) {
                 return true;
             })
         
+        }
+
+        update_move(move) {
+            this.move = move || '';
+            $('#keyboard').text(this.move)
         }
     }
     return Keyboard
