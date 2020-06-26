@@ -42,7 +42,12 @@
 			var train = new Train(control)
 			var keybaord = new Keyboard(train, control)
 			var buttons = new Buttons(control)
-			$(document).click(e => $(e.target).is(':button') && document.activeElement.blur())
+			$(document).click(e => {
+				if($(e.target).is(':button,:checkbox')) {  
+					document.activeElement.blur()
+				}
+				return true;
+			})
 
 			$('.nav-tabs').stickyTabs();
 
@@ -98,9 +103,10 @@
 					<div class="container-fluid">
 						<div class="row mx-1 my-3">
 							<div class="col-xl-4 col-sm-7">
-								<div class="row w-100 position-absolute">
+								<div class="row w-100 position-absolute ">
 									<input id="undo-move-btn" type="button" class="col-1 btn btn-lg btn-mine" value="↶">
-									<input id="redo-move-btn" type="button" class="col-1 offset-xl-8 offset-md-9 btn btn-lg btn-mine" value="↷">
+									<div id="keyboard" class="col-2 offset-md-3 d-none d-xl-inline "></div>
+									<input id="redo-move-btn" type="button" class="col-1 offset-xl-3 offset-md-9 btn btn-lg btn-mine" value="↷">
 								</div>
 								<div class="row">
 									<div id="cube-container" class="d-flex mx-1 mt-n4 mb-n4">
@@ -112,9 +118,6 @@
 								</div>
 								<div class="row d-xl-none float-right">
 									<table id="moves" class="table-sm text-left table-bordered w-auto mt-n1"></table>
-								</div>
-								<div class="row d-none d-xl-flex mt-5 float-left">
-									<div id="keyboard" class=""></div>
 								</div>
 							</div>
 							<div class="col-xl-4 col-sm-4 ">
@@ -192,25 +195,25 @@
 									<input id="oll-btn" class="btn btn-mine btn-sm align-self-start col-2" type="button" value="OLL">
 									<select id="oll-group" class="form-control form-control-sm col-10" multiple="multiple">
 										<option value="-3" selected>-- 2 look --</option>
-										<option value="-1">-- random --</option>
-										<option value="-2">-- algo --</option>
+										<option value="-2">-- random --</option>
+										<option value="-1">-- algo --</option>
 									</select>
-									<label class="col-6" for="oll-weight">weight of latest</label>
+									<label class="col-6" for="oll-weight">weight</label>
 									<input class="form-control form-control-sm col-6" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="6">								  
 									<input id="oll-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
 									<div id="oll-tips" class="col-10"></div>
 								</div>
 							</div>
 							<div class="col mx-1">
-								<div class="d-flex row form-group">
+								<div class="d-flex row align-items-center">
 									<input id="pll-btn" class="btn btn-mine btn-sm align-self-start col-2" type="button" value="PLL">
 									<select id="pll-group" class="form-control form-control-sm col-10" multiple="multiple">
 										<option value="-3" selected>-- 2 look --</option>
 										<option value="-1">-- random --</option>
 										<option value="-2">-- algo --</option>
 									</select>
-									<label class="col-6" for="pll-weight">weight of latest</label>
-									<input class="form-control form-control-sm col-6" type="range" id="pll-weight" name="oll-weight" min="0" max="10" step="1" value="6">								  
+									<label class="col-2 ml-n2 mr-2" for="pll-weight">weight</label>
+									<input class="form-control form-control-sm col-10" type="range" id="pll-weight" name="oll-weight" min="-1" max="10" step="1" value="6">								  
 									<input id="pll-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
 									<div id="pll-tips" class="col-10" ></div>
 								</div>

@@ -43,6 +43,23 @@ Train = (function() {
         return random(algs, weights)
     }
 
+    function choose_alg(choices, type, previous_ref, pre_move_i) {
+        let weight = parseInt($(`#${type}-weight`).val())
+        let round = weight == -1
+
+        let chosen;
+        if (round) {
+            previous_ref.i = (previous_ref.i + 1) % choices.length
+            chosen = choices[previous_ref.i]
+        } else {
+            chosen = random_weight(choices, weight)
+        }
+
+        tip(chosen, `#${type}-tips`, ((-pre_move_i + 4) % 4)) // the comments are when moves are in reverse)
+
+        return alg_move(chosen)
+    }
+
     function alg_move(alg) {
         let moves = alg.moves
         return 	Array.isArray(moves) ? moves[0] : moves;
@@ -82,7 +99,10 @@ Train = (function() {
             this.$move_idx = $('#move_idx') 
             this.$algo = $('#algo')
             this.current_idx = 0;
-        
+
+            this.oll_choice = {i: -1}
+            this.pll_choice = {i: -1}
+
             let self = this;
             this.$algo.keyup(function(){
                 self.all_moves = self.$algo.html();
@@ -90,8 +110,9 @@ Train = (function() {
 
             $('#f2l-btn').click(_ => self.f2l_scramble())
 
-			$('#oll-btn').click(_ => self.oll_scramble())
-	
+            $('#oll-btn').click(_ => self.oll_scramble())
+            
+
 			algos.ready.then(_ => {
 				function renderSelect($select, coll) {
 					$select = $($select)
@@ -396,7 +417,7 @@ Train = (function() {
                     return
                 }
                 switch(selected[0]) {
-                    case '-3': { // 2look
+                    case '-3':  // 2look
                         let first = random(data.pll[0].algs)
                         tip(first, '#pll-tips')
                         let second = random(data.pll[1].algs)
@@ -404,23 +425,19 @@ Train = (function() {
                         let interim_moves = random(['U ', "U' ", 'U2 ', ''])
                         algo = alg_move(first) + " " + interim_moves + alg_move(second)
                         break;
-                    }
-                    case '-2':
-                        algo = this.$algo.html();
-                        break;
-                    case '-1':
+                    case '-2': // random
                         algo = alg_move(random_alg(data.pll, '#pll-tips'))
                         break;
-                    default: {
+                    case '-1': // algorithm from input box
+                        algo = this.$algo.html();
+                        break;
+                    default: { // from multi-selected algorithms
                         let algs = selected.flatMap(s => {
                             let [group, alg] = s.split('.').map(x => parseInt(x))
                             return data.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
                         })
 
-                        let weight = parseInt($('#pll-weight').val())
-                        algo = random_weight(algs, weight)
-                        tip(algo, '#pll-tips', ((-pre_move_i + 4) % 4)) // the comments are when moves are in reverse
-                        algo = alg_move(algo)
+                        algo = choose_alg(algs, 'pll', this.pll_choice, pre_move_i)
                     }
                 }
             }
