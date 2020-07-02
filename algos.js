@@ -312,6 +312,7 @@ algos = (function ($) {
 			   * string: return as string instead of an array
 			   * keepNop: maintain non operations such as comments
 			   * keepTriggers: keep triggers as they are. Otherwise resolve to moves 
+			   * shallow: don't recurse when there are nested moves (in groupings)
 			   */
 			toMoves(options = {}) {
 				if (this.amount == 0) return (options.string ? "" : [])
@@ -320,8 +321,15 @@ algos = (function ($) {
 					if (options.string) {
 						return containedArray.reduce((acc, val) => acc.concat(val.toMoves(options)), []).join(" ").repeat(Math.abs(this.amount))
 					}
-					let op = options.nested ? 'map' : 'flatMap'
-					let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(containedArray[op](s => s.toMoves(options)))
+					let toMoves = s => s.toMoves(options)
+					let op = arr => arr.flatMap(toMoves); 
+					if (options.nested) {
+						op = arr => arr.map(toMoves)
+					} 
+					if (options.shallow) {
+						op = arr => arr
+					}
+					let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(op(containedArray))
 					result = options.nested ? result : result.flat(Infinity)
 					return options.sequence ? new Sequence(result, this.amount) : result
 				 } 
@@ -356,7 +364,12 @@ algos = (function ($) {
 				return this.cascade(s => s.rotate(axis, amount))
 			}
 
+			toString(options = {}) {
+				return `${this.innerString(options)}${this.op ? op.toString() : ''}${this.stringAmount}`
+			}
+
 		}
+
 
 		class Nop {
 			get inverted() {
@@ -378,6 +391,31 @@ algos = (function ($) {
 
 		}
 
+
+		class InvertEach extends RepeatedUnit{
+			constructor(repeatable_unit) {
+				super(undefined, 1)
+				this.repeatable_unit = repeatable_unit;
+			}
+
+			get inverted() {
+				return new InvertEach(this.repeatable_unit.inverted)
+			}
+
+			isContainer(options) {
+				return this.repeatable_unit.isContainer(options);
+			}
+
+			containedArray(invert, options) {
+				return this.repeatable_unit.toMoves($.extend({}, options, {shallow: true, string: false})).map(x => new InvertEach(x));
+			}
+
+			innerString(options) {
+				if (this.repeatable_unit.constructor === Atomic) return this.repeatable_unit.inverted.toString(options)
+				return this.repeatable_unit.toString(options) + "~";
+			}
+		}
+
 		class Atomic extends RepeatedUnit {
 			constructor(character, inner, outer, amount) {
 				super(4, amount)
@@ -394,8 +432,8 @@ algos = (function ($) {
 				return false;
 			}
 
-			toString() {
-				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}${this.stringAmount}`
+			innerString() {
+				return `${this.outer ? this.outer + "-" : ""}${this.inner ? this.inner : ""}${this.character}`
 			}
 
 			get permutation() {
@@ -442,16 +480,16 @@ algos = (function ($) {
 				return !options.keepTriggers;
 			}
 			
-			toSequence() {
-				return algos.parse(data.triggers[this.name].moves)
+			toSequence(ignoreAmount = false) {
+				return algos.parse(`(${data.triggers[this.name].moves})${ignoreAmount ? '' : this.stringAmount}`)
 			}
 
 			containedArray(invert, options) {
-				return this.toSequence().containedArray(invert, options)
+				return this.toSequence(true).containedArray(invert, options)
 			}
 
-			toString() {
-				return `${this.name}${this.stringAmount}`
+			innerString() {
+				return this.name
 			}
 
 			cascade(f) {
@@ -472,6 +510,7 @@ algos = (function ($) {
 				return new Sequence(this.sub, -this.amount)	
 			}
 
+
 			isContainer(options) {
 				return true;
 			}
@@ -481,12 +520,8 @@ algos = (function ($) {
 				return this.sub.map(s => s.inverted).reverse()
 			}
 
-			toString(clean = true) {
-				var str = `${this.sub.map(s => s.toString()).join(" ")}`
-				if (clean && this.amount == 1) {
-					return str;
-				}
-				return `(${str})${this.stringAmount}`
+			innerString() {
+				return `${this.sub.map(s => s.toString()).join(" ")}`
 			}
 
 			cascade(f) {
@@ -514,9 +549,9 @@ algos = (function ($) {
 				return this.sequence.containedArray(invert, options)
 			}
 
-			toString(clean = false) {
+			innerString(options) {
 				let substr = this.sequence.toString(clean)
-				if (clean) return substr;
+				if (options.clean) return substr;
 				return `<${this.name}>${substr}</${this.name}>`
 			}
 
@@ -544,7 +579,7 @@ algos = (function ($) {
 				return [this.a, invert ? this.b.inverted : this.b, this.a.inverted]
 			}
 
-			toString() {
+			innerString() {
 				return `[${this.a.toString()}:${this.b.toString()}]`
 			}
 
@@ -575,7 +610,7 @@ algos = (function ($) {
 				return [a, b, a.inverted, b.inverted]
 			}
 
-			toString() {
+			innerString() {
 				return `[${this.a.toString()},${this.b.toString()}]`
 			}
 
@@ -610,7 +645,8 @@ algos = (function ($) {
 			NewLine: NewLine,
 			Pause: Pause, 
 			Permutation: Permutation,
-			Face: Face
+			Face: Face,
+			InvertEach: InvertEach
 		}
 	})();
 
@@ -812,17 +848,19 @@ algos = (function ($) {
 	}
 
 	notationpeg.then(data => {
-		let parser = PEG.buildParser(data, {classes: classes});
-		let cache = new LRU(200);
-		parse = algos.parse = function(algo) {
-			algo = Array.isArray(algo) ? algo.join(' ') : algo
-			try {
-				return parser.parse(algo, {classes: classes});
-			} catch(err) {
-				console.log('algo', algo)
-				throw err;
+		try {
+			let parser = PEG.buildParser(data, {classes: classes});
+			let cache = new LRU(200);
+			parse = algos.parse = function(algo) {
+				algo = Array.isArray(algo) ? algo.join(' ') : algo
+				try {
+					return parser.parse(algo, {classes: classes});
+				} catch(err) {
+					console.log('algo', algo)
+					throw err;
+				}
 			}
-		}
+		} catch(e) {console.log(e);}
 	})
 
 	function lazyRender(default_stage, items, $container) {

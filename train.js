@@ -196,7 +196,13 @@ Train = (function() {
 				}
 				renderSelect('#pll-group', data.pll);
 				renderSelect('#oll-group', data.oll)
-			})
+            });
+            
+            ['pll', 'oll'].forEach(type => {
+                let id = `#${type}-weight`
+                $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val()))
+            })
+
 			$('#pll-btn').click(_ => self.pll_scramble())
 
 			$('#full-btn').click(function(){
@@ -461,7 +467,7 @@ Train = (function() {
         }
 
         undoAlgo() {
-            let algo = algos.parse(this.$algo.html()).inverted
+            let algo = algos.parse(this.$algo.text()).inverted
             algo = algo.toMoves()
             this.control.move(algo)
         }
