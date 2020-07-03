@@ -28,7 +28,7 @@ REPEATABLE_UNIT = BLOCK_MOVE
                 / [(\[{}] nestedSequence:SEQUENCE [)\]}] { return nestedSequence; }
                 / MARKUP_SEQUENCE
 
-REPEATABLE_UNIT2 =  repeatable_unit:REPEATABLE_UNIT "~" { return new options.classes.InvertEach(repeatable_unit) }
+REPEATABLE_UNIT2 =  repeatable_unit:REPEATABLE_UNIT "^" { return new options.classes.InvertEach(repeatable_unit) }
               / repeatable_unit:REPEATABLE_UNIT { return repeatable_unit; }
 
 

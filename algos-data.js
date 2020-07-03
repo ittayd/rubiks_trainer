@@ -3,79 +3,79 @@ data = (function($){
 		{
 			name: "Corner on top, FL color facing side, edge colors match",
 			algs: [// {type: "f2l", moves: "U (R U' R')"},
-				// {type: "f2l", moves: "y' U' (Slot~) y"},
+				// {type: "f2l", moves: "y' U' (Slot^) y"},
 				{ type: "f2l", moves: "U' R U R' U2 (R U' R')" },
-				{ type: "f2l", moves: "d Match~ U2' Slot~ y" },
+				{ type: "f2l", moves: "d Match^ U2' Slot^ y" },
 				{ type: "f2l", moves: "U' R U2' R' U2 (R U' R')" },
-				{ type: "f2l", moves: "d LeftSexy~  (Slot~) y" },
-				{ type: "f2l", moves: "y' Slot~ U' d' (R U R')" },
-				{ type: "f2l", moves: "R U' R' U d (Match~) y" }]
+				{ type: "f2l", moves: "d LeftSexy^  (Slot^) y" },
+				{ type: "f2l", moves: "y' Slot^ U' d' (R U R')" },
+				{ type: "f2l", moves: "R U' R' U d (Match^) y" }]
 		},
 		{
 			name: "Corner on top, FL color facing side, edge colors opposite",
 			algs: [
-				// {type: "f2l", moves: "y' (Match~) y"},
+				// {type: "f2l", moves: "y' (Match^) y"},
 				// {type: "f2l", moves: "(R U R')"},
-				{ type: "f2l", moves: "d Match~ U' (Match~) y" },
+				{ type: "f2l", moves: "d Match^ U' (Match^) y" },
 				{ type: "f2l", moves: "U' R U R' U (R U R')" },
-				{ type: "f2l", moves: "U' R U2' R' d (Match~) y" },
+				{ type: "f2l", moves: "U' R U2' R' d (Match^) y" },
 				{ type: "f2l", moves: "R' U2 R2 U R2' U R" },
-				{ type: "f2l", moves: "d Slot~ U' (Match~) y" },
+				{ type: "f2l", moves: "d Slot^ U' (Match^) y" },
 				{ type: "f2l", moves: "U' R U' R' U (R U R')" }]
 		},
 		{
 			name: "Corner on top, FL color facing up",
 			algs: [
 				{ type: "f2l", moves: "R U2' R' U' (R U R')" },
-				{ type: "f2l", moves: "y' LeftSlot~ U (Match~) y" },
+				{ type: "f2l", moves: "y' LeftSlot^ U (Match^) y" },
 				{ type: "f2l", moves: "U R U2 R' U (R U' R')" },
-				{ type: "f2l", moves: "y' U' LeftSlot~ U' (Slot~) y" },
+				{ type: "f2l", moves: "y' U' LeftSlot^ U' (Slot^) y" },
 				{ type: "f2l", moves: "U2 R U R' U (R U' R')" },
-				{ type: "f2l", moves: "y' U2 Match~ U' (Slot~) y" },
-				{ type: "f2l", moves: "y' U LeftSlot~ y R U2 Slot~ U' R'" },
-				{ type: "f2l", moves: "U' R U2' R' y' LeftSlot~ U' Slot~ y" }]
+				{ type: "f2l", moves: "y' U2 Match^ U' (Slot^) y" },
+				{ type: "f2l", moves: "y' U LeftSlot^ y R U2 Slot^ U' R'" },
+				{ type: "f2l", moves: "U' R U2' R' y' LeftSlot^ U' Slot^ y" }]
 		},
 		{
 			name: "Corner down, edge on top",
 			algs: [
 				{ type: "f2l", moves: "U R U' R' d' (L' U L) y'" },
-				{ type: "f2l", moves: "y' U' Slot~ r' U' R U M' y" },
-				{ type: "f2l", moves: "y' Match~ U (Match~) y" },
+				{ type: "f2l", moves: "y' U' Slot^ r' U' R U M' y" },
+				{ type: "f2l", moves: "y' Match^ U (Match^) y" },
 				{ type: "f2l", moves: "R U R' U' (R U R')" },
 				{ type: "f2l", moves: "R U' R' U (R U' R')" },
-				{ type: "f2l", moves: "y' Slot~ U' (Slot~) y" }]
+				{ type: "f2l", moves: "y' Slot^ U' (Slot^) y" }]
 		},
 		{
 			name: "Edge down, corner on top",
 			algs: [
 				{ type: "f2l", moves: "U' R U' R' U2 (R U' R')" },
-				{ type: "f2l", moves: "d Slot~ U2 (Slot~) y" },
-				{ type: "f2l", moves: "U' R U R' d (Match~) y" },
-				{ type: "f2l", moves: "d Match~ d' (R U R')" },
-				{ type: "f2l", moves: "R U' R' d (Slot~) y" },
+				{ type: "f2l", moves: "d Slot^ U2 (Slot^) y" },
+				{ type: "f2l", moves: "U' R U R' d (Match^) y" },
+				{ type: "f2l", moves: "d Match^ d' (R U R')" },
+				{ type: "f2l", moves: "R U' R' d (Slot^) y" },
 				{ type: "f2l", moves: "[R U R' U'] [R U R' U'] (R U R')" }]
 		},
 		{
 			name: "Corner down, edge down",
 			algs: [
-				{ type: "f2l", moves: "R U' Match~ U R' U2 (R U' R')" },
-				{ type: "f2l", moves: "R U LeftSlot~ U' R' U (R U R')" },
-				{ type: "f2l", moves: "R U' R' d Match~ U' (Match~) y" },
-				{ type: "f2l", moves: "R U Match~ U' R' U2 y' (Match~) y" },
-				{ type: "f2l", moves: "R U' R' U y' LeftSexy~ (Slot~) y" }]
+				{ type: "f2l", moves: "R U' Match^ U R' U2 (R U' R')" },
+				{ type: "f2l", moves: "R U LeftSlot^ U' R' U (R U R')" },
+				{ type: "f2l", moves: "R U' R' d Match^ U' (Match^) y" },
+				{ type: "f2l", moves: "R U Match^ U' R' U2 y' (Match^) y" },
+				{ type: "f2l", moves: "R U' R' U y' LeftSexy^ (Slot^) y" }]
 		}
 	]
 
     /*
     var oll = [
         { "type": "oll", "name": "28", "imageFileName": "oll28.gif", "moves": "(M' U M) U2 (M' U M)", "comments": "The middle slices should be done with the left ring finger for M' and the left thumb for M. The (M' U M) group may take some getting used to." },
-        { "type": "oll", "name": "57", "imageFileName": "oll57.gif", "moves": "(R U R' U') r (Slot~ U') r'", "comments": "There's nothing too fancy here. The finger tricks used are pretty common. I do the slice turn as M' now because I think it's a little faster that way." },
+        { "type": "oll", "name": "57", "imageFileName": "oll57.gif", "moves": "(R U R' U') r (Slot^ U') r'", "comments": "There's nothing too fancy here. The finger tricks used are pretty common. I do the slice turn as M' now because I think it's a little faster that way." },
         { "type": "oll", "name": "20", "imageFileName": "oll20.gif", "moves": "r' (R U) (R U R' U' r2) (R2' U) (R U') r'", "comments": "Here, I use the slice as (r' R) because it flows a little nicer. This is the least common OLL case (1/216). The finger tricks here are pretty simple." },
         { "type": "oll", "name": "23", "imageFileName": "oll23.gif", "moves": "(R2' D) (R' U2) (R D') (R' U2 R')", "comments": "This is one of the most awkward OLLs with all correctly flipped edges. It's still pretty fast, though." },
         { "type": "oll", "name": "24", "imageFileName": "oll24.gif", "moves": "(r U) (R' U') (r' F) (R F')", "comments": "Custom." },
         { "type": "oll", "name": "25", "imageFileName": "oll25.gif", "moves": "F' (r U R' U') (r' F R)", "comments": "Custom. LeftSlot fast." },
         { "type": "oll", "name": "27", "imageFileName": "oll27.gif", "moves": "(R U R' U) (R U2 R')", "comments": "This is the Sune. Your right hand should never come off of the cube during the execution at any time." },
-        { "type": "oll", "name": "26", "imageFileName": "oll26.gif", "moves": "(R U2) (Match~ U' R')", "comments": "This is just the inverse of the Sune, called the Antisune." },
+        { "type": "oll", "name": "26", "imageFileName": "oll26.gif", "moves": "(R U2) (Match^ U' R')", "comments": "This is just the inverse of the Sune, called the Antisune." },
         { "type": "oll", "name": "22", "imageFileName": "oll22.gif", "moves": "(R U2') (R2' U') (R2 U') (R2' U2' R)", "comments": "The execution of this algorithm is pretty neat. The R2 turns should alternate in direction so that they can be performed by the right hand without letting go of the cube. The left hand holds the cube and makes the U' turns." },
         { "type": "oll", "name": "21", "imageFileName": "oll21.gif", "moves": "L' U' L U' L' U L U' L' U2 L", "comments": "Custom. Double sune (or anti-sune, I can never remember) with the left hand." },
         { "type": "oll", "name": "3", "imageFileName": "oll03.gif", "moves": "f (R U R' U') f' U' F (R U R' U') F'", "comments": "This is a clever combination of the two six move OLLs." },
@@ -104,20 +104,20 @@ data = (function($){
         { "type": "oll", "name": "34", "imageFileName": "oll34.gif", "moves": "(R U R2' U') (R' F) (R U) (R U') F'", "comments": "This case is fast. It takes a little while to get used to the R2' not being just R', but the algorithm flows very nicely. I make the last F' turn with my right index finger." },
         { "type": "oll", "name": "46", "imageFileName": "oll46.gif", "moves": "(R' U') (R' F R F') (U R)", "comments": "There's nothing fancy here. This is just a sledgehammer with a setup move." },
         { "type": "oll", "name": "5", "imageFileName": "oll05.gif", "moves": "(r' U2) (R U R' U r)", "comments": "This is just a fat Antisune performed from the back of the cube." },
-        { "type": "oll", "name": "6", "imageFileName": "oll06.gif", "moves": "(r U2) (Match~ U' r')", "comments": "This is just a fat Antisune." },
+        { "type": "oll", "name": "6", "imageFileName": "oll06.gif", "moves": "(r U2) (Match^ U' r')", "comments": "This is just a fat Antisune." },
         { "type": "oll", "name": "7", "imageFileName": "oll07.gif", "moves": "(r U R' U) (R U2 r')", "comments": "This case is just the inverse of one of the squares (OLL #6)." },
         { "type": "oll", "name": "12", "imageFileName": "oll12.gif", "moves": "[F (R U R' U') F'] U [F (R U R' U') F']", "comments": "This is just a Sune from the back right except with a setup move." },
         { "type": "oll", "name": "8", "imageFileName": "oll08.gif", "moves": "(r' U' R U') (R' U2 r)", "comments": "Like OLL #7, this is just the inverse of one of the squares (OLL #5)." },
         { "type": "oll", "name": "11", "imageFileName": "oll11.gif", "moves": "[F' (L' U' L U) F] y [F (R U R' U') F'] y'", "comments": "Like OLL #12, this is just a Sune with a setup move." },
-        { "type": "oll", "name": "37", "imageFileName": "oll37.gif", "moves": "F (R U') (Match~ U) (R' F')", "comments": "This is one of the fastest orientations. It's the first half of the Y-permutation. The last six moves are EXTREMELY FAST." },
+        { "type": "oll", "name": "37", "imageFileName": "oll37.gif", "moves": "F (R U') (Match^ U) (R' F')", "comments": "This is one of the fastest orientations. It's the first half of the Y-permutation. The last six moves are EXTREMELY FAST." },
         { "type": "oll", "name": "35", "imageFileName": "oll35.gif", "moves": "(R U2) (R2 F) (R F' R U2 R')", "comments": "This is just the sledgehammer with a setup move." },
         { "type": "oll", "name": "10", "imageFileName": "oll10.gif", "moves": "(R U R' U) (R' F R F') (R U2 R')", "comments": "This is kind of like a Sune with a sledgehammer mixed in." },
         { "type": "oll", "name": "9", "imageFileName": "oll09.gif", "moves": "(R U R' U' R' F) (R2 U R' U' F')", "comments": "This is a pretty fast algorithm that flows very nicely." },
         { "type": "oll", "name": "51", "imageFileName": "oll51.gif", "moves": "f (R U R' U') (R U R' U') f'", "comments": "This is just the easy P-orientation repeated twice." },
-        { "type": "oll", "name": "52", "imageFileName": "oll52.gif", "moves": "(R U Slot~d') (R U' R' F') y'", "comments": "The d' turn eliminates the need for a rotation, so this algorithm can be done very quickly." },
+        { "type": "oll", "name": "52", "imageFileName": "oll52.gif", "moves": "(R U Slot^d') (R U' R' F') y'", "comments": "The d' turn eliminates the need for a rotation, so this algorithm can be done very quickly." },
         { "type": "oll", "name": "56", "imageFileName": "oll56.gif", "moves": "f (R U R' U') f' F (R U R' U') (R U R' U') F'", "comments": "I do this algorithm as the easy P-orientation followed by the easy T-orientation repeated twice." },
         { "type": "oll", "name": "55", "imageFileName": "oll55.gif", "moves": "(R U2) (R2 U' R U' R' U2) (F R F')", "comments": "This is just a Sune performed from the back right with a setup at the beginning and a sledgehammer at the end." },
-        { "type": "oll", "name": "13", "imageFileName": "oll13.gif", "moves": "(r U' r' U' r U r' y' (Slot~) y", "comments": "I like this algorithm. I just wish it didn't have a rotation." },
+        { "type": "oll", "name": "13", "imageFileName": "oll13.gif", "moves": "(r U' r' U' r U r' y' (Slot^) y", "comments": "I like this algorithm. I just wish it didn't have a rotation." },
         { "type": "oll", "name": "16", "imageFileName": "oll16.gif", "moves": "(r U r') (R U R' U') (r U' r')", "comments": "This is just a fast trigger with a fast setup before and after." },
         { "type": "oll", "name": "14", "imageFileName": "oll14.gif", "moves": "(R' F) (R U R' F' R) y' (R U' R') y", "comments": "This case is pretty nice, but like OLL #13, I don't like the rotation." },
         { "type": "oll", "name": "15", "imageFileName": "oll15.gif", "moves": "(l' U' l) (L' U' L U) (l' U l)", "comments": "This is just the mirror of OLL #16." },
@@ -141,7 +141,7 @@ data = (function($){
 			name: "All Edges Correctly Oriented",
 			algs: [ /* http://badmephisto.com/2LookOLL.pdf */
 				{ type: "oll", moves: "Match U LeftSlot", name: "27-Sune" },
-				{ type: "oll", moves: "Match~ U' LeftSlot~", name: "26-AntiSune" },
+				{ type: "oll", moves: "Match^ U' LeftSlot^", name: "26-AntiSune" },
 				{ type: "oll", moves: "F Sexy3 F'", name: "21-Car" },
 				{ type: "oll", moves: "[f (Sexy) f'] [F (Sexy) F']", name: "22-Blinker" },
 				{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },
@@ -194,7 +194,7 @@ data = (function($){
 			algs: [
 				{ type: "oll", moves: "f [Sexy] f'", name: "44-P" },
 				{ type: "oll", moves: "f' (L' U' L U) f", name: "43-P" },
-				{ type: "oll", moves: "R U B' U' Slot~ B R'", name: "32-P" },
+				{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-P" },
 				{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-P" },
 			]
 		},
@@ -233,7 +233,7 @@ data = (function($){
 		{
 			name: "Knight Move shapes",
 			algs: [
-				{ type: "oll", moves: "r U' r' U' r U r' y' [Slot~]" , name: "13-Knight"},
+				{ type: "oll", moves: "r U' r' U' r U r' y' [Slot^]" , name: "13-Knight"},
 				{ type: "oll", moves: "R' F Match F' R y' [Slot]", name: "14-Knight" },
 				{ type: "oll", moves: "[r U r'] [Sexy] [r U' r']", name: "16-Knight" },
 				{ type: "oll", moves: "[l' U' l] [L' U' L U] [l' U l]", name: "15-Knight" },
@@ -258,7 +258,7 @@ data = (function($){
 		{
 			name: "Square shapes",
 			algs: [
-				{ type: "oll", moves: "r U2' Match~ U' r'", name: "6-Square" },
+				{ type: "oll", moves: "r U2' Match^ U' r'", name: "6-Square" },
 				{ type: "oll", moves: "l' U2 L U L' U l", name: "5-Square" },
 			]
 		},
@@ -283,18 +283,18 @@ data = (function($){
 	   { "type": "pll", "name": "Z", "imageFileName": "pll04.gif", "moves": "(M2' U) (M2' U) (M' U2) (M2' U2) (M' U2)", "comments": "The Z permutation is performed very similarly to the H perm. The last U2 is not necessary if you account for it before the algorithm." },
 	   { "type": "pll", "name": "Ja", "imageFileName": "pll08.gif", "moves": "(R' U L') U2 (R U' R') U2 (L R U')", "comments": "I perform the R of the [R L] a split second after I start the L so that I can immediately perform the U' to AUF when the L face has been moved to where it belongs." },
 	   { "type": "pll", "name": "Jb", "imageFileName": "pll09.gif", "moves": "(R U R' F') (R U R' U') (R' F) (R2 U') (R' U')", "comments": "This is the same as the T perm with the last four moves instead performed at the beginning." },
-	   { "type": "pll", "name": "T", "imageFileName": "pll10.gif", "moves": "(R U R' U') (R' F) (R2 U') (Match~ U) (R' F')", "comments": "This is the T permuation. It is long but definitely very fast and easy. It can be performed in almost one swift motion without any readjusting of the fingers. Note that it is a combination of two easy orientations." },
+	   { "type": "pll", "name": "T", "imageFileName": "pll10.gif", "moves": "(R U R' U') (R' F) (R2 U') (Match^ U) (R' F')", "comments": "This is the T permuation. It is long but definitely very fast and easy. It can be performed in almost one swift motion without any readjusting of the fingers. Note that it is a combination of two easy orientations." },
 	   { "type": "pll", "name": "Rb", "imageFileName": "pll11.gif", "moves": "(R' U2) (R U2) (R' F R U R' U') (R' F' R2 U')", "comments": "This is a pretty straightforard alg that flows pretty nicely." },
 	   { "type": "pll", "name": "Ra", "imageFileName": "pll12.gif", "moves": "R U R' F' R U2 R' U2 R' F R U R U2 R' U'", "comments": "You could also just mirror Rb, but this alg is more right hand friendly. Notice the similarity with the Jb permutation." },
-	   { "type": "pll", "name": "F", "imageFileName": "pll13.gif", "moves": "R' U' F' (R U R' U') (R' F) (R2 U') (Match~ U) (Slot~)", "comments": "This is a T permutation with a 3 move setup in the beginning and a cancellation of one of those moves at the end." },
-	   { "type": "pll", "name": "Ga", "imageFileName": "pll15.gif", "moves": "(R2' u) (R' U Match~ u') R2' y' (Slot~) y", "comments": "This alg has a pretty decent flow to it and can be performed almost in one motion until the rotation." },
-	   { "type": "pll", "name": "Gb", "imageFileName": "pll16.gif", "moves": "(Match~) y (R2' u R' U) (R U' R u' R2') y'", "comments": "This is the inverse of Ga. Note how similar they look. I perform this one almost exactly the same way." },
+	   { "type": "pll", "name": "F", "imageFileName": "pll13.gif", "moves": "R' U' F' (R U R' U') (R' F) (R2 U') (Match^ U) (Slot^)", "comments": "This is a T permutation with a 3 move setup in the beginning and a cancellation of one of those moves at the end." },
+	   { "type": "pll", "name": "Ga", "imageFileName": "pll15.gif", "moves": "(R2' u) (R' U Match^ u') R2' y' (Slot^) y", "comments": "This alg has a pretty decent flow to it and can be performed almost in one motion until the rotation." },
+	   { "type": "pll", "name": "Gb", "imageFileName": "pll16.gif", "moves": "(Match^) y (R2' u R' U) (R U' R u' R2') y'", "comments": "This is the inverse of Ga. Note how similar they look. I perform this one almost exactly the same way." },
 	   { "type": "pll", "name": "Gc", "imageFileName": "pll14.gif", "moves": "(R2' u' R U') (R U R' u R2) (f R' f')", "comments": "You could rotate and insert the pair instead of performing the last three moves as shown." },
 	   { "type": "pll", "name": "Gd", "imageFileName": "pll17.gif", "moves": "(R U R') y' (R2' u' R U') (R' U R' u R2) y", "comments": "This is just the inverse of Gc. I execute it very similarly because most of the moves overlap in the same manner." },
 	   { "type": "pll", "name": "V", "imageFileName": "pll18.gif", "moves": "(R' U R' d') (R' F' R2 U') (R' U R' F) (R F) y'", "comments": "This is one of my least favorite permutations because the flow just isn't there." },
 	   { "type": "pll", "name": "Na", "imageFileName": "pll19.gif", "moves": "(z) D (R' U) (R2 D' R D U') (R' U) (R2 D' R U' R) z'", "comments": "This alg could also be performed using <R,U,L> if you don't do the rotation, but this way is faster with practice." },
 	   { "type": "pll", "name": "Nb", "imageFileName": "pll20.gif", "moves": "(z) U' (R D') (R2' U R' D U') (R D') (R2' U R' D R') z'", "comments": "This is just the mirror of the other N permutation." },
-	   { "type": "pll", "name": "Y", "imageFileName": "pll21.gif", "moves": "(F R U') (Match~ U) (R' F') (R U R' U') (R' F R F')", "comments": "This is very quick and can be performed without any adjustments of where the fingers are. It is just a combination of two quick orientations." }
+	   { "type": "pll", "name": "Y", "imageFileName": "pll21.gif", "moves": "(F R U') (Match^ U) (R' F') (R U R' U') (R' F R F')", "comments": "This is very quick and can be performed without any adjustments of where the fingers are. It is just a combination of two quick orientations." }
    ] */
 
 	// 3B - 3bar (full bar), 3C - 3 colors, HL - headlights, O2B - outer 2bar, I2B - inner 2bar, BE - bookend, NBG - narrow BE, (adj) additional color is from adjacent face, 
@@ -312,7 +312,7 @@ data = (function($){
 			name: "Corner Permutations Only",
 			algs: [
 				{ type: "pll", moves: "x [Pull D2] [Slot D2] R2 x'", name: "Aa", image_comment: "O2B(opp), 3C: 4 colors | HL(adj), 3C | O2B + HL: 4 colors | I2B, I2B: BE" },
-				{ type: "pll", moves: "x' [Pull~ D2] [Slot~ D2] R2 x", name: "Ab", image_comment: " HL(adj), 3C | O2B(opp), 3C: 4 colors | I2B, I2B: BE | O2B + HL: 4 colors" },
+				{ type: "pll", moves: "x' [Pull^ D2] [Slot^ D2] R2 x", name: "Ab", image_comment: " HL(adj), 3C | O2B(opp), 3C: 4 colors | I2B, I2B: BE | O2B + HL: 4 colors" },
 				{ type: "pll", moves: ["x' [Slot D] [Match D'] [Match D] [Slot D'] x", "x' [Slot, D] [Match, D] x"], name: "E", image_comment: "NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle | NBE, 4 checkers,opp middle"},
 			]
 		},
@@ -324,18 +324,18 @@ data = (function($){
 				{ type: "pll", moves: "<bl>[Match F']</bl> <r>{[Sexy] [<r>R' F</r>] [<m>R2 U' R'</m>] U'}</r>", name: "Jb", image_comment: "O2B, I2B : BE | O2B, I2B : BE | 3B, 2B | 3B, 2B" },
 				{ type: "pll", moves: ["F Slot U' <bl>[Match F']</bl> Sexy Sledge", "[F Slot: U'] Sexy Sledge"], name: "Y", image_comment: "O2B, O2B | I2B: NBE | 3C, 3C: NBE, same 2 color external | I2B: NBE" },
 				{ type: "pll", moves: ["<bl>[Match F']</bl> LeftSexy [<r>R' F</r>] R U LeftSlot U'", "[L U2' L' U2'] [L F'] [L' U' L U] [L F] L2' U"], name: "Ra", image_comment: "HL, I2B: 4 colors | O2B(adj), 3C: adj twice | 3C, 3C: BE adj twice | HL, 3C : checkers "},
-				{ type: "pll", moves: "LeftSexy~ [<r>R' F</r>] Sexy [<g>R' F'</g>] R2 U'", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
+				{ type: "pll", moves: "LeftSexy^ [<r>R' F</r>] Sexy [<g>R' F'</g>] R2 U'", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
 				{ type: "pll", moves: "U' [Pull d'] [<g>R' F'</g>] [<m>R2 U' R'</m> U] [<g>R' F</g> R F]", name: "V", image_comment: "O2B: NBE | 4checkers: NBE | O2B: NBE | I2B, I2B: NBE"},
 				{ type: "pll", moves: ["R' U' F' Match <bl>{U' R' F [<m>R2 U' R'</m>]}</bl> U' Match U R", "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'"], name: "F", image_comment: "4checkers: BE | 3B, 3C: 4 colors | 3B, 3C: 4 colors | 4checkers: BE"},
 				{ type: "pll", moves: ["Match U Match F' Match <bl>{U' R' F [<m>R2 U' R'</m>]}</bl> U2 Slot","{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U"], name: "Na", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
-				{ type: "pll", moves: ["R' U Slot F' U' F Match F R' F' Pull~", "R' [U,  Slot F'] [F : R'] Pull~", "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'"], name: "Nb", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
+				{ type: "pll", moves: ["R' U Slot F' U' F Match F R' F' Pull^", "R' [U,  Slot F'] [F : R'] Pull^", "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'"], name: "Nb", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
 			]
 		},
 		{
 			name: "Corner & Edge Cycle Permutations (G perms)",
 			algs: [
-				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' Slot~] y", name: "Ga", image_comment: "I2B(adj): BE  | BE + opp *2  | 4 checker | O2B, HL: 4 col" },
-				{ type: "pll", moves: "[Match~] y R2 u R' U Pull~ u' R2 y'", name: "Gb", image_comment: "O2B(opp) : opp * 2 | I2B(opp): BE | HL(opp), 3C | HL(opp), 3C" },
+				{ type: "pll", moves: "R2 u Pull U' R u' R2 [y' Slot^] y", name: "Ga", image_comment: "I2B(adj): BE  | BE + opp *2  | 4 checker | O2B, HL: 4 col" },
+				{ type: "pll", moves: "[Match^] y R2 u R' U Pull^ u' R2 y'", name: "Gb", image_comment: "O2B(opp) : opp * 2 | I2B(opp): BE | HL(opp), 3C | HL(opp), 3C" },
 				{ type: "pll", moves: "R2 u' R U' Match u R2 [y Slot] y'", name: "Gc", image_comment: "BE, opp *2 | I2B: BE adj | O2B, HL: 4 col | 4 checker" },
 				{ type: "pll", moves: "[Match] y' R2 u' Slot U R' u R2 y", name: "Gd", image_comment: "I2B(opp): BE | O2B(opp) : opp * 2 | HL(opp), 3C | HL(opp), 3C" },
 			]
