@@ -60,8 +60,9 @@ algos = (function ($) {
 				do {
 					cycle.push(current)
 					let prev = current
-					current = temp[current - base]
-					if (current === undefined) throw "Array has indexes outside of the array"
+					current = temp[prev - base]
+					if (current === undefined) 
+						throw new Error(`${prev - base} is not a source in the current array [${array.join(',')}]`)
 					temp[prev - base] = -1
 				} while (current != cycle[0])
 				if (cycle.length > 1) {
@@ -316,10 +317,13 @@ algos = (function ($) {
 			   */
 			toMoves(options = {}) {
 				if (this.amount == 0) return (options.string ? "" : [])
-				if (this.isContainer(options)) {
-					let containedArray = this.containedArray(this.amount < 0, options)
+				if (this.isGroup(options)) { // resolved contains other objects
+					let resolved = this.resolveShallow(options)
+					if (this.amount < 0) {
+						resolved = resolved.map(x => x.inverted).reverse();
+					}
 					if (options.string) {
-						return containedArray.reduce((acc, val) => acc.concat(val.toMoves(options)), []).join(" ").repeat(Math.abs(this.amount))
+						return resolved.reduce((acc, val) => acc.concat(val.toMoves(options)), []).join(" ").repeat(Math.abs(this.amount))
 					}
 					let toMoves = s => s.toMoves(options)
 					let op = arr => arr.flatMap(toMoves); 
@@ -329,11 +333,11 @@ algos = (function ($) {
 					if (options.shallow) {
 						op = arr => arr
 					}
-					let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(op(containedArray))
+					let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(op(resolved))
 					result = options.nested ? result : result.flat(Infinity)
 					return options.sequence ? new Sequence(result, this.amount) : result
 				 } 
-				 
+
 				 return options.sequence ? new Sequence([this.toAtomic]) : [this.toString()] 
 			}
 
@@ -347,8 +351,16 @@ algos = (function ($) {
 			}
 
 			get permutation() {
-				let containedArray = this.amount == 0 ? [] : this.containedArray(this.amount < 0, {})
-				let p = containedArray.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
+				let p;
+				if (this.isGroup({})) {
+					let resolveShallow = this.amount == 0 ? [] : this.resolveShallow({})
+					p = resolveShallow.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
+				} else {
+					p = this.selfPermutation();
+					if (this.amount < 0) {
+						p = p.inverted;
+					}
+				}
 				for(let i = 1; i < Math.abs(this.amount); i++) {
 					p = p.then(p)
 				}
@@ -402,18 +414,23 @@ algos = (function ($) {
 				return new InvertEach(this.repeatable_unit.inverted)
 			}
 
-			isContainer(options) {
-				return this.repeatable_unit.isContainer(options);
+			isGroup(options) {
+				return this.repeatable_unit.isGroup(options);
 			}
 
-			containedArray(invert, options) {
-				return this.repeatable_unit.toMoves($.extend({}, options, {shallow: true, string: false})).map(x => new InvertEach(x));
+			resolveShallow(options) {
+				return this.repeatable_unit.resolveShallow(options).map(x => x.inverted);
 			}
 
 			innerString(options) {
 				if (this.repeatable_unit.constructor === Atomic) return this.repeatable_unit.inverted.toString(options)
-				return this.repeatable_unit.toString(options) + "~";
+				return this.repeatable_unit.toString(options) + "^";
 			}
+
+			selfPermutation() {
+				return this.repeatable_unit.permutation
+			}
+
 		}
 
 		class Atomic extends RepeatedUnit {
@@ -428,7 +445,7 @@ algos = (function ($) {
 				return new Atomic(this.character, this.inner, this.outer, -this.amount)
 			}
 
-			isContainer(options) {
+			isGroup(options) {
 				return false;
 			}
 
@@ -476,16 +493,20 @@ algos = (function ($) {
 				return new Trigger(name, amount)
 			}
 
-			isContainer(options) {
+			isGroup(options) {
 				return !options.keepTriggers;
 			}
 			
 			toSequence(ignoreAmount = false) {
-				return algos.parse(`(${data.triggers[this.name].moves})${ignoreAmount ? '' : this.stringAmount}`)
+				let str = data.triggers[this.name].moves
+				if (!ignoreLocalStorage) {
+					str = `(${str})${this.stringAmount}`
+				}
+				return algos.parse(str)
 			}
 
-			containedArray(invert, options) {
-				return this.toSequence(true).containedArray(invert, options)
+			resolveShallow(options) {
+				return this.toSequence(true).resolveShallow(options)
 			}
 
 			innerString() {
@@ -506,18 +527,17 @@ algos = (function ($) {
 
 			get inverted() {
 				if (this.amount == 1) 
-					return new Sequence(this.containedArray(true));
+					return new Sequence(this.resolveShallow(true));
 				return new Sequence(this.sub, -this.amount)	
 			}
 
 
-			isContainer(options) {
+			isGroup(options) {
 				return true;
 			}
 
-			containedArray(invert, options) {
-				if (!invert) return this.sub
-				return this.sub.map(s => s.inverted).reverse()
+			resolveShallow(options) {
+				return this.sub
 			}
 
 			innerString() {
@@ -541,12 +561,12 @@ algos = (function ($) {
 				return this.sequence.inverted;
 			}
 
-			isContainer(options) {
-				return this.sequence.isContainer(options);
+			isGroup(options) {
+				return this.sequence.isGroup(options);
 			}
 
-			containedArray(invert, options) {
-				return this.sequence.containedArray(invert, options)
+			resolveShallow(options) {
+				return this.sequence.resolveShallow(options)
 			}
 
 			innerString(options) {
@@ -571,12 +591,12 @@ algos = (function ($) {
 				return new Conjugate(this.a, this.b.inverted)
 			}
 
-			isContainer(options) {
+			isGroup(options) {
 				return true;
 			}
 
-			containedArray(invert, options) {
-				return [this.a, invert ? this.b.inverted : this.b, this.a.inverted]
+			resolveShallow(options) {
+				return [this.a, this.b, this.a.inverted]
 			}
 
 			innerString() {
@@ -600,13 +620,11 @@ algos = (function ($) {
 				return new Commutator(this.b, this.a);
 			}
 
-			isContainer(options) {
+			isGroup(options) {
 				return true;
 			}
 
-			containedArray(invert, options) {
-				let a = invert ? this.b : this.a
-				let b = invert ? this.a : this.b
+			resolveShallow(options) {
 				return [a, b, a.inverted, b.inverted]
 			}
 
@@ -785,6 +803,7 @@ algos = (function ($) {
 
 			turns.forEach((turn, i) => {
 				let url = check_and_set(formula  + turn, async function() {
+					try {
 					algo = algo || algos.parse(formula).inverted
 					face = face || algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
 					//formula = algo.toMoves({string: true})
@@ -810,6 +829,9 @@ algos = (function ($) {
 
 					}
 					return url;
+				} catch (e) {
+					throw e
+				}
 				})
 				url.then(url => {
 					images[i].src = url
