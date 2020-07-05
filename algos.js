@@ -788,9 +788,9 @@ algos = (function ($) {
 			img_comments = (image_comment || '').split("|")
 			let images = turns.map((_, i) => {
 				let $div = $(`<div class="image"></div>`).appendTo($container);
-				let $image = $(`<img width="100" height="100">${(img_comments[i] || '').trim()}</img>`)
+				let $image = $(`<img width="100" height="100"></img>`)
 				$div.append($image)
-				$div.append($(`<br>${img_comments[i]}`))
+				$div.append($(`<div class="image-comment">${(img_comments[i]||'').trim()}</div>`))
 				/*$image.click(function () {
 					setDemoAlgo(turns[i] + formula, $(this));
 				});*/
@@ -837,7 +837,9 @@ algos = (function ($) {
 					images[i].src = url
 				})
 			})
-			var known = 'known';
+
+			let $subcontainer = $(`<div class="formulas"></div>`).appendTo($container) 
+			let known = 'known';
 			[].concat(moves).forEach(move => {
 				// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
 				move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${data.triggers[match].moves}">${match}</span>`)
@@ -845,13 +847,13 @@ algos = (function ($) {
 				$move.find('[data-toggle="tooltip"]').tooltip();
 				$div = $(`<div class="formula ${known}"></div>`)
 				$div.append($move)
-				$div.appendTo($container)/*.click(function () {
+				$div.appendTo($subcontainer)/*.click(function () {
 					setDemoAlgo(formula, $(this));
 				});*/
 				known = '';
 			})
 			if (comment) {
-				$container.append(`<div class="comment">${comment}</div>`)
+				$subcontainer.append(`<div class="comment">${comment}</div>`)
 			}
 		}
 

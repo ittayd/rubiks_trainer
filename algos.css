@@ -27,61 +27,57 @@ body {
 	padding:5px;
 }
 
-ul.f2l, ul.oll > li, ul.pll > li{
-	list-style: none;
+ul.pll {
+	--num-images: 4;
+}
+
+ul.f2l, ul.oll {
+	--num-images: 1;
+}
+ul.f2l, ul.oll, ul.pll {
+	display: grid;
+	grid-template-columns: minmax(50px, max-content) repeat(var(--num-images), 100px) repeat(100, max-content);
+	grid-gap: 10px;
+	align-items: center;
 }
 
 li.algo{
-	clear:both;
-	margin-bottom:20px;
+	display: contents;
 }
 
 
 li.title{
-	clear:both;
 	font-size:24px;
-	padding-top:30px;
-	padding-bottom:30px;
 	margin-left: -30px;
 	font-weight:bold;
+	grid-column: 1/-1;
 }
 
 .name{
-	float:left;
-	width:180px;
+	grid-column-start: 1;
 }	
-.image{
-	float:left;
-	width:100px;
-	height:130px;
-	font-size: 12;
+
+.image-comment {
+	font-size: 12px;
 	text-align: center;
 }	
-.formula{
-	float:left;
-	margin-left:50px;
-}
-.comment {
-	float:left;
-	margin-left:50px;
-}
+
 .arrows{
 	display:none;
 }
-.comment {
-	float:left;
-	margin-left:50px;
+
+.formulas {
+	display: flex;
 }
 
-
-
-/*
-div.virtualcube {
-	display: inline-block;
-	height: 500px;
-	width: 500px;
+.formula, .comment {
+	display: inline;
 }
-*/
+
+.formula::after, .comment::after {
+	padding: 0px 10px; 
+	content: ";"; 
+}
 
 #undo-move-btn {
 	z-index: 100;
