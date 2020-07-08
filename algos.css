@@ -36,7 +36,7 @@ ul.f2l, ul.oll {
 }
 ul.f2l, ul.oll, ul.pll {
 	display: grid;
-	grid-template-columns: minmax(50px, max-content) repeat(var(--num-images), 100px) repeat(100, max-content);
+	grid-template-columns: minmax(50px, max-content) min-content repeat(100, max-content);
 	grid-gap: 10px;
 	align-items: center;
 }
@@ -54,6 +54,20 @@ li.title{
 	list-style: none;
 	clear: both;
 }
+
+li > .images {
+	display: flex;
+}
+
+.images > .image {
+	flex-basis: 100px;
+}
+
+ul.pll:not(.expand-images) .images > .image:not(:first-child) {
+	display: none;
+}
+
+
 
 .name{
 	grid-column-start: 1;

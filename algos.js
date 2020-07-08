@@ -786,8 +786,9 @@ algos = (function ($) {
 			
 			const turns = ((image && image.stage) || default_stage) == 'pll' ? ["", " y", " y2", " y'"] : [""]
 			img_comments = (image_comment || '').split("|")
+			let $images = $('<div class="images"></div>').appendTo($container)
 			let images = turns.map((_, i) => {
-				let $div = $(`<div class="image"></div>`).appendTo($container);
+				let $div = $(`<div class="image"></div>`).appendTo($images);
 				let $image = $(`<img width="100" height="100"></img>`)
 				$div.append($image)
 				$div.append($(`<div class="image-comment">${(img_comments[i]||'').trim()}</div>`))
@@ -803,7 +804,7 @@ algos = (function ($) {
 
 			turns.forEach((turn, i) => {
 				let url = check_and_set(formula  + turn, async function() {
-					try {
+				try {
 					algo = algo || algos.parse(formula).inverted
 					face = face || algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
 					//formula = algo.toMoves({string: true})
@@ -869,6 +870,9 @@ algos = (function ($) {
 				}
 			});
 		});
+
+		$container.click(_ => $container.toggleClass('expand-images'))
+
 	}
 
 	notationpeg.then(data => {
