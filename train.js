@@ -238,27 +238,28 @@ Train = (function() {
             $('#reposition-btn').click(_ => control.reposition());
 
             let $result = $('#result')
+
             $('#reverse-btn').click(_ => {
-				$result.html(algos.parse(self.$algo.html()).inverted.toString())
+				$result.text(algos.parse(self.algotext()).inverted.toMoves({nested: true, keepTriggers: true, string:true}))
             })
             
             $('#order-btn').click(_ => {
-                $result.html(algos.parse(self.$algo.html()).permutation.order)
+                $result.text(algos.parse(self.algotext()).permutation.order)
             })
             'xyz'.split('').forEach(axis => {
                 $(`#mirror-${axis}-btn`).click(_ => {
-                    $result.html(algos.parse(self.$algo.html()).mirror(axis).toString())
+                    $result.text(algos.parse(self.algotext()).mirror(axis).toString())
                 })
                 $(`#clockwise-${axis}-btn`).click(_ => {
-                    $result.html(algos.parse(self.$algo.html()).rotate(axis).toString())
+                    $result.text(algos.parse(self.algotext()).rotate(axis).toString())
                 })
                 $(`#counter-${axis}-btn`).click(_ => {
-                    $result.html(algos.parse(self.$algo.html()).rotate(axis, -1).toString())
+                    $result.text(algos.parse(self.algotext()).rotate(axis, -1).toString())
                 })
             })
 
             $('#copy-btn').click(_ => {
-                self.$algo.html($result.html())
+                self.$algo.text($result.text())
             })
 
             $('#f2l-tips-btn').click(_ => {$('#f2l-tips').toggle(true); self.$algo.html(self.train_moves)})
@@ -268,6 +269,10 @@ Train = (function() {
 
         }
 
+        
+        algotext() {
+            return this.$algo.text().split('').map(char => char.charCodeAt(0)  == 160 ? ' ' : char).join('')
+        }
 
         advance({to = 0, delta = undefined, jump = false, reset = false} = {}) {
             var all_moves_arr = algos.parse(this.all_moves).toMoves({keepTriggers: true})
@@ -467,7 +472,7 @@ Train = (function() {
         }
 
         undoAlgo() {
-            let algo = algos.parse(this.$algo.text()).inverted
+            let algo = algos.parse(this.algotext()).inverted
             algo = algo.toMoves()
             this.control.move(algo)
         }

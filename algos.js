@@ -322,8 +322,9 @@ algos = (function ($) {
 					if (this.amount < 0) {
 						resolved = resolved.map(x => x.inverted).reverse();
 					}
-					if (options.string) {
-						return resolved.reduce((acc, val) => acc.concat(val.toMoves(options)), []).join(" ").repeat(Math.abs(this.amount))
+					let string = options.string;
+					if (string) {
+						options = $.extend({}, options, {string: false})
 					}
 					let toMoves = s => s.toMoves(options)
 					let op = arr => arr.flatMap(toMoves); 
@@ -334,11 +335,17 @@ algos = (function ($) {
 						op = arr => arr
 					}
 					let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(op(resolved))
-					result = options.nested ? result : result.flat(Infinity)
+					result = options.nested ? result[0] : result.flat(Infinity)
+					if (string) {
+						function toStr(arr) { 
+							return arr.reduce((acc, e) => acc.concat((Array.isArray(e) ? `[${toStr(e)}]` : e)), []).join(" ")
+						}
+						return toStr(result)
+					}
 					return options.sequence ? new Sequence(result, this.amount) : result
 				 } 
 
-				 return options.sequence ? new Sequence([this.toAtomic]) : [this.toString()] 
+				 return options.sequence ? new Sequence([this.toAtomic]) : this.toString() 
 			}
 
 			get stringAmount() {
@@ -405,13 +412,13 @@ algos = (function ($) {
 
 
 		class InvertEach extends RepeatedUnit{
-			constructor(repeatable_unit) {
-				super(undefined, 1)
+			constructor(repeatable_unit, amount = 1) {
+				super(undefined, amount)
 				this.repeatable_unit = repeatable_unit;
 			}
 
 			get inverted() {
-				return new InvertEach(this.repeatable_unit.inverted)
+				return new InvertEach(this.repeatable_unit, -this.amount)
 			}
 
 			isGroup(options) {
@@ -494,7 +501,7 @@ algos = (function ($) {
 			}
 
 			isGroup(options) {
-				return !options.keepTriggers;
+				return !(options.keepTriggers & this.amount == 1);
 			}
 			
 			toSequence(ignoreAmount = false) {
@@ -526,8 +533,6 @@ algos = (function ($) {
 			}
 
 			get inverted() {
-				if (this.amount == 1) 
-					return new Sequence(this.resolveShallow(true));
 				return new Sequence(this.sub, -this.amount)	
 			}
 
@@ -541,7 +546,9 @@ algos = (function ($) {
 			}
 
 			innerString() {
-				return `${this.sub.map(s => s.toString()).join(" ")}`
+				let base = `${this.sub.map(s => s.toString()).join(" ")}`
+				if (this.amount != 1) base = `(${base})`
+				return base;
 			}
 
 			cascade(f) {
