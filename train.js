@@ -105,7 +105,7 @@ Train = (function() {
 
             let self = this;
             this.$algo.keyup(function(){
-                self.all_moves = self.$algo.html();
+                self.all_moves = self.algotext();
             })
 
             $('#f2l-btn').click(_ => self.f2l_scramble())
@@ -328,7 +328,7 @@ Train = (function() {
                 let groupIdx = parseInt($('#f2l-group').find(":selected").val());
                 switch(groupIdx) {
                     case -2:
-                        algo = this.$algo.html();
+                        algo = this.algotext();
                         break;
                     case -1:
                         algo = alg_move(random_alg(data.f2l, '#f2l-tips'))
@@ -385,7 +385,7 @@ Train = (function() {
                         break;
                     }
                     case '-2':
-                        algo = this.$algo.html();
+                        algo = this.algotext();
                         break;
                     case '-1':
                         algo = alg_move(random_alg(data.oll, '#oll-tips'))
@@ -440,7 +440,7 @@ Train = (function() {
                         algo = alg_move(random_alg(data.pll, '#pll-tips'))
                         break;
                     case '-1': // algorithm from input box
-                        algo = this.$algo.html();
+                        algo = this.algotext();
                         break;
                     default: { // from multi-selected algorithms
                         let algs = selected.flatMap(s => {
@@ -465,7 +465,7 @@ Train = (function() {
         }
 
         doAlgo(inverted) {
-            let algo = algos.parse(this.$algo.html())
+            let algo = algos.parse(this.algotext())
             if (inverted) {
                 algo = algo.inverted
             }
