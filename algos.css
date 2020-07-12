@@ -115,6 +115,9 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 /*	top: 20px;*/
 }
 
+.form-check-inline {
+	line-height: 1;
+}
 
 .virtualcube {
 	float: left;

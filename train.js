@@ -233,7 +233,7 @@ Train = (function() {
 			})
 
             $('#do-btn').click(_ => self.doAlgo());
-			$('#undo-btn').click(_ => self.undoAlgo());
+			$('#undo-btn').click(_ => self.doAlgo(true));
 			$('#reset-btn').click(_ => control.reset());
             $('#reposition-btn').click(_ => control.reposition());
 
@@ -464,17 +464,14 @@ Train = (function() {
             return this.all_moves;
         }
 
-        doAlgo() {
+        doAlgo(inverted) {
             let algo = algos.parse(this.$algo.html())
+            if (inverted) {
+                algo = algo.inverted
+            }
+            let fast = $('#fast-chk').is(":checked");
             algo = algo.toMoves()
-            console.log('do', algo)
-            this.control.move(algo)
-        }
-
-        undoAlgo() {
-            let algo = algos.parse(this.algotext()).inverted
-            algo = algo.toMoves()
-            this.control.move(algo)
+            this.control.move(algo, fast)
         }
     }
 
