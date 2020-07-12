@@ -506,7 +506,7 @@ algos = (function ($) {
 			
 			toSequence(ignoreAmount = false) {
 				let str = data.triggers[this.name].moves
-				if (!ignoreLocalStorage) {
+				if (!ignoreAmount) {
 					str = `(${str})${this.stringAmount}`
 				}
 				return algos.parse(str)
@@ -878,7 +878,7 @@ algos = (function ($) {
 			});
 		});
 
-		$container.click(_ => $container.toggleClass('expand-images'))
+		$container.click(e => $(event.target).is('img') && 	$container.toggleClass('expand-images'))
 
 	}
 
