@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=900, initial-scale=1">
+	<meta name="viewport" content="width=1080, initial-scale=1">
 
 	<title>Rubik's Cube Algos</title>
 
@@ -78,8 +78,6 @@
 
 
 			$(':button').mouseup(function() { this.blur() })
-
-			
 		});
 
 
@@ -113,23 +111,12 @@
 				<fieldset>
 					<div class="container-fluid">
 						<div class="row mx-1 my-3">
-							<div class="col-xl-4 col-sm-7">
-								<div class="row w-100 position-absolute ">
-									<input id="undo-move-btn" type="button" class="col-1 btn btn-lg btn-mine" value="↶">
-									<div id="keyboard" class="col-2 offset-md-3 d-none d-xl-inline "></div>
-									<input id="redo-move-btn" type="button" class="col-1 offset-xl-3 offset-md-9 btn btn-lg btn-mine" value="↷">
-								</div>
-								<div class="row">
-									<div id="cube-container" class="d-flex mx-1 mt-n4 mb-n4">
-										<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
-										<!--<canvas id="canvas3" width="500" height="500">
-											Sorry, this demo requires a web browser which supports HTML5 canvas!
-										</canvas>-->
-									</div>
-								</div>
-								<div class="row d-xl-none float-right">
-									<table id="moves" class="table-sm text-left table-bordered w-auto mt-n1"></table>
-								</div>
+							<div class="col-xl-4 col-sm-7" id="cube-controls">
+								<input id="undo-move-btn" type="button" class="btn btn-lg btn-mine" value="↶">
+								<div id="keyboard" class="d-none d-xl-inline "></div>
+								<input id="redo-move-btn" type="button" class="btn btn-lg btn-mine" value="↷">
+								<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
+								<table id="moves" class="d-xl-none table-sm text-left table-bordered"></table>
 							</div>
 							<div class="col-xl-4 col-sm-4 ">
 								<table id="triggers" class="table-sm text-left table-bordered w-auto">
