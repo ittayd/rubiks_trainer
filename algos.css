@@ -1,3 +1,22 @@
+@media only screen and (max-width: 400px) {
+	html {
+		font-size: 12px;
+	}
+
+	#triggers, #moves {
+		font-size: 10px;
+	}
+
+	#triggers .btn, #moves .btn {
+		font-size: 8.75px;
+	}
+
+	#algo-controls > *:nth-child(n+6) {
+		display: none;
+
+	}
+}
+
 #result g, #algo g, .algo g {
 	color: mediumseagreen;
 }
@@ -21,10 +40,6 @@
     
 .opt-l2 {
     padding-left: 15px;
-}
-
-body {
-	padding:5px;
 }
 
 ul.pll {
@@ -97,49 +112,71 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 
 #cube-controls {
 	display: grid;
-	grid-template-columns: repeat(12, 40px);
-	grid-template-rows: repeat(12, 40px);
+	grid-template-columns: repeat(6, 1fr);
 }
+
+/* make cells square */ 
+#cube-controls::before {
+    content: '';
+    width: 0;
+    padding-bottom: 100%;
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+}
+
+#cube-controls > *:first-child {
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+}
+
+/* end square */
 
 #undo-move-btn {
 	z-index: 100;
-	grid-column: 1;
-	grid-row: 1;
-	height: 50px;
-	width: 50px;
+	grid-column-start: 1;
+	grid-row-start: 1;
+	width: fit-content;
+	height: fit-content;
 }
 
 #keyboard {
 	z-index: 100;
 	grid-column: 2/-2;
-	grid-row: 1;
+	grid-row-start: 1;
 }
 
 #redo-move-btn {
 	z-index: 100;
-	grid-column: -1;
-	grid-row: 1;
-	height: 50px;
-	width: 50px;
+	grid-column-start: -1;
+	grid-row-start: 1;
+	width: fit-content;
+	height: fit-content;
 }
 
 .virtualcube {
 	grid-column: 1/-1;
-	grid-row: 1/-1;
-	height: 500px;
-	width: 550px;
-	position:relative;
-	top: -20px;
+	grid-row: 2;
+	height: 260px;
+	width: 225px;
+	position: relative;
+	top: -30px;
 	object-fit:contain; /* required for mobile */
 	/* border:1px solid #CCCCCC; */
+}
+
+#debug {
+	background-color: yellow;
+	grid-column: 1;
+	grid-row: 2;
 }
   
 #moves {
 	z-index: 100;
-	grid-column: -1;
-	grid-row: -4;
+	grid-column: -4/span 3;
+	grid-row: 3;
 	position: relative;
-	right: 20px;
+	right: -20px;
+	top: -27px;
 }
 
 /*

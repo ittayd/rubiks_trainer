@@ -3,7 +3,7 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=1080, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
 
 	<title>Rubik's Cube Algos</title>
 
@@ -95,9 +95,9 @@
 				<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
 					<a class="nav-item nav-link active show" id="nav-intro-tab" data-toggle="tab" href="#nav-intro"   role="tab" aria-controls="nav-intro" aria-selected="true">Intro</a>
 					<a class="nav-item nav-link"             id="nav-f2l-tab"   data-toggle="tab" href="#nav-f2l"     role="tab" aria-controls="nav-f2l"   aria-selected="false">F2L</a>
-					<a class="nav-item nav-link"             id="nav-oll2-tab"  data-toggle="tab" href="#nav-oll2"    role="tab" aria-controls="nav-oll2"  aria-selected="false">OLL (2 looks)</a>
+					<a class="nav-item nav-link"             id="nav-oll2-tab"  data-toggle="tab" href="#nav-oll2"    role="tab" aria-controls="nav-oll2"  aria-selected="false">OLL2L</a>
 					<a class="nav-item nav-link"             id="nav-oll-tab"   data-toggle="tab" href="#nav-oll"     role="tab" aria-controls="nav-oll"   aria-selected="false">OLL</a>
-					<a class="nav-item nav-link"             id="nav-pll2-tab"  data-toggle="tab" href="#nav-pll2"    role="tab" aria-controls="nav-pll2"  aria-selected="false">PLL (2 look)</a>
+					<a class="nav-item nav-link"             id="nav-pll2-tab"  data-toggle="tab" href="#nav-pll2"    role="tab" aria-controls="nav-pll2"  aria-selected="false">PLL2L</a>
 					<a class="nav-item nav-link"             id="nav-pll-tab"   data-toggle="tab" href="#nav-pll"     role="tab" aria-controls="nav-pll"   aria-selected="false">PLL</a>
 				</div>
 			</nav>
@@ -109,17 +109,19 @@
 		<div id="nav-tabContent" class="tab-content">
 			<div class="tab-pane fade active show" id="nav-intro" role="tabpanel" aria-labelledby="nav-intro-tab">
 				<fieldset>
-					<div class="container-fluid">
-						<div class="row mx-1 my-3">
-							<div class="col-xl-4 col-sm-7" id="cube-controls">
-								<input id="undo-move-btn" type="button" class="btn btn-lg btn-mine" value="↶">
-								<div id="keyboard" class="d-none d-xl-inline "></div>
-								<input id="redo-move-btn" type="button" class="btn btn-lg btn-mine" value="↷">
-								<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
-								<table id="moves" class="d-xl-none table-sm text-left table-bordered"></table>
+					<div class="container-fluid px-1">
+						<div class="row">
+							<div class="col-7 col-xl-4 pl-3 pr-1">
+								<div id="cube-controls">
+									<input id="undo-move-btn" type="button" class="btn btn-mine btn-sm" value="↶">
+									<div id="keyboard" class="d-none d-xl-inline "></div>
+									<input id="redo-move-btn" type="button" class="btn btn-mine btn-sm" value="↷">
+									<canvas class="virtualcube" kind="RubiksCube" facelist="f,r,u,b,l,d" debug></canvas>
+									<table id="moves" class="d-xl-none table-sm text-left table-bordered"></table>
+								</div>
 							</div>
-							<div class="col-xl-4 col-sm-4 ">
-								<table id="triggers" class="table-sm text-left table-bordered w-auto">
+							<div class="col-5 col-xl-4 pl-1 pr-3">
+								<table id="triggers" class="table-sm text-left table-bordered">
 									<thead>
 									<tr>
 										<th>Name</th>
@@ -131,9 +133,9 @@
 							</div>
 						</div>
 						
-						<div class="row">
+						<div class="row" id="train-controls">
 							<div class="col mx-1">
-								<div class="row form-group"> 
+								<div class="row form-group" id="algo-controls"> 
 									<div class="form-control form-control-sm col-12" contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
 									<div class="m-2 col-2 form-check form-check-inline">
 										<input class="form-check-input" type="checkbox" value="" id="fast-chk">
