@@ -11,9 +11,8 @@
 		font-size: 8.75px;
 	}
 
-	#algo-controls > *:nth-child(n+6) {
+	#algo-controls div > :nth-child(n+6) {
 		display: none;
-
 	}
 }
 
@@ -113,6 +112,7 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 #cube-controls {
 	display: grid;
 	grid-template-columns: repeat(6, 1fr);
+	height: 355px;
 }
 
 /* make cells square */ 
@@ -189,44 +189,27 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	display: none;
 }
 
+
+#train-controls {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
 #div_menu {
 	z-index: 100;
-	position: relative;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	background-color: white;
 }
 
 #nav-tabContent {
-	position: relative;
-/*	top: 20px;*/
+	margin-top: 30px;
 }
 
 .form-check-inline {
 	line-height: 1;
 }
 
-
-#div_canvas {
-	width:285px;
-	height:255px; 
-	position:absolute; display:none; 
-	background-color:#DDDDDD;
-	border:solid 2px #666666;
-	padding:10px;
-	margin:10px;
-}
-
-#div_menu  ul > li{
-	/*
-	margin-right:40px;
-	list-style: none;
-	float:left;
-	border: solid 2px;
-	height:25px;
-	width:120px;
-	text-align:center;
-	margin:2px;
-	cursor:pointer;
-	*/
-}
 
 #div_menu > ul > li.active{
 	background-color:#DDDDFF;
@@ -239,19 +222,7 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 .tab_body_item.active {
 	display:block;
 }
-/*
-.known {
-	/* background-color:#FFFFCC; 
-	font-weight: 600;
-}
 
-input[type=button] {
-	background-color: #e4e4e4;
-}
-
-button {
-	background-color: #e4e4e4;
-}*/
 .btn-mine {
 	background-color: #e4e4e4;
 	border-bottom: 2px solid #cccccc;

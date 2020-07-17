@@ -109,8 +109,8 @@
 		<div id="nav-tabContent" class="tab-content">
 			<div class="tab-pane fade active show" id="nav-intro" role="tabpanel" aria-labelledby="nav-intro-tab">
 				<fieldset>
-					<div class="container-fluid px-1">
-						<div class="row">
+					<div class="container-fluid px-1 mt-3">
+						<div class="row mb-3">
 							<div class="col-7 col-xl-4 pl-3 pr-1">
 								<div id="cube-controls">
 									<input id="undo-move-btn" type="button" class="btn btn-mine btn-sm" value="↶">
@@ -133,11 +133,11 @@
 							</div>
 						</div>
 						
-						<div class="row" id="train-controls">
-							<div class="col mx-1">
-								<div class="row form-group" id="algo-controls"> 
+						<div id="train-controls" class="mx-4">
+							<div id="algo-controls">
+								<div class="row form-group"> 
 									<div class="form-control form-control-sm col-12" contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
-									<div class="m-2 col-2 form-check form-check-inline">
+									<div class="col-2 form-check form-check-inline">
 										<input class="form-check-input" type="checkbox" value="" id="fast-chk">
 										<label class="form-check-label" for="fast-chk">fast</label>						
 									</div>
@@ -165,7 +165,7 @@
 									<input type="button" id="copy-btn" class="btn btn-mine btn-sm align-self-start col-2" value="copy" >
 								</div>
 							</div>
-							<div class="col mx-1">
+							<div id="advance-controls">
 								<div class="row form-group">
 									<input id="full-btn" class="btn btn-mine btn-sm col-2" type="button" value="Full">
 									<input id="start-btn" class="btn btn-mine btn-sm col-2" type="button" value="↞">
@@ -175,8 +175,7 @@
 									<input id="end-btn" class="btn btn-mine btn-sm col-2" type="button" value="↠">
 								</div>
 							</div>
-							<div class="w-100 d-xl-none"></div>
-							<div class="col mx-1">
+							<div id="f2l-controls">
 								<div class="row form-group">							
 										<input id="f2l-btn" type="button" value="F2L" class="btn btn-mine btn-sm col-2"></input>
 										<select id="f2l-group" class="form-control form-control-sm col-10">
@@ -193,7 +192,7 @@
 										<div id="f2l-tips" class="col-10"></div>
 								</div>
 							</div>
-							<div class="col mx-1">
+							<div id="oll-controls">
 								<div class="d-flex row form-group">
 									<input id="oll-btn" class="btn btn-mine btn-sm align-self-start col-2" type="button" value="OLL">
 									<select id="oll-group" class="form-control form-control-sm col-10" multiple="multiple">
@@ -201,13 +200,13 @@
 										<option value="-2">-- random --</option>
 										<option value="-1">-- algo --</option>
 									</select>
-									<label class="col-6" for="oll-weight">weight</label>
-									<input class="form-control form-control-sm col-6" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="6">								  
+									<label class="col-2" for="oll-weight">weight</label>
+									<input class="form-control form-control-sm col-4" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="6">								  
 									<input id="oll-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
-									<div id="oll-tips" class="col-10"></div>
+									<div id="oll-tips" class="col-6"></div>
 								</div>
 							</div>
-							<div class="col mx-1">
+							<div id="pll-controls">
 								<div class="d-flex row align-items-center">
 									<input id="pll-btn" class="btn btn-mine btn-sm align-self-start col-2" type="button" value="PLL">
 									<select id="pll-group" class="form-control form-control-sm col-10" multiple="multiple">
@@ -216,9 +215,9 @@
 										<option value="-2">-- algo --</option>
 									</select>
 									<label class="col-2 ml-n2 mr-2" for="pll-weight">weight</label>
-									<input class="form-control form-control-sm col-10" type="range" id="pll-weight" name="oll-weight" min="-1" max="10" step="1" value="6">								  
+									<input class="form-control form-control-sm col-4" type="range" id="pll-weight" name="oll-weight" min="-1" max="10" step="1" value="6">								  
 									<input id="pll-tips-btn" type="button" class="btn btn-mine btn-sm col-2" value="tip">
-									<div id="pll-tips" class="col-10" ></div>
+									<div id="pll-tips" class="col-4" ></div>
 								</div>
 							</div>
 						</div>
