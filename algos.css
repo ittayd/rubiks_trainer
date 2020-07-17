@@ -1,4 +1,17 @@
+:root {
+	--vc-width: 450px;
+	--vc-height: 520px;
+	--vc-row: 1;
+	--tr-columns: 5;
+}
+
 @media only screen and (max-width: 400px) {
+	:root {
+		--vc-width: 225px;
+		--vc-height: 260px;
+		--vc-row: 2;
+		--tr-columns: 1;
+	}
 	html {
 		font-size: 12px;
 	}
@@ -155,9 +168,9 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 
 .virtualcube {
 	grid-column: 1/-1;
-	grid-row: 2;
-	height: 260px;
-	width: 225px;
+	grid-row: var(--vc-row);
+	height: var(--vc-height);
+	width: var(--vc-width);
 	position: relative;
 	top: -30px;
 	object-fit:contain; /* required for mobile */
@@ -192,8 +205,15 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 
 #train-controls {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	grid-template-columns: repeat(var(--tr-columns), 1fr);
+	column-gap: 10px;
 }
+
+#train-controls > * {
+	margin-right: 0px;
+	margin-left: 0px;
+}
+
 #div_menu {
 	z-index: 100;
 	position: fixed;
