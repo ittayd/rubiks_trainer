@@ -206,12 +206,30 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 #train-controls {
 	display: grid;
 	grid-template-columns: repeat(var(--tr-columns), 1fr);
-	column-gap: 10px;
+	column-gap: 5px;
 }
 
 #train-controls > * {
-	margin-right: 0px;
-	margin-left: 0px;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+}
+
+#train-controls > * > * {
+	display: contents;
+}
+
+#train-controls .select2 {
+	line-height: 1.2;
+}
+
+#train-controls > * > * > *{
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+
+#advance-controls > * > * {
+	flex: 1;
 }
 
 #div_menu {
@@ -249,5 +267,5 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	border-right: 2px solid #cccccc;
 
 	outline: none;
-
+	height: fit-content;
 }
