@@ -360,8 +360,11 @@ algos = (function ($) {
 			get permutation() {
 				let p;
 				if (this.isGroup({})) {
-					let resolveShallow = this.amount == 0 ? [] : this.resolveShallow({})
-					p = resolveShallow.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
+					let resolved = this.amount == 0 ? [] : this.resolveShallow({})
+					if (this.amount < 0) {
+						resolved = resolved.map(x => x.inverted).reverse();
+					}
+					p = resolved.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
 				} else {
 					p = this.selfPermutation();
 					if (this.amount < 0) {
@@ -755,7 +758,7 @@ algos = (function ($) {
 		const triggersPattern = new RegExp(Object.keys(data.triggers).sort((a,b) => b.length - a.length).join('|'), "g")
 
 		function renderCycle(arr) {
-			return arr.reduce((acc, val, i) => `${acc},U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'},`, '')
+			return arr.map((val, i) => `U${val}U${arr[(i+1)%arr.length]}-s7-${val % 2 ? 'red' : 'blue'}`).join(",")
 		}
 
 		async function img_blob(url) {
