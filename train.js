@@ -312,7 +312,7 @@ Train = (function() {
             if(delta < 0)
                 partial = partial.inverted
 
-            this.control.move(partial.toMoves(), jump ? true : false);
+            this.control.move(partial, jump ? true : false);
 
             this.current_idx = to;
 
@@ -470,7 +470,6 @@ Train = (function() {
                 algo = algo.inverted
             }
             let fast = $('#fast-chk').is(":checked");
-            algo = algo.toMoves()
             this.control.move(algo, fast)
         }
     }
