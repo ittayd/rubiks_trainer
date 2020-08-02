@@ -4,7 +4,8 @@
 		<title>three.js webgl - STL</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="https://threejs.org/examples/main.css">
+        <link type="text/css" rel="stylesheet" href="https://threejs.org/examples/main.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.4.2/gsap.js"></script>
 	</head>
 	<body>
 		<div id="info">
@@ -27,6 +28,15 @@
 
 			var camera, cameraTarget, scene, renderer;
 
+            var colors = {
+                D: 0xfff7ff, // white
+                U: 0xffef48, // yellow
+                R: 0xef3923, // red
+                F: 0x41aac8, // blue
+                L: 0xff8c0a, // orange
+                B: 0x82ca38, // green
+            }
+
             function matrix4Between(v1, v2) {
                 var qrot = new THREE.Quaternion();
                 qrot.setFromUnitVectors(v1, v2);
@@ -34,38 +44,114 @@
                 m4.makeRotationFromQuaternion(qrot);
                 return m4
             }
+
+            function eulerToVector(euler, x=1, y=0, z=0) {
+                let vec = new THREE.Vector3(x, y, z)
+                vec.applyEuler(euler);
+                vec.x = Math.round(vec.x * 1000) / 1000
+                vec.y = Math.round(vec.y * 1000) / 1000
+                vec.z = Math.round(vec.z * 1000) / 1000
+                
+                return vec;
+            }
+
+            function worldVec(mesh) {
+                let q = new THREE.Quaternion();
+                mesh.getWorldQuaternion(q);
+                let vec = new THREE.Vector3(1,0,0);
+                vec.applyQuaternion(q);
+                vec.x = Math.round(vec.x * 1000) / 1000
+                vec.y = Math.round(vec.y * 1000) / 1000
+                vec.z = Math.round(vec.z * 1000) / 1000
+
+                return vec;
+            }
+
+
+            function buildCornerMesh(corner_g) {
+                let cq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(-1,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
+                let material = new THREE.MeshLambertMaterial();
+                let first = new THREE.Mesh(corner_g, material);
+                let second = new THREE.Mesh(corner_g.clone(), material.clone());
+                let third = new THREE.Mesh(corner_g.clone(), material.clone());
+
+                first.rotation.setFromQuaternion(cq);
+                second.rotation.setFromQuaternion((new THREE.Quaternion(-0.5, -0.5, 0.5, 0.5)).premultiply(cq));
+                third.rotation.setFromQuaternion((new THREE.Quaternion(0.5, 0.5, -0.5, 0.5)).premultiply(cq));
+                
+                let group = new THREE.Group();
+                group.name = "corner";
+                group.rotation.setFromQuaternion(cq.inverse());
+
+                group.add(first);
+                group.add(second);
+                group.add(third);
+
+                return group;
+            }
+
+            function buildEdgeMesh(edge_g) {
+                let cq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(0,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
+                let material = new THREE.MeshLambertMaterial();
+                let first = new THREE.Mesh(edge_g, material);
+                let second = new THREE.Mesh(edge_g.clone(), material.clone());
+
+                first.rotation.setFromQuaternion(cq);
+                second.rotation.setFromQuaternion((new THREE.Quaternion(0, Math.SQRT1_2, -Math.SQRT1_2, 0)).premultiply(cq));
+
+                let group = new THREE.Group();
+                group.name = "edge"
+                group.rotation.setFromQuaternion(cq.inverse());
+
+                group.add(first);
+                group.add(second)
+
+                return group;
+            }
+
+            function buildCenterMesh(center_g) {
+                let material = new THREE.MeshLambertMaterial();
+                let first = new THREE.Mesh(center_g, material);
+                first.name = "center"
+                return first;
+            }
+
 			class Face {
 				constructor(scene, axis, color, corner, edge, center) {
-                    this.facelets = [];
                     var material = new THREE.MeshPhongMaterial( { color: color, specular: 0x111111, shininess: 200 } );
                     var m4 = matrix4Between(new THREE.Vector3(0,0,1), axis);
+                    
 
-                    [corner, edge, center] = [corner, edge, center].map(g => {
-                        g = g.clone()
-                        g.applyMatrix4(m4);
-                        return g;
-                    })
+//                    [corner, edge, center] = [corner, edge, center].map(g => {
+//                        g = g.clone()
+//                        g.applyMatrix4(m4);
+//                        return g;
+//                    })
 
+                    let localAxis = axis = new THREE.Vector3(0,0,1);;
                     function place(geom, angle) {
                         let mesh = new THREE.Mesh(geom.clone(), material);
+                        mesh.geometry.rotateZ(angle)
                         mesh.castShadow = true;
     					mesh.receiveShadow = true;
-                        mesh.rotateOnAxis(axis, angle);   
                         scene.add(mesh);                    
+
+                        mesh.rotation.setFromRotationMatrix(m4);
                         return mesh;
                     }
                     
-                    this.facelets[0] = place(corner, 0);
-                    this.facelets[1] = place(edge, 0);
-                    this.facelets[2] = place(corner, Math.PI/2);
-                    this.facelets[3] = place(edge, -Math.PI/2);
-                    this.facelets[4] = place(center, 0);
-                    this.facelets[5] = place(edge, Math.PI/2);
-                    this.facelets[6] = place(corner, -Math.PI/2);
-                    this.facelets[7] = place(edge, Math.PI);
-                    this.facelets[8] = place(corner, Math.PI);
+                    this[0] = place(corner, 0);
+ /*                   this[1] = place(edge, 0);
+                    this[2] = place(corner, -Math.PI/2);
+                    this[3] = place(edge, Math.PI/2);
+                    this[4] = place(center, 0);
+                    this[5] = place(edge, -Math.PI/2);
+                    this[6] = place(corner, Math.PI/2);
+                    this[7] = place(edge, -Math.PI);
+                    this[8] = place(corner, -Math.PI);
+                */              }
 
-                }
+
             }
             
 			init();
@@ -91,8 +177,8 @@
 
 				scene.add( new THREE.HemisphereLight( 0x443333, 0x111122 ) );
 
-				addShadowedLight( 1, 1, 1, 0xffffff, 1.35 );
-				addShadowedLight( 0.5, 1, - 1, 0xffaa00, 1 );
+				addShadowedLight( 5, 5, 5, 0xffffff, 1.35 );
+				addShadowedLight( -5, -5, - 5, 0xffffff, 1.35 );
 				// renderer
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -124,20 +210,75 @@
                     return new Promise((resolve, reject) => {
                         loader.load(url, resolve, undefined, reject);
                     })
+                };
+
+                function cssColor(str){
+                    var ctx = document.createElement("canvas").getContext("2d");
+                    ctx.fillStyle = str;
+                    return ctx.fillStyle;
                 }
+                Promise.all(['./corner.stl', './edge.stl', './center.stl', './core.stl'].map(load)).then(([corner_g, edge_g, center_g, core_g]) => {
+                    var material = new THREE.MeshLambertMaterial({color: 0x999999 } );
+                    let core = new THREE.Mesh(core_g, material);
+                    core.name = "core"
+                    core.receiveShadow = true;
+                    // scene.add(core);
 
-                Promise.all(['./corner.stl', './edge.stl', './center.stl', './core.stl'].map(load)).then(([corner, edge, center, core]) => {
-                    var material = new THREE.MeshPhongMaterial( { color: 0xEEEEEE, specular: 0x111111, shininess: 200 } );
-                    let mesh = new THREE.Mesh(core, material);
-                    mesh.receiveShadow = true;
-                    scene.add(mesh);
+                    window.pieces = []
 
-                    let F = new Face(scene, new THREE.Vector3(0, 0, 1), new THREE.Color().setStyle("blue"), corner, edge, center);
-                    let U = new Face(scene, new THREE.Vector3(0, 1, 0), new THREE.Color().setStyle("yellow"), corner, edge, center);
-                    let R = new Face(scene, new THREE.Vector3(1, 0, 0), new THREE.Color().setStyle("red"), corner, edge, center);
-                    let L = new Face(scene, new THREE.Vector3(-1, 0, 0), new THREE.Color().setStyle("orange"), corner, edge, center);
-                    let B = new Face(scene, new THREE.Vector3(0, -1, 0), new THREE.Color().setStyle("green"), corner, edge, center);
-                    let D = new Face(scene, new THREE.Vector3(0, 0, -1), new THREE.Color().setStyle("white"), corner, edge, center);
+                    let corner = buildCornerMesh(corner_g);
+                    let edge = buildEdgeMesh(edge_g);
+                    let center = buildCenterMesh(center_g)
+                    
+                    let up = new THREE.Vector3();
+                    for(let x = -1; x < 2; x++) {
+                        for (let y = -1; y < 2; y++) {
+                            for (let z = -1; z < 2; z++) {
+                                // trial and error of why the following works
+                                let zeros = (!x)+(!y)+(!z)
+                                let piece = {0: corner, 1: edge, 2: center, 3: core}[zeros].clone()
+
+                                piece.position.set(x * 2, y * 2, z * 2);
+                                
+                                // trial and error of why the following works
+                                piece.up.y = y;
+                                piece.up.x = !y * 1;
+
+                                piece.lookAt(0,0,0);
+                                piece.receiveShadow = true;
+                                
+                                scene.add(piece);
+                                
+                                window.pieces.push(piece)
+
+                            }
+                        }
+                    }
+             
+                    console.log('scene', scene)
+                    let q = new THREE.Quaternion();
+                    let v = new THREE.Vector3(1, 2, 3)
+                    let v2 = new THREE.Vector3()
+                    window.meshes = [];
+                    scene.traverse(mesh => {
+                        if ( mesh instanceof THREE.Mesh ) {
+                            mesh.material = new THREE.MeshLambertMaterial()
+                            if (mesh.name == "core") {
+                                return;
+                            }
+                            mesh.updateWorldMatrix(true);
+                            mesh.getWorldDirection(v2)
+                            let face = Math.round(v2.dot(v));
+                            let color = { '1': colors.L, '-1': colors.R, '2': colors.D, '-2': colors.U, '3': colors.B, '-3': colors.F }[face]
+                            mesh.material.color.set(color)
+                            window.meshes.push(mesh)
+
+                        }
+                    })
+
+                    window.THREE = THREE;
+                    window.scene = scene;
+                    window.render = render;
                     render();
                 })
 
