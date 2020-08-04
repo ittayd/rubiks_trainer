@@ -6,13 +6,15 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
         <link type="text/css" rel="stylesheet" href="https://threejs.org/examples/main.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.4.2/gsap.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" crossorigin="anonymous"></script>
 	</head>
 	<body>
 		<div id="info">
 			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> -
 			STL loader test by <a href="https://github.com/aleeper" target="_blank" rel="noopener">aleeper</a>.<br/>
 			PR2 head from <a href="http://www.ros.org/wiki/pr2_description">www.ros.org</a>
-		</div>
+        </div>
+        
 
 		<script type="module">
 
@@ -23,6 +25,132 @@
             import { STLLoader } from 'https://threejs.org/examples/jsm/loaders/STLLoader.js';
             
             import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js'
+
+            import { Reflector } from 'https://threejs.org/examples/jsm/objects/Reflector.js';
+
+            import { TransformControls } from 'https://threejs.org/examples/jsm/controls/TransformControls.js';
+
+            class Draggable extends EventTarget {
+
+                constructor(element, options) {
+                    super();
+                    this.position = {
+                        current: new THREE.Vector2(),
+                        start: new THREE.Vector2(),
+                        delta: new THREE.Vector2(),
+                        previous: new THREE.Vector2(),
+                        drag: new THREE.Vector2(),
+                    };
+
+                    this.options = Object.assign({
+                        convert: true
+                    }, options || {});
+
+                    this.element = element;
+                    this.touch = null;
+
+                    this.drag = {
+
+                        start: (event) => {
+
+                            if (event.type == 'mousedown' && event.which != 1) return;
+                            if (event.type == 'touchstart' && event.touches.length > 1) return;
+
+                            this.setCurrentPosition(event);
+
+                            this.position.start = this.position.current.clone();
+                            this.position.delta.set(0, 0);
+                            this.position.drag.set(0, 0);
+
+                            this.touch = (event.type == 'touchstart');
+
+                            this._trigger('drag:start')
+
+                            window.addEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false);
+                            window.addEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false);
+                        },
+
+                        move: (event) => {
+
+
+                            this.position.previous = this.position.current.clone();
+
+
+                            this.setCurrentPosition(event);
+
+                            this.position.delta = this.position.current.clone().sub(this.position.previous);
+                            this.position.drag = this.position.current.clone().sub(this.position.start);
+
+
+                            this._trigger('drag:move')
+
+                        },
+
+                        end: (event) => {
+
+                            this.setCurrentPosition(event);
+
+                            this._trigger('drag:end')
+
+                            window.removeEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false);
+                            window.removeEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false);
+
+                        },
+
+                    };
+
+                    this.enable();
+
+                    return this;
+
+                }
+
+                enable() {
+
+                    this.element.addEventListener('touchstart', this.drag.start, false);
+                    this.element.addEventListener('mousedown', this.drag.start, false);
+
+                    return this;
+
+                }
+
+                disable() {
+
+                    this.element.removeEventListener('touchstart', this.drag.start, false);
+                    this.element.removeEventListener('mousedown', this.drag.start, false);
+
+                    return this;
+
+                }
+
+                setCurrentPosition(event) {
+
+                    const dragEvent = event.touches
+                        ? (event.touches[0] || event.changedTouches[0])
+                        : event;
+
+                    this.position.current.set(dragEvent.pageX, dragEvent.pageY);
+                    if (this.options.convert) {
+                        this.convertPosition(this.position.current)
+                    }
+
+                }
+
+                convertPosition(position) {
+
+                    position.x = (position.x / this.element.offsetWidth) * 2 - 1;
+                    position.y = - ((position.y / this.element.offsetHeight) * 2 - 1);
+
+                    return position;
+
+                }
+
+                _trigger(name) {
+                    this.dispatchEvent(new CustomEvent(name, { detail: this.position }));
+                }
+
+            }
+            window.Draggable = Draggable;
 
 			var container, stats, controls;
 
@@ -75,9 +203,9 @@
                 let second = new THREE.Mesh(corner_g.clone(), material.clone());
                 let third = new THREE.Mesh(corner_g.clone(), material.clone());
 
-                first.rotation.setFromQuaternion(cq);
-                second.rotation.setFromQuaternion((new THREE.Quaternion(-0.5, -0.5, 0.5, 0.5)).premultiply(cq));
-                third.rotation.setFromQuaternion((new THREE.Quaternion(0.5, 0.5, -0.5, 0.5)).premultiply(cq));
+                first.quaternion.copy(cq);
+                second.quaternion.set(-0.5, -0.5, 0.5, 0.5).premultiply(cq);
+                third.quaternion.set(0.5, 0.5, -0.5, 0.5).premultiply(cq);
                 
                 let group = new THREE.Group();
                 group.name = "corner";
@@ -96,8 +224,8 @@
                 let first = new THREE.Mesh(edge_g, material);
                 let second = new THREE.Mesh(edge_g.clone(), material.clone());
 
-                first.rotation.setFromQuaternion(cq);
-                second.rotation.setFromQuaternion((new THREE.Quaternion(0, Math.SQRT1_2, -Math.SQRT1_2, 0)).premultiply(cq));
+                first.quaternion.copy(cq);
+                second.quaternion.set(0, Math.SQRT1_2, -Math.SQRT1_2, 0).premultiply(cq);
 
                 let group = new THREE.Group();
                 group.name = "edge"
@@ -153,9 +281,13 @@
 
 
             }
-            
+
+            let needRender = false;
+
 			init();
-			animate();
+			render();
+
+           
 
 			function init() {
 
@@ -163,14 +295,14 @@
 				document.body.appendChild( container );
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 30 );
-				camera.position.set( 10, 10, 10 );
+				camera.position.set(7, 6, 10);
 
 				cameraTarget = new THREE.Vector3( 0, 0, 0 );
 				
 				camera.lookAt( cameraTarget );
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0x72645b );
+				scene.background = new THREE.Color( 0xEEEEEE );
 				//scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
 
 				// Lights
@@ -178,7 +310,25 @@
 				scene.add( new THREE.HemisphereLight( 0x443333, 0x111122 ) );
 
 				addShadowedLight( 5, 5, 5, 0xffffff, 1.35 );
-				addShadowedLight( -5, -5, - 5, 0xffffff, 1.35 );
+                addShadowedLight( -5, -5, - 5, 0xffffff, 1.35 );
+                
+                // mirror
+                var geometry = new THREE.PlaneBufferGeometry(6, 5);
+				var leftMirror = new Reflector( geometry, {
+					clipBias: 0.003,
+					textureWidth: window.innerWidth * window.devicePixelRatio,
+					textureHeight: window.innerHeight * window.devicePixelRatio,
+					color: 0x777777
+				} );
+                leftMirror.position.set(-8, 1.5, 2);
+                leftMirror.rotation.y = Math.PI / 2;
+                leftMirror.name = "mirror"
+                scene.add( leftMirror );
+                
+                let backMirror = leftMirror.clone
+                
+
+
 				// renderer
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -192,17 +342,25 @@
 
                 controls = new OrbitControls(camera, renderer.domElement);
                 controls.enableDamping = true;
-                controls.rotateSpeed = 0.1;
+                controls.rotateSpeed = 0.2;
                 controls.dampingFactor = 0.1;
                 controls.enableZoom = true;
                 // controls.autoRotate = true;
                 controls.autoRotateSpeed = .75;
+                controls.addEventListener('change', animate);
+
+                let transform = new TransformControls(camera, renderer.domElement );
+                transform.addEventListener( 'change', animate );
+                scene.add(transform)
+
 				// stats
 
 				stats = new Stats();
 				container.appendChild( stats.dom );
                 
                 window.addEventListener( 'resize', onWindowResize, false );
+
+                let tl = gsap.timeline({onUpdate: animate});
 
                 var loader = new STLLoader();
 
@@ -238,6 +396,7 @@
                                 let zeros = (!x)+(!y)+(!z)
                                 let piece = {0: corner, 1: edge, 2: center, 3: core}[zeros].clone()
 
+                                piece.name += `${x+1}${y+1}${z+1}`
                                 piece.position.set(x * 2, y * 2, z * 2);
                                 
                                 // trial and error of why the following works
@@ -256,19 +415,18 @@
                     }
              
                     console.log('scene', scene)
-                    let q = new THREE.Quaternion();
-                    let v = new THREE.Vector3(1, 2, 3)
-                    let v2 = new THREE.Vector3()
+                    let coder = new THREE.Vector3(1, 2, 3); // to code faces
+                    let direction = new THREE.Vector3()
                     window.meshes = [];
                     scene.traverse(mesh => {
                         if ( mesh instanceof THREE.Mesh ) {
-                            mesh.material = new THREE.MeshLambertMaterial()
-                            if (mesh.name == "core") {
+                            if ({core: true, mirror: true}[mesh.name] ) {
                                 return;
                             }
+                            mesh.material = new THREE.MeshLambertMaterial()
                             mesh.updateWorldMatrix(true);
-                            mesh.getWorldDirection(v2)
-                            let face = Math.round(v2.dot(v));
+                            mesh.getWorldDirection(direction)
+                            let face = Math.round(direction.dot(coder));
                             let color = { '1': colors.L, '-1': colors.R, '2': colors.D, '-2': colors.U, '3': colors.B, '-3': colors.F }[face]
                             mesh.material.color.set(color)
                             window.meshes.push(mesh)
@@ -276,9 +434,45 @@
                         }
                     })
 
+                    let rotated = window.pieces.filter(p => p.position.x == 2)
+                    let to = new THREE.Group();
+                    scene.add(to);
+                    let from = scene // better to have a group to rotate the cube as a whole
+                    rotated.forEach(p => {
+                        scene.remove(p)
+                        to.add(p);
+                        console.log('rotated1', p.name)
+                    })
+
+                    tl.to(to.rotation, 3, {x: Math.PI/2}).then(_ => {
+                        to.updateMatrixWorld();
+                        rotated.forEach(p => {
+                            p.applyMatrix4( to.matrixWorld );
+                            to.remove(p)
+                            p.applyMatrix4( new THREE.Matrix4().getInverse( scene.matrixWorld ) );
+                            scene.add(p)
+                            p.position.round();
+                        })
+
+                        rotated = window.pieces.filter(p => p.position.y == 2)
+                        to.rotation.set(0,0,0)
+                        rotated.forEach(p => {
+                            scene.remove(p)
+                            to.add(p);
+                            console.log('rotated2', p.name)
+                        })
+                        tl.to(to.rotation, 3, {y: Math.PI/2})
+                    })
+
+
+
                     window.THREE = THREE;
                     window.scene = scene;
                     window.render = render;
+                    window.transform = transform; 
+                    window.camera = camera;
+
+
                     render();
                 })
 
@@ -313,29 +507,26 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                animate();
 
 			}
 
 			function animate() {
-
-				requestAnimationFrame( animate );
-                controls.update();
-				render();
-				stats.update();
-
+                if (!needRender) {
+                    needRender = true;
+                    requestAnimationFrame( render );
+                }
 			}
 
 			function render() {
+                needRender = false;
+                stats.begin();
 
-				var timer = Date.now() * 0.0005;
-
-/*				camera.position.x = -3;
-				camera.position.z = -5;
-				camera.position.y = 5;
-*/
+                controls.update();
 
 				renderer.render( scene, camera );
+                stats.end();
 
 			}
 
