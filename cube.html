@@ -158,11 +158,11 @@
 
             var colors = {
                 D: 0xfff7ff, // white
-                U: 0xffef48, // yellow
-                R: 0xef3923, // red
-                F: 0x41aac8, // blue
-                L: 0xff8c0a, // orange
-                B: 0x82ca38, // green
+                U: 0xf6e84b, // yellow
+                R: 0xe3302d, // red
+                F: 0x0ebcf8, // blue
+                L: 0xff9d38, // orange
+                B: 0x51da6a, // green
             }
 
             function matrix4Between(v1, v2) {
@@ -203,13 +203,18 @@
                 let second = new THREE.Mesh(corner_g.clone(), material.clone());
                 let third = new THREE.Mesh(corner_g.clone(), material.clone());
 
-                first.quaternion.copy(cq);
-                second.quaternion.set(-0.5, -0.5, 0.5, 0.5).premultiply(cq);
-                third.quaternion.set(0.5, 0.5, -0.5, 0.5).premultiply(cq);
+                // first.quaternion.copy(cq);
+                // second.quaternion.set(0.5, 0.5, -0.5, 0.5)
+                second.rotation.set(Math.PI / 2, 0, -Math.PI/2)
+                // second.quaternion.set(-0.5, -0.5, 0.5, 0.5).premultiply(cq);
+
+                // corner.children[2].quaternion.set(0.5, 0.5, -0.5, -0.5)
+                third.rotation.set(-Math.PI / 2, -Math.PI/2, 0)
+                // third.quaternion.set(0.5, 0.5, -0.5, 0.5).premultiply(cq);
                 
                 let group = new THREE.Group();
                 group.name = "corner";
-                group.rotation.setFromQuaternion(cq.inverse());
+                // group.rotation.setFromQuaternion(cq.inverse());
 
                 group.add(first);
                 group.add(second);
@@ -224,12 +229,15 @@
                 let first = new THREE.Mesh(edge_g, material);
                 let second = new THREE.Mesh(edge_g.clone(), material.clone());
 
-                first.quaternion.copy(cq);
-                second.quaternion.set(0, Math.SQRT1_2, -Math.SQRT1_2, 0).premultiply(cq);
+                //first.quaternion.copy(cq);
+
+                second.rotation.set(Math.PI / 2, 0, -Math.PI)
+                // corner.children[1].quaternion.set(0, Math.SQRT1_2, -Math.SQRT1_2, 0)
+                //second.quaternion.set(0, Math.SQRT1_2, -Math.SQRT1_2, 0).premultiply(cq);
 
                 let group = new THREE.Group();
                 group.name = "edge"
-                group.rotation.setFromQuaternion(cq.inverse());
+                //group.rotation.setFromQuaternion(cq.inverse());
 
                 group.add(first);
                 group.add(second)
@@ -306,11 +314,18 @@
 				//scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
 
 				// Lights
+                var ambient = new THREE.AmbientLight( 0xffffff, 0.5)
+                var front = new THREE.PointLight( 0xffffff )
+                var back = new THREE.PointLight( 0xffffff )
+                front.position.set( 6, 8, 6 )
+                back.position.set( -10, -8, -6 );
 
-				scene.add( new THREE.HemisphereLight( 0x443333, 0x111122 ) );
+                var lights = new THREE.Group()
+                lights.add(ambient, front, back)
+                window.lights = lights;
 
-				addShadowedLight( 5, 5, 5, 0xffffff, 1.35 );
-                addShadowedLight( -5, -5, - 5, 0xffffff, 1.35 );
+                scene.add(lights)
+
                 
                 // mirror
                 var geometry = new THREE.PlaneBufferGeometry(6, 5);
@@ -378,23 +393,32 @@
                 Promise.all(['./corner.stl', './edge.stl', './center.stl', './core.stl'].map(load)).then(([corner_g, edge_g, center_g, core_g]) => {
                     var material = new THREE.MeshLambertMaterial({color: 0x999999 } );
                     let core = new THREE.Mesh(core_g, material);
-                    core.name = "core"
-                    core.receiveShadow = true;
-                    // scene.add(core);
+                    core.name = 'core'
 
-                    window.pieces = []
-
+                    
                     let corner = buildCornerMesh(corner_g);
                     let edge = buildEdgeMesh(edge_g);
                     let center = buildCenterMesh(center_g)
                     
+                    window.corner = corner;
+                    window.edge = edge;
+                    window.center = center;
+
+                    window.pieces = []
+
                     let up = new THREE.Vector3();
+                    let cornerq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(-1,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
+                    let edgeq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(0,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
+                    let centerq = new THREE.Quaternion().identity()
+                    let coreq = centerq;
+                    let lookup = {0: [corner, cornerq], 1: [edge, edgeq], 2: [center, centerq], 3: [core, coreq]}
                     for(let x = -1; x < 2; x++) {
                         for (let y = -1; y < 2; y++) {
                             for (let z = -1; z < 2; z++) {
                                 // trial and error of why the following works
                                 let zeros = (!x)+(!y)+(!z)
-                                let piece = {0: corner, 1: edge, 2: center, 3: core}[zeros].clone()
+                                let [piece, rq] = lookup[zeros]
+                                piece = piece.clone();
 
                                 piece.name += `${x+1}${y+1}${z+1}`
                                 piece.position.set(x * 2, y * 2, z * 2);
@@ -404,6 +428,7 @@
                                 piece.up.x = !y * 1;
 
                                 piece.lookAt(0,0,0);
+                                piece.quaternion.multiply(rq)
                                 piece.receiveShadow = true;
                                 
                                 scene.add(piece);
@@ -420,13 +445,14 @@
                     window.meshes = [];
                     scene.traverse(mesh => {
                         if ( mesh instanceof THREE.Mesh ) {
-                            if ({core: true, mirror: true}[mesh.name] ) {
+                            if ({'core111': true, mirror: true}[mesh.name] ) {
                                 return;
                             }
-                            mesh.material = new THREE.MeshLambertMaterial()
+                            mesh.material = new THREE.MeshPhysicalMaterial({metalness:0, roughness: 0.5, reflectivity: 0.5, transmission: 0.5})
                             mesh.updateWorldMatrix(true);
                             mesh.getWorldDirection(direction)
                             let face = Math.round(direction.dot(coder));
+                            console.log('face', face)
                             let color = { '1': colors.L, '-1': colors.R, '2': colors.D, '-2': colors.U, '3': colors.B, '-3': colors.F }[face]
                             mesh.material.color.set(color)
                             window.meshes.push(mesh)
@@ -444,6 +470,15 @@
                         console.log('rotated1', p.name)
                     })
 
+                    function roundAngle(angle) {
+                        const round = Math.PI / 2;
+                        return Math.round( angle / round ) * round;
+                    }
+
+                    function roundRotation(rotation) {
+                        return rotation.set(roundAngle(rotation.x), roundAngle(rotation.y), roundAngle(rotation.z))
+                    }
+
                     tl.to(to.rotation, 3, {x: Math.PI/2}).then(_ => {
                         to.updateMatrixWorld();
                         rotated.forEach(p => {
@@ -460,8 +495,11 @@
                             scene.remove(p)
                             to.add(p);
                             console.log('rotated2', p.name)
-                        })
-                        tl.to(to.rotation, 3, {y: Math.PI/2})
+                        });
+
+                        tl.to(to.rotation, 3, {y: Math.PI/2, onComplete: _ => {
+                            pieces.forEach(p => roundRotation(p.rotation));
+                        }});
                     })
 
 
@@ -487,9 +525,9 @@
 				directionalLight.position.set( x, y, z );
 				scene.add( directionalLight );
 
-				directionalLight.castShadow = true;
-
-				var d = 1;
+//				directionalLight.castShadow = true;
+/*
+				var d = 2;
 				directionalLight.shadow.camera.left = - d;
 				directionalLight.shadow.camera.right = d;
 				directionalLight.shadow.camera.top = d;
@@ -499,7 +537,7 @@
 				directionalLight.shadow.camera.far = 4;
 
 				directionalLight.shadow.bias = - 0.002;
-
+*/
 			}
 
 			function onWindowResize() {
@@ -528,6 +566,7 @@
 				renderer.render( scene, camera );
                 stats.end();
 
+                if(window.animate) animate();
 			}
 
 		</script>
