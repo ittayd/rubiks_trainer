@@ -157,6 +157,7 @@
 			var camera, cameraTarget, scene, renderer;
 
             var colors = {
+                C: 0x999999, // core piece
                 D: 0xfff7ff, // white
                 U: 0xf6e84b, // yellow
                 R: 0xe3302d, // red
@@ -165,129 +166,10 @@
                 B: 0x51da6a, // green
             }
 
-            function matrix4Between(v1, v2) {
-                var qrot = new THREE.Quaternion();
-                qrot.setFromUnitVectors(v1, v2);
-                var m4 = new THREE.Matrix4();
-                m4.makeRotationFromQuaternion(qrot);
-                return m4
-            }
-
-            function eulerToVector(euler, x=1, y=0, z=0) {
-                let vec = new THREE.Vector3(x, y, z)
-                vec.applyEuler(euler);
-                vec.x = Math.round(vec.x * 1000) / 1000
-                vec.y = Math.round(vec.y * 1000) / 1000
-                vec.z = Math.round(vec.z * 1000) / 1000
-                
-                return vec;
-            }
-
-            function worldVec(mesh) {
-                let q = new THREE.Quaternion();
-                mesh.getWorldQuaternion(q);
-                let vec = new THREE.Vector3(1,0,0);
-                vec.applyQuaternion(q);
-                vec.x = Math.round(vec.x * 1000) / 1000
-                vec.y = Math.round(vec.y * 1000) / 1000
-                vec.z = Math.round(vec.z * 1000) / 1000
-
-                return vec;
-            }
-
-
-            function buildCornerMesh(corner_g) {
-                let cq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(-1,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
-                let material = new THREE.MeshLambertMaterial();
-                let first = new THREE.Mesh(corner_g, material);
-                let second = new THREE.Mesh(corner_g.clone(), material.clone());
-                let third = new THREE.Mesh(corner_g.clone(), material.clone());
-
-                // first.quaternion.copy(cq);
-                // second.quaternion.set(0.5, 0.5, -0.5, 0.5)
-                second.rotation.set(Math.PI / 2, 0, -Math.PI/2)
-                // second.quaternion.set(-0.5, -0.5, 0.5, 0.5).premultiply(cq);
-
-                // corner.children[2].quaternion.set(0.5, 0.5, -0.5, -0.5)
-                third.rotation.set(-Math.PI / 2, -Math.PI/2, 0)
-                // third.quaternion.set(0.5, 0.5, -0.5, 0.5).premultiply(cq);
-                
-                let group = new THREE.Group();
-                group.name = "corner";
-                // group.rotation.setFromQuaternion(cq.inverse());
-
-                group.add(first);
-                group.add(second);
-                group.add(third);
-
-                return group;
-            }
-
-            function buildEdgeMesh(edge_g) {
-                let cq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(0,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
-                let material = new THREE.MeshLambertMaterial();
-                let first = new THREE.Mesh(edge_g, material);
-                let second = new THREE.Mesh(edge_g.clone(), material.clone());
-
-                //first.quaternion.copy(cq);
-
-                second.rotation.set(Math.PI / 2, 0, -Math.PI)
-                // corner.children[1].quaternion.set(0, Math.SQRT1_2, -Math.SQRT1_2, 0)
-                //second.quaternion.set(0, Math.SQRT1_2, -Math.SQRT1_2, 0).premultiply(cq);
-
-                let group = new THREE.Group();
-                group.name = "edge"
-                //group.rotation.setFromQuaternion(cq.inverse());
-
-                group.add(first);
-                group.add(second)
-
-                return group;
-            }
-
-            function buildCenterMesh(center_g) {
-                let material = new THREE.MeshLambertMaterial();
-                let first = new THREE.Mesh(center_g, material);
-                first.name = "center"
-                return first;
-            }
-
-			class Face {
-				constructor(scene, axis, color, corner, edge, center) {
-                    var material = new THREE.MeshPhongMaterial( { color: color, specular: 0x111111, shininess: 200 } );
-                    var m4 = matrix4Between(new THREE.Vector3(0,0,1), axis);
-                    
-
-//                    [corner, edge, center] = [corner, edge, center].map(g => {
-//                        g = g.clone()
-//                        g.applyMatrix4(m4);
-//                        return g;
-//                    })
-
-                    let localAxis = axis = new THREE.Vector3(0,0,1);;
-                    function place(geom, angle) {
-                        let mesh = new THREE.Mesh(geom.clone(), material);
-                        mesh.geometry.rotateZ(angle)
-                        mesh.castShadow = true;
-    					mesh.receiveShadow = true;
-                        scene.add(mesh);                    
-
-                        mesh.rotation.setFromRotationMatrix(m4);
-                        return mesh;
-                    }
-                    
-                    this[0] = place(corner, 0);
- /*                   this[1] = place(edge, 0);
-                    this[2] = place(corner, -Math.PI/2);
-                    this[3] = place(edge, Math.PI/2);
-                    this[4] = place(center, 0);
-                    this[5] = place(edge, -Math.PI/2);
-                    this[6] = place(corner, Math.PI/2);
-                    this[7] = place(edge, -Math.PI);
-                    this[8] = place(corner, -Math.PI);
-                */              }
-
-
+			
+            function move(from, to, objs) {
+                if (objs == undefined) objs = from.children.slice()
+                objs.slice().forEach(o => to.attach(o))
             }
 
             let needRender = false;
@@ -391,84 +273,105 @@
                     return ctx.fillStyle;
                 }
                 Promise.all(['./corner.stl', './edge.stl', './center.stl', './core.stl'].map(load)).then(([corner_g, edge_g, center_g, core_g]) => {
-                    var material = new THREE.MeshLambertMaterial({color: 0x999999 } );
-                    let core = new THREE.Mesh(core_g, material);
+                    corner_g.scale(0.5, 0.5, 0.5);
+                    edge_g.scale(0.5, 0.5, 0.5);
+                    center_g.scale(0.5, 0.5, 0.5);
+                    core_g.scale(0.5, 0.5, 0.5);
+
+                    let core = new THREE.Mesh(core_g);
                     core.name = 'core'
 
-                    
-                    let corner = buildCornerMesh(corner_g);
-                    let edge = buildEdgeMesh(edge_g);
-                    let center = buildCenterMesh(center_g)
-                    
-                    window.corner = corner;
-                    window.edge = edge;
-                    window.center = center;
+                                        
+                    let face = new THREE.Group();
+                    let center = new THREE.Mesh(center_g)
+                    let corner_facelet = new THREE.Mesh(corner_g);
+                    let edge_facelet = new THREE.Mesh(edge_g);
+                    face.add(center)
+                    for (let i = 0; i < 4; i++) {                        
+                        let corner_facelet2 = corner_facelet.clone()
+                        let edge_facelet2 = edge_facelet.clone()
+                        corner_facelet2.position.set(1, 1, 0);
+                        edge_facelet2.position.set(0, 1, 0);
+                        face.attach(corner_facelet2)
+                        face.attach(edge_facelet2)
+                        face.rotateZ(Math.PI/2)
+                    }
+                    window.face = face
+
+                    let start = new THREE.Vector3(0, 0, -1)
+                    face.position.copy(start)
+                    let faces = [];
+                    for(let i = 0; i < 3; i++) {
+                        for (let s = -1; s < 2; s += 2) {
+                            let axis = new THREE.Vector3().setComponent(i, s);
+                            let q = new THREE.Quaternion().setFromUnitVectors(start, axis);
+                            let another = face.clone()
+                            another.quaternion.copy(q);
+                            another.position.copy(axis)
+                            faces.push(another)
+                        }
+                    }
+                    let cube = new THREE.Group();
+                    cube.add(...faces)
+                    console.log('cube', cube)
+                    cube.add(core)
+                    scene.add(cube)
+
+                    // attach to scene so it updates position to world
+                    faces.forEach(face => move(face, cube, face.children))
+                    cube.remove(...faces)
+                    window.cube = cube;
 
                     window.pieces = []
 
-                    let up = new THREE.Vector3();
-                    let cornerq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(-1,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
-                    let edgeq = (new THREE.Quaternion()).setFromRotationMatrix((new THREE.Matrix4()).lookAt(new THREE.Vector3(0,-1,1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0))).inverse();
-                    let centerq = new THREE.Quaternion().identity()
-                    let coreq = centerq;
-                    let lookup = {0: [corner, cornerq], 1: [edge, edgeq], 2: [center, centerq], 3: [core, coreq]}
-                    for(let x = -1; x < 2; x++) {
+                    let pieces = []
+                    for (let x = -1; x < 2; x++) {
+                        pieces[x] = pieces[x] || []
                         for (let y = -1; y < 2; y++) {
+                            pieces[x][y] = pieces[x][y] || []
                             for (let z = -1; z < 2; z++) {
-                                // trial and error of why the following works
-                                let zeros = (!x)+(!y)+(!z)
-                                let [piece, rq] = lookup[zeros]
-                                piece = piece.clone();
-
-                                piece.name += `${x+1}${y+1}${z+1}`
-                                piece.position.set(x * 2, y * 2, z * 2);
-                                
-                                // trial and error of why the following works
-                                piece.up.y = y;
-                                piece.up.x = !y * 1;
-
-                                piece.lookAt(0,0,0);
-                                piece.quaternion.multiply(rq)
-                                piece.receiveShadow = true;
-                                
-                                scene.add(piece);
-                                
-                                window.pieces.push(piece)
-
+                                if (pieces[x][y][z] === undefined) {
+                                    let piece = new THREE.Group();
+                                    piece.position.set(x, y, z);
+                                    cube.add(piece)
+                                    pieces[x][y][z] = piece
+                                }
                             }
                         }
                     }
-             
-                    console.log('scene', scene)
+
+                    cube.children.slice().forEach(facelet => {
+                        if (facelet.type == "Group")  {
+                            return;
+                        }
+                        facelet.position.round();
+                        let piece = pieces[facelet.position.x][facelet.position.y][facelet.position.z]
+                        piece.attach(facelet)
+                    })
+
                     let coder = new THREE.Vector3(1, 2, 3); // to code faces
                     let direction = new THREE.Vector3()
                     window.meshes = [];
-                    scene.traverse(mesh => {
+                    cube.traverse(mesh => {
                         if ( mesh instanceof THREE.Mesh ) {
-                            if ({'core111': true, mirror: true}[mesh.name] ) {
-                                return;
-                            }
                             mesh.material = new THREE.MeshPhysicalMaterial({metalness:0, roughness: 0.5, reflectivity: 0.5, transmission: 0.5})
                             mesh.updateWorldMatrix(true);
                             mesh.getWorldDirection(direction)
                             let face = Math.round(direction.dot(coder));
-                            console.log('face', face)
-                            let color = { '1': colors.L, '-1': colors.R, '2': colors.D, '-2': colors.U, '3': colors.B, '-3': colors.F }[face]
+                            if (mesh.name == 'core') face = 0;
+                            let color = {0: colors.C, '1': colors.L, '-1': colors.R, '2': colors.D, '-2': colors.U, '3': colors.B, '-3': colors.F }[face]
                             mesh.material.color.set(color)
                             window.meshes.push(mesh)
 
                         }
                     })
 
-                    let rotated = window.pieces.filter(p => p.position.x == 2)
-                    let to = new THREE.Group();
-                    scene.add(to);
-                    let from = scene // better to have a group to rotate the cube as a whole
-                    rotated.forEach(p => {
-                        scene.remove(p)
-                        to.add(p);
-                        console.log('rotated1', p.name)
-                    })
+                    let rotation = new THREE.Group();
+                    scene.add(rotation);
+                    
+                    let rotated = cube.children.filter(p => p.position.x == 1)
+                    
+                    move(cube, rotation, rotated)
 
                     function roundAngle(angle) {
                         const round = Math.PI / 2;
@@ -479,29 +382,21 @@
                         return rotation.set(roundAngle(rotation.x), roundAngle(rotation.y), roundAngle(rotation.z))
                     }
 
-                    tl.to(to.rotation, 3, {x: Math.PI/2}).then(_ => {
-                        to.updateMatrixWorld();
+                    tl.to(rotation.rotation, 3, {x: Math.PI/2}).then(_ => {
+                        move(rotation, cube, rotated)
                         rotated.forEach(p => {
-                            p.applyMatrix4( to.matrixWorld );
-                            to.remove(p)
-                            p.applyMatrix4( new THREE.Matrix4().getInverse( scene.matrixWorld ) );
-                            scene.add(p)
-                            p.position.round();
+                            p.position.round()
+                            roundRotation(p.rotation)
                         })
+                        rotation.rotation.set(0,0,0)
+                        
+                        rotated = cube.children.filter(p => p.position.y == 0)
+                        move(cube, rotation, rotated)
 
-                        rotated = window.pieces.filter(p => p.position.y == 2)
-                        to.rotation.set(0,0,0)
-                        rotated.forEach(p => {
-                            scene.remove(p)
-                            to.add(p);
-                            console.log('rotated2', p.name)
-                        });
-
-                        tl.to(to.rotation, 3, {y: Math.PI/2, onComplete: _ => {
-                            pieces.forEach(p => roundRotation(p.rotation));
+                        tl.to(rotation.rotation, 3, {y: Math.PI/2, onComplete: _ => {
+                            rotated.forEach(p => roundRotation(p.rotation));
                         }});
                     })
-
 
 
                     window.THREE = THREE;
