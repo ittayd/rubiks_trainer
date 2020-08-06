@@ -159,11 +159,11 @@
             var colors = {
                 C: 0x999999, // core piece
                 D: 0xfff7ff, // white
-                U: 0xf6e84b, // yellow
-                R: 0xe3302d, // red
-                F: 0x0ebcf8, // blue
-                L: 0xff9d38, // orange
-                B: 0x51da6a, // green
+                U: 0xffff41, // yellow
+                R: 0xff1836, // red
+                F: 0x00b6ff, // blue
+                L: 0xff6c0f, // orange
+                B: 0x00fd55, // green
             }
 
 			
@@ -192,15 +192,13 @@
 				camera.lookAt( cameraTarget );
 
 				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xEEEEEE );
+				scene.background = new THREE.Color(0xd1d5db);
 				//scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
 
 				// Lights
-                var ambient = new THREE.AmbientLight( 0xffffff, 0.5)
-                var front = new THREE.PointLight( 0xffffff )
-                var back = new THREE.PointLight( 0xffffff )
-                front.position.set( 6, 8, 6 )
-                back.position.set( -10, -8, -6 );
+                var ambient = new THREE.AmbientLight( 0xffffff, 0.7)
+                var front = createShadowedLight(6, 6, 6, 0xeeeece, 0.35)
+                var back = createShadowedLight(-6, -4, -4, 0xeeeece, 0.35)
 
                 var lights = new THREE.Group()
                 lights.add(ambient, front, back)
@@ -228,12 +226,12 @@
 
 				// renderer
 
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.outputEncoding = THREE.sRGBEncoding;
+				// renderer.outputEncoding = THREE.sRGBEncoding;
 
-				renderer.shadowMap.enabled = true;
+				//renderer.shadowMap.enabled = true;
 
 				container.appendChild( renderer.domElement );
 
@@ -354,7 +352,7 @@
                     window.meshes = [];
                     cube.traverse(mesh => {
                         if ( mesh instanceof THREE.Mesh ) {
-                            mesh.material = new THREE.MeshPhysicalMaterial({metalness:0, roughness: 0.5, reflectivity: 0.5, transmission: 0.5})
+                            mesh.material =  new THREE.MeshPhysicalMaterial({metalness:0, roughness: 0.7, reflectivity: 0.5, transmission: 0.5})
                             mesh.updateWorldMatrix(true);
                             mesh.getWorldDirection(direction)
                             let face = Math.round(direction.dot(coder));
@@ -414,25 +412,26 @@
 
 			}
 
-			function addShadowedLight( x, y, z, color, intensity ) {
+			function createShadowedLight( x, y, z, color, intensity ) {
 
-				var directionalLight = new THREE.DirectionalLight( color, intensity );
-				directionalLight.position.set( x, y, z );
-				scene.add( directionalLight );
+				var light = new THREE.SpotLight( color, intensity );
+				light.position.set( x, y, z );
 
-//				directionalLight.castShadow = true;
-/*
+				light.castShadow = true;
+
 				var d = 2;
-				directionalLight.shadow.camera.left = - d;
-				directionalLight.shadow.camera.right = d;
-				directionalLight.shadow.camera.top = d;
-				directionalLight.shadow.camera.bottom = - d;
+				light.shadow.camera.left = - d;
+				light.shadow.camera.right = d;
+				light.shadow.camera.top = d;
+				light.shadow.camera.bottom = - d;
 
-				directionalLight.shadow.camera.near = 1;
-				directionalLight.shadow.camera.far = 4;
+				light.shadow.camera.near = 1;
+				light.shadow.camera.far = 4;
 
-				directionalLight.shadow.bias = - 0.002;
-*/
+                light.shadow.bias = - 0.002;
+                
+                return light;
+
 			}
 
 			function onWindowResize() {
