@@ -150,8 +150,7 @@
                 }
 
             }
-            window.Draggable = Draggable;
-
+            
 			var container, stats, controls;
 
 			var camera, cameraTarget, scene, renderer;
@@ -176,9 +175,6 @@
 
 			init();
 			render();
-
-            const transparent_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
-
 
 			function init() {
 
@@ -209,14 +205,14 @@
 
                 
                 // mirror
-                var geometry = new THREE.PlaneBufferGeometry(6, 5);
+                var geometry = new THREE.PlaneBufferGeometry(3, 3);
 				var leftMirror = new Reflector( geometry, {
 					clipBias: 0.003,
 					textureWidth: window.innerWidth * window.devicePixelRatio,
 					textureHeight: window.innerHeight * window.devicePixelRatio,
 					color: 0x777777
 				} );
-                leftMirror.position.set(-8, 1.5, 2);
+                leftMirror.position.set(-3, 0.8, 1.3);
                 leftMirror.rotation.y = Math.PI / 2;
                 leftMirror.name = "mirror"
                 scene.add( leftMirror );
@@ -236,6 +232,7 @@
 
 				container.appendChild( renderer.domElement );
 
+                
                 controls = new OrbitControls(camera, renderer.domElement);
                 controls.enableDamping = true;
                 controls.rotateSpeed = 0.2;
@@ -243,7 +240,10 @@
                 controls.enableZoom = true;
                 // controls.autoRotate = true;
                 controls.autoRotateSpeed = .75;
-                controls.addEventListener('change', animate);
+                controls.addEventListener('change', _ => animate());
+                window.controls = controls ;
+                controls.enabled = false;
+
 
                 let transform = new TransformControls(camera, renderer.domElement );
                 transform.addEventListener( 'change', animate );
@@ -283,21 +283,31 @@
                                         
                     let face = new THREE.Group();
                     let center = new THREE.Mesh(center_g)
-                    let dragTarget = new THREE.Mesh(new THREE.PlaneBufferGeometry(1,1), transparent_m);
-                    dragTarget.name = "dragTarget";
-                    dragTarget.position.set(0, 0, -0.6)
                     center.name = 'center'
-                    center.add(dragTarget);
-                    
+
                     let corner_facelet = new THREE.Mesh(corner_g);
                     corner_facelet.name = 'corner_facelet'
-                    corner_facelet.add(dragTarget.clone())
 
                     let edge_facelet = new THREE.Mesh(edge_g);
                     edge_facelet.name = edge_facelet
-                    edge_facelet.add(dragTarget.clone())
 
                     face.add(center)
+
+                    /*
+                    let drag_g = new THREE.PlaneBufferGeometry(1,1)
+                    drag_g.computeFaceNormals();
+                
+                    let dragTarget = new THREE.Mesh(drag_g, transparent_m);
+                    dragTarget.name = "dragTarget";
+                    dragTarget.position.set(0, 0, -0.6)
+                    dragTarget.rotation.set(0, Math.PI, 0) // only one site intersects with raycaster
+                    // center.add(dragTarget);
+                    
+                    // corner_facelet.add(dragTarget.clone())
+
+                    // edge_facelet.add(dragTarget.clone())
+                    */
+
                     for (let i = 0; i < 4; i++) {                        
                         let corner_facelet2 = corner_facelet.clone()
                         let edge_facelet2 = edge_facelet.clone()
@@ -324,7 +334,6 @@
                     }
                     let cube = new THREE.Group();
                     cube.add(...faces)
-                    console.log('cube', cube)
                     cube.add(core)
                     scene.add(cube)
 
@@ -382,22 +391,198 @@
                         }
                     })
 
-                    console.log('dragTargets', dragTargets)
-                    let rotation = new THREE.Group();
-                    scene.add(rotation);
-                    
-                    let rotated = cube.children.filter(p => p.position.x == 1)
-                    
-                    move(cube, rotation, rotated)
+                    const helper_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
+                    //const helper_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
 
-                    function roundAngle(angle) {
-                        const round = Math.PI / 2;
-                        return Math.round( angle / round ) * round;
+                    let helpers = new THREE.Group()
+                    helpers.name = "helpers"
+
+                    let rotation = new THREE.Group();
+                    rotation.name = "rotation";
+                    helpers.add(rotation)
+
+                    let envelope =  new THREE.Mesh(
+                        new THREE.BoxBufferGeometry(3, 3, 3),
+                        helper_m,
+                    );
+                    envelope.name = "envelope"
+                    helpers.add(envelope)
+
+                    let dragged =  new THREE.Mesh(
+                        new THREE.PlaneBufferGeometry(200, 200),
+                        helper_m
+                    );
+                    dragged.name = "dragged"
+                    helpers.add(dragged);
+
+                    scene.add(helpers);
+
+                    const raycaster = new THREE.Raycaster();
+                    function intersect(position, object) {
+                        raycaster.setFromCamera(position, camera);
+
+                        let multiple = Array.isArray(object)
+                        const intersect = (multiple)
+                            ? raycaster.intersectObjects(object)
+                            : raycaster.intersectObject(object);
+
+                        return (intersect.length > 0) ? intersect[0] : false;
+                    }
+
+                    Array.prototype.minBy = function (fn) { return this.extremumBy(fn, Math.min); };
+
+                    Array.prototype.maxBy = function (fn) { return this.extremumBy(fn, Math.max); };
+
+                    Array.prototype.extremumBy = function (pluck, extremum) {
+                        return this.reduce(function (best, next) {
+                            var pair = [pluck(next), next];
+                            if (!best) {
+                                return pair;
+                            } else if (extremum.apply(null, [best[0], pair[0]]) == best[0]) {
+                                return best;
+                            } else {
+                                return pair;
+                            }
+                        }, null)[1];
+                    }
+
+                    function roundAngle(x) {
+                        const half = Math.PI / 2
+                        return Math.round( x  / half ) * half;
                     }
 
                     function roundRotation(rotation) {
                         return rotation.set(roundAngle(rotation.x), roundAngle(rotation.y), roundAngle(rotation.z))
+                        
                     }
+
+                    let draggable = new Draggable(renderer.domElement) 
+                    
+                    // done -> selecting -> rotating -> finishing -> done 
+                    //                                            - (drag start) -> selecting_next
+                    // selecting_next - (finish animation) -> selecting 
+
+                    let drag = {state: 'done'}
+                    $(draggable).on('drag:start', event => {
+                        if (['selecting', 'rotating'].includes(drag.state)) return;
+                        let intersection = intersect(event.target.position.current, envelope)
+                        window.intersection = intersection
+                        if (!intersection) {
+                            return;
+                        }
+                        let meshes = cube.children.flatMap(c => c.type == 'Group' ? c.children : [c]);
+                        let mesh = intersect(event.target.position.current, meshes).object
+                        if (mesh == undefined){
+                            return;
+                        }
+                        drag.piece = mesh.parent;
+                        drag.current = dragged.worldToLocal(intersection.point.clone())
+                        drag.total = new THREE.Vector3();
+                        drag.normal = intersection.face.normal
+                        drag.momentum = []
+
+                        envelope.attach(dragged);
+                        dragged.rotation.set( 0, 0, 0 ); 
+                        dragged.position.set( 0, 0, 0 );
+                        dragged.lookAt(intersection.face.normal.round());
+                        dragged.translateZ(1.5)
+                        dragged.updateMatrixWorld();
+
+                        scene.attach(dragged);
+                        drag.state = (drag.state == 'finishing') ? 'selecting_next' : 'selecting'
+                    }).on('drag:move', event => {
+                        if (['done', 'finishing'].includes(drag.state)) return;
+                        let intersection = intersect(event.target.position.current, dragged);
+
+                        /* trag target local system */
+                        const point = dragged.worldToLocal(intersection.point.clone());
+                        drag.delta = point.clone().sub(drag.current).setZ(0); // only measure in the xy plane (that is facing the camera)
+                        drag.total.add(drag.delta);
+                        drag.current = point;
+                        const time = Date.now();
+                        drag.momentum = drag.momentum.filter( moment => time - moment.time < 500 );
+                        let delta = drag.delta
+                        drag.momentum.push( { delta, time } )
+                        if (drag.state == 'selecting' && drag.total.length() > 0.05) {
+                            // choose an axis
+                            drag.main = [0,1,2].maxBy(i => Math.abs(drag.total.getComponent(i)))
+                            let direction = new THREE.Vector3();
+                            direction.setComponent(drag.main, 1);
+                            direction = dragged.localToWorld(direction).sub(dragged.position); // relative to dragged in world 
+                            direction = envelope.worldToLocal(direction).round();
+
+                            drag.axis = direction.cross(drag.normal).negate();
+                            drag.rotated = cube.children.filter(p => p.position.dot(drag.axis) == drag.piece.position.dot(drag.axis));
+                            rotation.rotation.set(0,0,0)
+                            move(cube, rotation, drag.rotated)
+                            drag.angle = 0;
+                            drag.state = 'rotating'
+                        } else if (drag.state == "rotating") { // flipping
+                            let delta = drag.delta.getComponent(drag.main) / 3;
+                            rotation.rotateOnAxis(drag.axis, delta)
+                            drag.angle += delta;
+                            animate();
+                        }
+                    }).on('drag:end', event => {
+                        if (['done', 'selecting'].includes(drag.state)) {// small touch not enough to create a rotation
+                            drag.state = 'done'
+                            return;
+                        }
+
+                        if (drag.state == 'selecting_next') {
+                            drag.state = 'finishing'
+                            return;
+                        }
+                        
+                        drag.state = 'finishing'
+
+                        const time = Date.now();
+                        drag.momentum = drag.momentum.filter( moment => time - moment.time < 500 );
+                        let momentum = drag.momentum.reduce((acc, cur, idx) => {
+                            return acc.add( cur.delta.multiplyScalar( idx / drag.momentum.length ) );
+                        }, new THREE.Vector2())
+
+                        if( Math.abs( momentum ) > 0.05 && Math.abs( drag.angle ) < Math.PI / 2 ) {
+                            drag.angle += Math.sign(drag.angle) * ( Math.PI / 4 )
+                        }
+
+                        let proxy = {
+                            target: roundAngle(drag.angle),
+                            current: drag.angle,
+                            previous: drag.angle
+                        }
+                        tl.to(proxy, 0.5, {
+                            current: proxy.target,
+                            ease: "power3.out",
+                            onUpdate: _ => {
+                                const delta = proxy.current - proxy.previous
+                                rotation.rotateOnAxis(drag.axis, delta)
+                                proxy.previous = proxy.current
+                            }, 
+                            onComplete: _ => {
+                                move(rotation, cube, drag.rotated)
+                                drag.rotated.forEach(piece => {
+                                    roundRotation(piece.rotation)
+                                    piece.position.round();
+                                });
+                                if (drag.state == 'preparing_next') {
+                                    drag.state = 'preparing'
+                                } else {
+                                    drag.state = 'done'
+                                }
+                            }
+                        })
+                        
+                    })
+                    
+
+                    /** rotation experiments **/
+                    /*
+                    let rotated = cube.children.filter(p => p.position.x == 1)
+                    
+                    move(cube, rotation, rotated)
+
+                    
 
                     tl.to(rotation.rotation, 3, {x: Math.PI/2}).then(_ => {
                         move(rotation, cube, rotated)
@@ -413,7 +598,7 @@
                         tl.to(rotation.rotation, 3, {y: Math.PI/2, onComplete: _ => {
                             rotated.forEach(p => roundRotation(p.rotation));
                         }});
-                    })
+                    })*/
 
 
                     window.THREE = THREE;
