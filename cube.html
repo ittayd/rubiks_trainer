@@ -161,7 +161,7 @@
                 U: 0xffff41, // yellow
                 R: 0xff1836, // red
                 F: 0x00b6ff, // blue
-                L: 0xf57913, // orange
+                L: 0xffA500, // orange
                 B: 0x00fd55, // green
             }
 
@@ -282,7 +282,9 @@
 
                                         
                     let face = new THREE.Group();
-                    let center = new THREE.Mesh(center_g)
+
+                    let center = new THREE.Group(); // so that every mesh's parent is a cube piece
+                    center.add(new THREE.Mesh(center_g))
                     center.name = 'center'
 
                     let corner_facelet = new THREE.Mesh(corner_g);
@@ -464,46 +466,70 @@
 
                     let drag = {state: 'done'}
 
-                    function rotateGroup(to) {
+                    function rotateGroup(to, duration) {
+                        to = roundAngle(to)
+
+                        let onComplete = _ => {
+                            let selected = rotation.children.slice()
+                            move(rotation, cube, rotation.children)
+                            selected.forEach(piece => {
+                                roundRotation(piece.rotation)
+                                piece.position.round();
+                            });
+                            if (drag.state == 'preparing_next') {
+                                drag.state = 'preparing'
+                            } else {
+                                drag.state = 'done'
+                            }
+
+                        }
+
+                        if (duration === 0 && drag.state == "rotating") {
+                            rotation.rotateOnAxis(drag.axis, to)
+                            animate();
+                            onComplete();
+                            return;
+                        }
+
                         let proxy = {
-                            target: roundAngle(to),
+                            target: to,
                             current: drag.angle,
                             previous: drag.angle
                         }
-                        let duration = Math.abs(proxy.target - proxy.current) / 3; // full Math.PI/2 should take 0.5 seconds.
-                        tl.to(proxy, duration, {
+                        if (duration === undefined) {
+                            duration = Math.abs(proxy.target - proxy.current) / 3; // full Math.PI/2 should take 0.5 seconds.
+                        } 
+
+                        let tweener = tl;
+                        if (drag.tween !== undefined) {
+                            tweener = drag.tween   
+                        }
+
+                        drag.tween = tweener.to(proxy, duration, {
                             current: proxy.target,
                             ease: "power3.out",
                             onUpdate: _ => {
                                 const delta = proxy.current - proxy.previous
                                 rotation.rotateOnAxis(drag.axis, delta)
                                 proxy.previous = proxy.current
-                            }, 
-                            onComplete: _ => {
-                                let selected = rotation.children.slice()
-                                move(rotation, cube, rotation.children)
-                                selected.forEach(piece => {
-                                    roundRotation(piece.rotation)
-                                    piece.position.round();
-                                });
-                                if (drag.state == 'preparing_next') {
-                                    drag.state = 'preparing'
-                                } else {
-                                    drag.state = 'done'
-                                }
-
-                            }
+                            },
+                            onComplete: onComplete
                         })
                     }
 
                     $(draggable).on('drag:start', event => {
                         if (['selecting', 'rotating'].includes(drag.state)) return;
                         let intersection = intersect(event.target.position.current, envelope)
-                        window.intersection = intersection
-                        if (!intersection) {
-                            return;
-                        }
-                        let meshes = cube.children.flatMap(c => c.type == 'Group' ? c.children : [c]);
+
+                        /** 
+                         * cube rotation: if the intersection is on the center piece, then it's a cube rotation.
+                         * 
+                         * alternative: if the intersection is empty, position dragged facing the camera (rotated 45 on y)
+                         * then any 'x' movement in dragged is rotating the cube on its y axis, and 'y' movement on the right is 
+                         * rotating on z (so the right hand side goes up/down) and 'y' movement on left is rotation on 'x'. right
+                         * and left are determined based on being above / below the half width of the screen
+                         */
+                        let meshes = cube.children.flatMap(c => c.type == 'Group' ? c.children : [c]); // intersection doesn't work on groups
                         let mesh = intersect(event.target.position.current, meshes).object
                         if (mesh == undefined){
                             return;
@@ -545,7 +571,7 @@
                             direction = envelope.worldToLocal(direction).round();
 
                             drag.axis = direction.cross(drag.normal).negate();
-                            drag.rotated = cube.children.filter(p => p.position.dot(drag.axis) == drag.piece.position.dot(drag.axis));
+                            drag.rotated = drag.piece.name == 'center' ? cube.children : cube.children.filter(p => p.position.dot(drag.axis) == drag.piece.position.dot(drag.axis));
                             rotation.rotation.set(0,0,0)
                             move(cube, rotation, drag.rotated)
                             drag.angle = 0;
@@ -586,18 +612,21 @@
 
                     // TODO: proper action queuing. Incl. replacing 'preparing_next. may require helpers per rotation action (or do the calculation with matrixes)'
                     // need to support aborting (cleanup queue)
-                    window.rotate = function(axis, layer, positive) {
+                    window.rotate = function(axis, counter, layer) {
                         if (['selecting', 'rotating'].includes(drag.state)) return;
                         rotation.rotation.set(0,0,0)
-                        drag.state = (drag.state == 'finishing') ? 'selecting_next' : 'selecting'
+                        drag.state = 'rotating'
                         let index = {x: 0, y: 1, z: 2}[axis]
                         drag.axis = new THREE.Vector3().setComponent(index, 1)
                         drag.angle = 0
-                        layer -= 1
-                        let angle = positive ? Math.PI/2 : -Math.PI/2
-                        let selected = cube.children.filter(p => p.position.getComponent(index) == layer);
+                        if (layer !== undefined) {
+                            layer -= 1
+                        }
+                        let angle = (counter ? 1 : -1) * Math.PI/2
+                        let selected = cube.children.filter(p => layer === undefined || p.position.getComponent(index) == layer);
+                        console.log('s', selected)
                         move(cube, rotation, selected);
-                        rotateGroup(angle)
+                        rotateGroup(angle, 0)
 
                     }
                     /** rotation experiments **/
