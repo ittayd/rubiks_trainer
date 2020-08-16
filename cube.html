@@ -155,6 +155,11 @@
 
 			var camera, cameraTarget, scene, renderer;
 
+            var world = {
+                width: 9,
+                height: 7.2
+            }
+
             var colors = {
                 C: 0x999999, // core piece
                 D: 0xfff7ff, // white
@@ -181,13 +186,8 @@
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 30 );
-				camera.position.set(7, 6, 10);
-
-				cameraTarget = new THREE.Vector3( 0, 0, 0 );
+				camera = new THREE.PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 1, 1000 );
 				
-				camera.lookAt( cameraTarget );
-
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color(0xd1d5db);
 				//scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
@@ -212,7 +212,7 @@
 					textureHeight: window.innerHeight * window.devicePixelRatio,
 					color: 0x777777
 				} );
-                leftMirror.position.set(-3, 0.8, 1.3);
+                leftMirror.position.set(-3.2, 1.2, 1.4);
                 leftMirror.rotation.y = Math.PI / 2;
                 leftMirror.name = "mirror"
                 scene.add( leftMirror );
@@ -255,6 +255,8 @@
 				container.appendChild( stats.dom );
                 
                 window.addEventListener( 'resize', onWindowResize, false );
+
+                onWindowResize();
 
                 let tl = gsap.timeline({onUpdate: animate});
 
@@ -466,8 +468,16 @@
 
                     let drag = {state: 'done'}
 
-                    function rotateGroup(to, duration) {
+                    let moves = []
+                    function rotateGroup(to, duration, no_undo) {
                         to = roundAngle(to)
+
+                        if (to != 0 && no_undo == undefined) {
+                            let axis = [0,1,2].maxBy(i => Math.abs(drag.axis.getComponent(i)))
+                            let layer = rotation.children.length == 27 ? undefined : (rotation.children[0].position.getComponent(axis) + 1);
+                            let counter = to > 0;
+                            moves.push({axis: drag.axis, layer: layer, turns: Math.round(to / (Math.PI / 2))})
+                        }
 
                         let onComplete = _ => {
                             let selected = rotation.children.slice()
@@ -562,7 +572,7 @@
                         drag.momentum = drag.momentum.filter( moment => time - moment.time < 500 );
                         let delta = drag.delta
                         drag.momentum.push( { delta, time } )
-                        if (drag.state == 'selecting' && drag.total.length() > 0.05) {
+                        if (drag.state == 'selecting' && drag.total.length() > 0.03) {
                             // choose an axis
                             drag.main = [0,1,2].maxBy(i => Math.abs(drag.total.getComponent(i)))
                             let direction = new THREE.Vector3();
@@ -612,22 +622,31 @@
 
                     // TODO: proper action queuing. Incl. replacing 'preparing_next. may require helpers per rotation action (or do the calculation with matrixes)'
                     // need to support aborting (cleanup queue)
-                    window.rotate = function(axis, counter, layer) {
+                    window.rotate = function(axis, turns, layer, no_undo) {
                         if (['selecting', 'rotating'].includes(drag.state)) return;
                         rotation.rotation.set(0,0,0)
                         drag.state = 'rotating'
-                        let index = {x: 0, y: 1, z: 2}[axis]
-                        drag.axis = new THREE.Vector3().setComponent(index, 1)
+                        drag.axis = axis;
+                        if (typeof axis === 'string') {
+                            let index = {x: 0, y: 1, z: 2}[axis]
+                            drag.axis = new THREE.Vector3().setComponent(index, 1)
+                        }
+                        let index = drag.axis.dot(new THREE.Vector3(0, 1, 2));
                         drag.angle = 0
                         if (layer !== undefined) {
                             layer -= 1
                         }
-                        let angle = (counter ? 1 : -1) * Math.PI/2
+                        let angle = turns * Math.PI/2
                         let selected = cube.children.filter(p => layer === undefined || p.position.getComponent(index) == layer);
-                        console.log('s', selected)
+                        
                         move(cube, rotation, selected);
-                        rotateGroup(angle, 0)
+                        rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo)
 
+                    }
+
+                    window.undo = function() {
+                        let move = moves.pop();
+                        window.rotate(move.axis, -move.turns, move.layer, true);
                     }
                     /** rotation experiments **/
                     /*
@@ -693,10 +712,29 @@
 
 			function onWindowResize() {
 
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+                let width = renderer.domElement.offsetWidth;
+                let height = renderer.domElement.offsetHeight;
 
-                renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.setSize( width, height );
+
+                camera.fov = 10;
+                camera.aspect = width / height;
+
+                const aspect = world.width / world.height;
+                const fovRad = 10 * THREE.Math.DEG2RAD;
+
+                let distance = ( aspect < camera.aspect )
+                    ? ( world.height / 2 ) / Math.tan( fovRad / 2 )
+                    : ( world.width / camera.aspect ) / ( 2 * Math.tan( fovRad / 2 ) );
+
+                distance *= 0.5;
+
+                camera.position.set(distance, distance * 0.8, distance)
+                camera.lookAt(-1.5, 0, 0);
+                //camera.lookAt( -1, 0.4, 0.7 /* 0.3, -8/3, 2*/ /*scene.position*/ );
+
+              	camera.updateProjectionMatrix();
+
                 animate();
 
 			}
@@ -712,7 +750,7 @@
                 needRender = false;
                 stats.begin();
 
-                controls.update();
+                if (controls.enabled) controls.update();
 
 				renderer.render( scene, camera );
                 stats.end();
