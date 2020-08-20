@@ -468,8 +468,12 @@
 
                     let drag = {state: 'done'}
 
+                    tl.then(_ => {
+                        console.log('no more moves');
+                        drag.tween = undefined;
+                    })
                     let moves = []
-                    function rotateGroup(to, duration, no_undo) {
+                    function rotateGroup(to, duration, no_undo, onComplete2) {
                         to = roundAngle(to)
 
                         if (to != 0 && no_undo == undefined) {
@@ -491,6 +495,8 @@
                             } else {
                                 drag.state = 'done'
                             }
+
+                            if(onComplete2) onComplete2()
 
                         }
 
@@ -525,6 +531,7 @@
                             },
                             onComplete: onComplete
                         })
+                
                     }
 
                     $(draggable).on('drag:start', event => {
@@ -620,10 +627,16 @@
                     })
                     
 
+                    let rotationQueue = []
                     // TODO: proper action queuing. Incl. replacing 'preparing_next. may require helpers per rotation action (or do the calculation with matrixes)'
                     // need to support aborting (cleanup queue)
                     window.rotate = function(axis, turns, layer, no_undo) {
-                        if (['selecting', 'rotating'].includes(drag.state)) return;
+                        if (drag.state == 'selecting') return;
+                        if (drag.state == 'rotating') {
+                            rotationQueue.push({axis: axis, turns: turns, layer: layer, no_undo: no_undo});
+                            return;
+                        }
+
                         rotation.rotation.set(0,0,0)
                         drag.state = 'rotating'
                         drag.axis = axis;
@@ -640,8 +653,18 @@
                         let selected = cube.children.filter(p => layer === undefined || p.position.getComponent(index) == layer);
                         
                         move(cube, rotation, selected);
-                        rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo)
+                        rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo, _ => {
+                            let move = rotationQueue.pop();
+                            if (move === undefined) {
+                                return;
+                            }
+                            rotate(move.axis, move.turns, move.layer, move.no_undo)
+                        })
 
+                    }
+
+                    window.abortRotation  = function(){
+                        rotationQueue = []
                     }
 
                     window.undo = function() {
