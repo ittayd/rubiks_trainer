@@ -285,10 +285,7 @@
                                         
                     let face = new THREE.Group();
 
-                    let center = new THREE.Group(); // so that every mesh's parent is a cube piece
-	            let center_m = new THREE.Mesh(center_g);
-		    center_m.name = 'center'
-                    center.add(center_m)
+                    let centerm = new THREE.Mesh(center_g);
                     center.name = 'center'
 
                     let corner_facelet = new THREE.Mesh(corner_g);
@@ -358,7 +355,7 @@
                             for (let z = -1; z < 2; z++) {
                                 if (pieces[x][y][z] === undefined) {
                                     let piece = new THREE.Group();
-				    piece.name = `piece-(${x},${y},${z})`
+				    //piece.name = `piece-(${x},${y},${z})`
                                     piece.position.set(x, y, z);
                                     cube.add(piece)
                                     pieces[x][y][z] = piece
@@ -374,6 +371,7 @@
                         facelet.position.round();
                         let piece = pieces[facelet.position.x][facelet.position.y][facelet.position.z]
                         piece.attach(facelet)
+			piece.name = facelet.name
                     })
 
                     let coder = new THREE.Vector3(1, 2, 3); // to code faces
