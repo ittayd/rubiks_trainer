@@ -356,6 +356,7 @@
                             for (let z = -1; z < 2; z++) {
                                 if (pieces[x][y][z] === undefined) {
                                     let piece = new THREE.Group();
+				    piece.name = `piece-(${x},${y},${z})`
                                     piece.position.set(x, y, z);
                                     cube.add(piece)
                                     pieces[x][y][z] = piece
