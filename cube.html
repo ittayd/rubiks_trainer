@@ -286,7 +286,9 @@
                     let face = new THREE.Group();
 
                     let center = new THREE.Group(); // so that every mesh's parent is a cube piece
-                    center.add(new THREE.Mesh(center_g))
+	            let center_m = new THREE.Mesh(center_g);
+		    center_m.name = 'center'
+                    center.add(center_m)
                     center.name = 'center'
 
                     let corner_facelet = new THREE.Mesh(corner_g);
