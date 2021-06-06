@@ -164,9 +164,6 @@ function move(objs, to) {
 
 let needRender = false;
 
-init();
-render();
-
 function init() {
 
     container = document.createElement( 'div' );
@@ -218,23 +215,6 @@ function init() {
 
     container.appendChild( renderer.domElement );
 
-    
-    controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.rotateSpeed = 0.2;
-    controls.dampingFactor = 0.1;
-    controls.enableZoom = true;
-    // controls.autoRotate = true;
-    controls.autoRotateSpeed = .75;
-    controls.addEventListener('change', _ => animate());
-    window.controls = controls ;
-    controls.enabled = false;
-
-
-    let transform = new TransformControls(camera, renderer.domElement );
-    transform.addEventListener( 'change', animate );
-    scene.add(transform)
-
     // stats
 
     stats = new Stats();
@@ -259,7 +239,8 @@ function init() {
         ctx.fillStyle = str;
         return ctx.fillStyle;
     }
-    Promise.all(['resources/corner.stl', 'resources/edge.stl', 'resources/center.stl', 'resources/core.stl'].map(load)).then(([corner_g, edge_g, center_g, core_g]) => {
+
+    return Promise.all(['resources/corner.stl', 'resources/edge.stl', 'resources/center.stl', 'resources/core.stl'].map(load)).then(([corner_g, edge_g, center_g, core_g]) => {
         corner_g.scale(0.5, 0.5, 0.5);
         edge_g.scale(0.5, 0.5, 0.5);
         center_g.scale(0.5, 0.5, 0.5);
@@ -447,68 +428,6 @@ function init() {
         tl.then(_ => {
             drag.tween = undefined;
         })
-        let moves = []
-        function rotateGroup(to, duration, no_undo, onComplete2) {
-            to = roundAngle(to)
-
-            if (to != 0 && no_undo == undefined) {
-                let axis = [0,1,2].maxBy(i => Math.abs(drag.axis.getComponent(i)))
-                let layer = rotation.children.length == 27 ? undefined : (rotation.children[0].position.getComponent(axis) + 1);
-                let counter = to > 0;
-                moves.push({axis: drag.axis, layer: layer, turns: Math.round(to / (Math.PI / 2))})
-            }
-
-            let onComplete = _ => {
-                let selected = rotation.children.slice()
-                move(rotation.children, cube)
-                selected.forEach(piece => {
-                    roundRotation(piece.rotation)
-                    piece.position.round();
-                });
-                if (drag.state == 'preparing_next') {
-                    drag.state = 'preparing'
-                } else {
-                    drag.state = 'done'
-                }
-
-                if(onComplete2) onComplete2()
-
-            }
-
-            if (duration === 0 && drag.state == "rotating") {
-                rotation.rotateOnAxis(drag.axis, to)
-                animate();
-                onComplete();
-                return;
-            }
-
-            let proxy = {
-                target: to,
-                current: drag.angle,
-                previous: drag.angle
-            }
-            if (duration === undefined) {
-                duration = Math.abs(proxy.target - proxy.current) / 3; // full Math.PI/2 should take 0.5 seconds.
-            } 
-
-            let tweener = tl;
-            if (drag.tween !== undefined) {
-                tweener = drag.tween   
-            }
-
-            drag.tween = tweener.to(proxy, duration, {
-                current: proxy.target,
-                ease: "power3.out",
-                onUpdate: _ => {
-                    const delta = proxy.current - proxy.previous
-                    rotation.rotateOnAxis(drag.axis, delta)
-                    proxy.previous = proxy.current
-                },
-                onComplete: onComplete
-            })
-    
-        }
-
         $(draggable).on('drag:start', event => {
             if (['selecting', 'rotating'].includes(drag.state)) return;
             let intersection = intersect(event.target.position.current, envelope)
@@ -603,6 +522,70 @@ function init() {
         
 
         let rotationQueue = []
+
+        let moves = []
+        function rotateGroup(to, duration, no_undo, onComplete2) {
+            to = roundAngle(to)
+
+            if (to != 0 && no_undo == undefined) {
+                let axis = [0,1,2].maxBy(i => Math.abs(drag.axis.getComponent(i)))
+                let layer = rotation.children.length == 27 ? undefined : (rotation.children[0].position.getComponent(axis) + 1);
+                let counter = to > 0;
+                moves.push({axis: drag.axis, layer: layer, turns: Math.round(to / (Math.PI / 2))})
+            }
+
+            let onComplete = _ => {
+                let selected = rotation.children.slice()
+                move(rotation.children, cube)
+                selected.forEach(piece => {
+                    roundRotation(piece.rotation)
+                    piece.position.round();
+                });
+                if (drag.state == 'preparing_next') {
+                    drag.state = 'preparing'
+                } else {
+                    drag.state = 'done'
+                }
+
+                if(onComplete2) onComplete2()
+
+            }
+
+            if (duration === 0 && drag.state == "rotating") {
+                rotation.rotateOnAxis(drag.axis, to)
+                animate();
+                onComplete();
+                return;
+            }
+
+            let proxy = {
+                target: to,
+                current: drag.angle,
+                previous: drag.angle
+            }
+            if (duration === undefined) {
+                duration = Math.abs(proxy.target - proxy.current) / 3; // full Math.PI/2 should take 0.5 seconds.
+            } 
+
+            let tweener = tl;
+            if (drag.tween !== undefined) {
+                tweener = drag.tween   
+            }
+
+            drag.tween = tweener.to(proxy, duration, {
+                current: proxy.target,
+                ease: "power3.out",
+                onUpdate: _ => {
+                    const delta = proxy.current - proxy.previous
+                    rotation.rotateOnAxis(drag.axis, delta)
+                    proxy.previous = proxy.current
+                },
+                onComplete: onComplete
+            })
+    
+        }
+
+
         // TODO: proper action queuing. Incl. replacing 'preparing_next. may require helpers per rotation action (or do the calculation with matrixes)'
         // need to support aborting (cleanup queue)
         function rotate(axis, turns, layer, no_undo) {
@@ -644,44 +627,11 @@ function init() {
 
         function undoRotation() {
             let move = moves.pop();
-            window.rotate(move.axis, -move.turns, move.layer, true);
+            rotate(move.axis, -move.turns, move.layer, true);
         }
-        /** rotation experiments **/
-        /*
-        let rotated = cube.children.filter(p => p.position.x == 1)
-        
-        move(cube, rotation, rotated)
-
-        
-
-        tl.to(rotation.rotation, 3, {x: Math.PI/2}).then(_ => {
-            move(rotation, cube, rotated)
-            rotated.forEach(p => {
-                p.position.round()
-                roundRotation(p.rotation)
-            })
-            rotation.rotation.set(0,0,0)
-            
-            rotated = cube.children.filter(p => p.position.y == 0)
-            move(cube, rotation, rotated)
-
-            tl.to(rotation.rotation, 3, {y: Math.PI/2, onComplete: _ => {
-                rotated.forEach(p => roundRotation(p.rotation));
-            }});
-        })*/
-
-
-        window.THREE = THREE;
-        window.scene = scene;
-        window.render = render;
-        window.transform = transform; 
-        window.camera = camera;
-
 
         render();
     })
-
-    //
 
 
 }
@@ -748,10 +698,11 @@ function render() {
     needRender = false;
     stats.begin();
 
-    if (controls.enabled) controls.update();
-
     renderer.render( scene, camera );
     stats.end();
 
     if(window.animate) animate();
 }
+
+await init();
+
