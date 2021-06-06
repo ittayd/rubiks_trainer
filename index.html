@@ -19,73 +19,9 @@
 
 	<link rel="stylesheet" href="algos.css"/>
 
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" crossorigin="anonymous"></script>
-	<link href="//cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-	<script src="//cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
-
-	<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/jquery-stickytabs@1.2.4/jquery.stickytabs.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pegjs/0.9.0/peg.js" crossorigin="anonymous"></script>
-
 	<script src="lib/virtualcube.js" crossorigin="anonymous"></script>	
-
-	<script src="algos-data.js"></script>
-	<script src="algos.js"></script>
-	<script src="train.js"></script>
-	<script src="control.js"></script>
-	<script src="keyboard.js"></script>
-	<script src="buttons.js"></script>
-
-	<script>
-		var $ = jQuery.noConflict();
-		
-   
-		$(function () {
-/*
-			rubik_cube = new RubikCube('canvas', 3, null, null, 600);
-			rubik_cube.reset();
-
-			rubik_cube3 = new RubikCube('canvas3', 3, null, null, 600);
-			rubik_cube3.reset();*/
-
-			var control = new Control()
-			var train = new Train(control)
-			var keybaord = new Keyboard(train, control)
-			var buttons = new Buttons(control)
-			$(document).click(e => {
-				if($(e.target).is(':button,:checkbox')) {  
-					document.activeElement.blur()
-				}
-				return true;
-			})
-
-			$('.nav-tabs').stickyTabs();
-
-			$('#undo-move-btn').click(_ => control.undo())
-			$('#redo-move-btn').click(_ => control.redo())
-
-			let $algo = $('#algo')
-			let sp = new URLSearchParams(window.location.search)
-			let algo = sp.get('algo')
-			if (algo !== null) {
-				$algo.html(algo);
-                Promise.all([algos.ready, control.ready]).then(_ => control.move(algo, {fast: true}))
-			}
-
-			$algo.bind('keydown keypress keyup ', e => e.stopPropagation());
-			$algo.keypress(e =>  e.which != 13);
-
-
-			$(':button').mouseup(function() { this.blur() })
-		});
-
-
-		/*
-		Cube applet : https://cubefreak.net/a/?case=R'UR'U'R'U'R'URUR2
-		*/
-
-	</script>
+	<script type="module" src="./js/init.mjs"></script>
+	<link href="//cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 
 <body>

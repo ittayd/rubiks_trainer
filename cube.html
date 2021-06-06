@@ -171,8 +171,10 @@
             }
 
 			
-            function move(from, to, objs) {
-                if (objs == undefined) objs = from.children.slice()
+            function move(objs, to) {
+                // #attach removes the object from its existing parent, thus modifying its children. 
+                // therefore, if `objs` is the children array, it will be modified during iteration.
+                // so must copy it using #slice 
                 objs.slice().forEach(o => to.attach(o))
             }
 
@@ -320,7 +322,6 @@
                         face.attach(edge_facelet2)
                         face.rotateZ(Math.PI/2)
                     }
-                    window.face = face
 
                     let start = new THREE.Vector3(0, 0, -1)
                     face.position.copy(start)
@@ -341,37 +342,25 @@
                     scene.add(cube)
 
                     // attach to scene so it updates position to world
-                    faces.forEach(face => move(face, cube, face.children))
+                    faces.forEach(face => move(face.children, cube ))
                     cube.remove(...faces)
                     window.cube = cube;
 
-                    window.pieces = []
-
-                    let pieces = []
-                    for (let x = -1; x < 2; x++) {
-                        pieces[x] = pieces[x] || []
-                        for (let y = -1; y < 2; y++) {
-                            pieces[x][y] = pieces[x][y] || []
-                            for (let z = -1; z < 2; z++) {
-                                if (pieces[x][y][z] === undefined) {
-                                    let piece = new THREE.Group();
-				    //piece.name = `piece-(${x},${y},${z})`
-                                    piece.position.set(x, y, z);
-                                    cube.add(piece)
-                                    pieces[x][y][z] = piece
-                                }
-                            }
-                        }
-                    }
+                    let pieces = new Array(3).fill(new Array(3).fill(new Array(3).fill(new THREE.Group())))
 
                     cube.children.slice().forEach(facelet => {
                         if (facelet.type == "Group")  {
                             return;
                         }
                         facelet.position.round();
-                        let piece = pieces[facelet.position.x][facelet.position.y][facelet.position.z]
+                        // position is -1,0,1
+                        let piece = pieces[facelet.position.x + 1][facelet.position.y + 1][facelet.position.z + 1]
+
+                        piece.position.set(x, y, z);
+                        cube.add(piece) // will not really add multiple times (otherwise can use pieces.flat().forEach...)
+
                         piece.attach(facelet)
-			piece.name = facelet.name
+			            piece.name = facelet.name
                     })
 
                     let coder = new THREE.Vector3(1, 2, 3); // to code faces
@@ -470,7 +459,6 @@
                     let drag = {state: 'done'}
 
                     tl.then(_ => {
-                        console.log('no more moves');
                         drag.tween = undefined;
                     })
                     let moves = []
@@ -486,7 +474,7 @@
 
                         let onComplete = _ => {
                             let selected = rotation.children.slice()
-                            move(rotation, cube, rotation.children)
+                            move(rotation.children, cube)
                             selected.forEach(piece => {
                                 roundRotation(piece.rotation)
                                 piece.position.round();
@@ -591,7 +579,7 @@
                             drag.axis = direction.cross(drag.normal).negate();
                             drag.rotated = drag.piece.name == 'center' ? cube.children : cube.children.filter(p => p.position.dot(drag.axis) == drag.piece.position.dot(drag.axis));
                             rotation.rotation.set(0,0,0)
-                            move(cube, rotation, drag.rotated)
+                            move(drag.rotated, rotation)
                             drag.angle = 0;
                             drag.state = 'rotating'
                         } else if (drag.state == "rotating") { // flipping
@@ -631,7 +619,7 @@
                     let rotationQueue = []
                     // TODO: proper action queuing. Incl. replacing 'preparing_next. may require helpers per rotation action (or do the calculation with matrixes)'
                     // need to support aborting (cleanup queue)
-                    window.rotate = function(axis, turns, layer, no_undo) {
+                    function rotate(axis, turns, layer, no_undo) {
                         if (drag.state == 'selecting') return;
                         if (drag.state == 'rotating') {
                             rotationQueue.push({axis: axis, turns: turns, layer: layer, no_undo: no_undo});
@@ -653,7 +641,7 @@
                         let angle = turns * Math.PI/2
                         let selected = cube.children.filter(p => layer === undefined || p.position.getComponent(index) == layer);
                         
-                        move(cube, rotation, selected);
+                        move(selected, rotation);
                         rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo, _ => {
                             let move = rotationQueue.pop();
                             if (move === undefined) {
@@ -664,11 +652,11 @@
 
                     }
 
-                    window.abortRotation  = function(){
+                    function abortRotation(){
                         rotationQueue = []
                     }
 
-                    window.undo = function() {
+                    function undoRotation() {
                         let move = moves.pop();
                         window.rotate(move.axis, -move.turns, move.layer, true);
                     }
