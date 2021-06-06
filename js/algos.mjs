@@ -34,7 +34,7 @@ class LRU {
 
 var parse;
 
-var notationpeg = $.ajax('notation.pegjs')
+var notationpeg = $.ajax('resources/notation.pegjs')
 
 var classes = (function(){
 	function lcm(n1, n2) {
