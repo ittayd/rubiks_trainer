@@ -24,7 +24,8 @@
             document.body.appendChild( container );
             $(container).css('height', "100vh")
             let cube = await new ThreeCube(container).load();
-            cube.rotate(new THREE.Vector3(1,0,0), 1, 2)
+            // cube.rotate(new THREE.Vector3(1,0,0), 1, 2)
+            window.cube = cube
 
         </script> 
 	</body>

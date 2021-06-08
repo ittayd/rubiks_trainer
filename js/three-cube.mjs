@@ -554,29 +554,25 @@ class ThreeCube {
     }
 
 
-    // TODO: proper action queuing. Incl. replacing 'preparing_next. may require helpers per rotation action (or do the calculation with matrixes)'
-    // need to support aborting (cleanup queue)
-    rotate(axis, turns, layer, no_undo) {
+    // axis: 0 - x, 1 - y, 2 - z
+    // turns
+    // layers: 0 left, 1 middle, 2 right (for x rotation)
+    rotate(axis, turns, layers, no_undo) {
         if (this.#drag.state == 'selecting') return;
         if (this.#drag.state == 'rotating') {
-            this.#rotationQueue.push({axis: axis, turns: turns, layer: layer, no_undo: no_undo});
+            this.#rotationQueue.push({axis: axis, turns: turns, layers: layers, no_undo: no_undo});
             return;
         }
 
         this.#rotation.rotation.set(0,0,0)
         this.#drag.state = 'rotating'
-        this.#drag.axis = axis;
-        if (typeof axis === 'string') {
-            let index = {x: 0, y: 1, z: 2}[axis]
-            this.#drag.axis = new THREE.Vector3().setComponent(index, 1)
-        }
+        this.#drag.axis = new THREE.Vector3().setComponent(axis, 1)
+        
         let index = this.#drag.axis.dot(new THREE.Vector3(0, 1, 2));
         this.#drag.angle = 0
-        if (layer !== undefined) {
-            layer -= 1
-        }
+        
         let angle = -turns * Math.PI/2
-        let selected = this.#cube.children.filter(p => layer === undefined || p.position.getComponent(index) == layer);
+        let selected = this.#cube.children.filter(p => layers === undefined || layers.includes(p.position.getComponent(index) +1));
         
         move(selected, this.#rotation);
         this.#rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo, _ => {
@@ -584,7 +580,7 @@ class ThreeCube {
             if (move === undefined) {
                 return;
             }
-            this.rotate(move.axis, move.turns, move.layer, move.no_undo)
+            this.rotate(move.axis, move.turns, move.layers, move.no_undo)
         })
 
     }
