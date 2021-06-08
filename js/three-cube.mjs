@@ -207,9 +207,7 @@ function roundAngle(x) {
 class ThreeCube {
     #needRender = false;
     #container;
-
     #camera
-    #cameraTarget
     #scene
     #renderer;
     #rotation;
@@ -218,6 +216,8 @@ class ThreeCube {
     #tl;
     #cube;
     #moves = [];
+    #rotationQueue = []
+    
 
     #onContainerResize() {
 
@@ -443,8 +443,6 @@ class ThreeCube {
 
         this.#scene.add(helpers);    
 
-        let rotationQueue = []
-    
         let draggable = new Draggable(this.#renderer.domElement) 
         
         // done -> selecting -> rotating -> finishing -> done 
@@ -550,7 +548,9 @@ class ThreeCube {
     
         })                
 
-        this.#render();      
+        this.#render();  
+        
+        return this;
     }
 
 
@@ -559,7 +559,7 @@ class ThreeCube {
     rotate(axis, turns, layer, no_undo) {
         if (this.#drag.state == 'selecting') return;
         if (this.#drag.state == 'rotating') {
-            rotationQueue.push({axis: axis, turns: turns, layer: layer, no_undo: no_undo});
+            this.#rotationQueue.push({axis: axis, turns: turns, layer: layer, no_undo: no_undo});
             return;
         }
 
@@ -575,22 +575,22 @@ class ThreeCube {
         if (layer !== undefined) {
             layer -= 1
         }
-        let angle = turns * Math.PI/2
+        let angle = -turns * Math.PI/2
         let selected = this.#cube.children.filter(p => layer === undefined || p.position.getComponent(index) == layer);
         
-        move(selected, rotation);
-        rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo, _ => {
-            let move = rotationQueue.pop();
+        move(selected, this.#rotation);
+        this.#rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo, _ => {
+            let move = this.#rotationQueue.pop();
             if (move === undefined) {
                 return;
             }
-            rotate(move.axis, move.turns, move.layer, move.no_undo)
+            this.rotate(move.axis, move.turns, move.layer, move.no_undo)
         })
 
     }
 
     abortRotation() {
-        rotationQueue = []
+        this.#rotationQueue = []
     }
 
     undoRotation() {
@@ -671,10 +671,6 @@ class ThreeCube {
 
 }
 
-let  container = document.createElement( 'div' );
-document.body.appendChild( container );
-$(container).css('height', "100vh")
-await new ThreeCube(container).load();
-
+export default ThreeCube;
 
 
