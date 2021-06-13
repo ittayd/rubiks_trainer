@@ -315,7 +315,6 @@ class ThreeCube {
         let pick = (ev) => {
             const faceDot = new THREE.Vector3(0,-1,-2);
             let obj = this.#scene.getObjectById(picker.pick(ev.clientX * window.devicePixelRatio, ev.clientY * window.devicePixelRatio, obj => obj.type === "Mesh"))
-            console.log('pick', obj, ev.clientX, ev.clientY)
             if (obj == undefined) return 
             return {
                 // 0 is the face around x (r), 1 is y (u), 2 is z (f)
@@ -331,14 +330,10 @@ class ThreeCube {
 
         let downPick 
 
-        console.log('hi')
         $(this.#renderer.domElement).on('pointerdown', ev => {
-            console.log('start picking', ev)
             downPick = pick(ev);
         }).on('pointerup', ev => {
-            console.log('end picking', ev)
             let upPick = pick(ev)
-            console.log('end', downPick, upPick)
             if (downPick === undefined || upPick === undefined) return 
 
             const subv = new THREE.Vector3()
