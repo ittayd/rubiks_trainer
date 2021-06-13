@@ -10,11 +10,15 @@ import { Reflector } from 'https://threejs.org/examples/jsm/objects/Reflector.js
 
 import { TransformControls } from 'https://threejs.org/examples/jsm/controls/TransformControls.js';
 
-import gsap from 'https://cdn.skypack.dev/gsap';
+import {gsap, Linear} from 'https://cdn.skypack.dev/gsap';
 
 import $ from 'https://cdn.skypack.dev/jquery';
 
-import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
+// import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
+
+// https://raw.githack.com/bennlich/three_js_gpu_picking/master/gpupicker.js is not compatible with three 0.12.7
+import {GPUPicker} from 'https://rawcdn.githack.com/ittayd/three_js_gpu_picking/e22cb7fc9ed0a10d6e01edf2f1e44eff957c499b/gpupicker.js' //'https://raw.githack.com/ittayd/three_js_gpu_picking/master/gpupicker.js';
+
 
 Array.prototype.minBy = function (fn) { return this.extremumBy(fn, Math.min); };
 
@@ -31,127 +35,6 @@ Array.prototype.extremumBy = function (pluck, extremum) {
             return pair;
         }
     }, null)[1];
-}
-
-class Draggable extends EventTarget {
-
-    constructor(element, options) {
-        super();
-        this.position = {
-            current: new THREE.Vector2(),
-            start: new THREE.Vector2(),
-            delta: new THREE.Vector2(),
-            previous: new THREE.Vector2(),
-            drag: new THREE.Vector2(),
-        };
-
-        this.options = Object.assign({
-            convert: true
-        }, options || {});
-
-        this.element = element;
-        this.touch = null;
-
-        this.drag = {
-
-            start: (event) => {
-
-                if (event.type == 'mousedown' && event.which != 1) return;
-                if (event.type == 'touchstart' && event.touches.length > 1) return;
-
-                this.setCurrentPosition(event);
-
-                this.position.start = this.position.current.clone();
-                this.position.delta.set(0, 0);
-                this.position.drag.set(0, 0);
-
-                this.touch = (event.type == 'touchstart');
-
-                this._trigger('drag:start')
-
-                window.addEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false);
-                window.addEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false);
-            },
-
-            move: (event) => {
-
-
-                this.position.previous = this.position.current.clone();
-
-
-                this.setCurrentPosition(event);
-
-                this.position.delta = this.position.current.clone().sub(this.position.previous);
-                this.position.drag = this.position.current.clone().sub(this.position.start);
-
-
-                this._trigger('drag:move')
-
-            },
-
-            end: (event) => {
-
-                this.setCurrentPosition(event);
-
-                this._trigger('drag:end')
-
-                window.removeEventListener((this.touch) ? 'touchmove' : 'mousemove', this.drag.move, false);
-                window.removeEventListener((this.touch) ? 'touchend' : 'mouseup', this.drag.end, false);
-
-            },
-
-        };
-
-        this.enable();
-
-        return this;
-
-    }
-
-    enable() {
-
-        this.element.addEventListener('touchstart', this.drag.start, false);
-        this.element.addEventListener('mousedown', this.drag.start, false);
-
-        return this;
-
-    }
-
-    disable() {
-
-        this.element.removeEventListener('touchstart', thisdrag.start, false);
-        this.element.removeEventListener('mousedown', this.drag.start, false);
-
-        return this;
-
-    }
-
-    setCurrentPosition(event) {
-
-        const dragEvent = event.touches
-            ? (event.touches[0] || event.changedTouches[0])
-            : event;
-
-        this.position.current.set(dragEvent.pageX, dragEvent.pageY);
-        if (this.options.convert) {
-            this.convertPosition(this.position.current)
-        }
-
-    }
-
-    convertPosition(position) {
-
-        position.x = (position.x / this.element.offsetWidth) * 2 - 1;
-        position.y = - ((position.y / this.element.offsetHeight) * 2 - 1);
-
-        return position;
-
-    }
-
-    _trigger(name) {
-        this.dispatchEvent(new CustomEvent(name, { detail: this.position }));
-    }
-
 }
 
 let world = {
@@ -199,25 +82,16 @@ function createShadowedLight( x, y, z, color, intensity ) {
 
 }
 
-function roundAngle(x) {
-    const half = Math.PI / 2
-    return Math.round( x  / half ) * half;
-}
-
 class ThreeCube {
     #needRender = false;
     #container;
     #camera
     #scene
     #renderer;
-    #rotation;
-    #raycaster = new THREE.Raycaster();
-    #drag = {state: 'done'}
-    #tl;
     #cube;
     #moves = [];
-    #rotationQueue = []
-    
+    #rotation = {state: "", group: undefined, queue: [], tl: undefined}
+
 
     #onContainerResize() {
 
@@ -417,136 +291,80 @@ class ThreeCube {
             }
         })
 
-        const helper_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
+        //const helper_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
         //const helper_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
 
         let helpers = new THREE.Group()
         helpers.name = "helpers"
 
-        this.#rotation = new THREE.Group();
-        this.#rotation.name = "rotation";
-        helpers.add(this.#rotation)
+        this.#rotation.group = new THREE.Group();
+        this.#rotation.group.name = "rotation";
+        helpers.add(this.#rotation.group)
 
-        let envelope =  new THREE.Mesh(
-            new THREE.BoxBufferGeometry(3, 3, 3),
-            helper_m,
-        );
-        envelope.name = "envelope"
-        helpers.add(envelope)
-
-        let dragged =  new THREE.Mesh(
-            new THREE.PlaneBufferGeometry(200, 200),
-            helper_m
-        );
-        dragged.name = "dragged"
-        helpers.add(dragged);
-
-        this.#scene.add(helpers);    
-
-        let draggable = new Draggable(this.#renderer.domElement) 
+        this.#scene.add(helpers);  
         
+        let picker = new GPUPicker(THREE, this.#renderer, this.#scene, this.#camera);
+
         // done -> selecting -> rotating -> finishing -> done 
         //                                            - (drag start) -> selecting_next
         // selecting_next - (finish animation) -> selecting 
 
-        this.#tl = gsap.timeline({onUpdate: this.#animate.bind(this)});
+        this.#rotation.tl = gsap.timeline({onUpdate: this.#animate.bind(this)});
 
-        this.#tl.then(_ => {
-            this.#drag.tween = undefined;
+//        this.#rotation.tl.then(_ => this.#rotation.tween = undefined)
+
+        let pick = (ev) => {
+            const faceDot = new THREE.Vector3(0,-1,-2);
+            let obj = this.#scene.getObjectById(picker.pick(ev.clientX / window.devicePixelRatio, ev.clientY / window.devicePixelRatio, obj => obj.type === "Mesh"))
+            if (obj == undefined) return 
+            return {
+                // 0 is the face around x (r), 1 is y (u), 2 is z (f)
+                face:  obj.getWorldDirection(new THREE.Vector3()).round().dot(faceDot),
+                position: obj.parent.position.toArray()
+            }
+        }
+
+        let and = (a, b) => a.map((e, i) => e == b[i] ? e: 0)
+        let xnor = (a, b) => a.map((e, i) => e == b[i] ? 1 : 0) 
+        let sub = (a, b) => a.map((e, i) => e - b[i])
+        let length_square = (a) => a.reduce((a, e) => a += e*e, 0)
+
+        let downPick 
+
+        $(this.#renderer.domElement).on('pointerdown', ev => {
+            downPick = pick(ev);
+        }).on('pointerup', ev => {
+            let upPick = pick(ev)
+            if (downPick === undefined || upPick === undefined) return 
+
+            const subv = new THREE.Vector3()
+            let length = length_square(sub(upPick.position, downPick.position))
+            if (length == 0) return;
+
+            // if the click is on the face around axis x (right), then it can only rotate y (up) or z (front)
+            const axisOptions = [[0,1,1], [1,0,1], [1,1,0]]
+
+            // get the common faces for the down and up events
+            let faceAxes = and(axisOptions[downPick.face], axisOptions[upPick.face]);
+
+            // if the move changed the x coordinate, then it can't be a rotation around x. so only pick coordinates that didn't change
+            let positionAxes = xnor(downPick.position, upPick.position)
+
+            // combine the above to get an axis that won
+            let axes = and(faceAxes, positionAxes)
+
+            let axis = axes.reduce((a,e,i) => a += e*i, 0)
+
+            if (axis == 0 && axes[0] == 0) return // no candidate axis
+
+            let delta = sub(upPick.position, downPick.position)
+
+            let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
+
+            let layer = upPick.position[axis] + 1
+
+            this.rotate(axis, direction, [layer])
         })
-
-        $(draggable).on('drag:start', event => {
-            if (['selecting', 'rotating'].includes(this.#drag.state)) return;
-            let intersection = this.#intersect(event.target.position.current, envelope)
-
-            /** 
-             * cube rotation: if the intersection is on the center piece, then it's a cube rotation.
-             * 
-             * alternative: if the intersection is empty, position dragged facing the camera (rotated 45 on y)
-             * then any 'x' movement in dragged is rotating the cube on its y axis, and 'y' movement on the right is 
-             * rotating on z (so the right hand side goes up/down) and 'y' movement on left is rotation on 'x'. right
-             * and left are determined based on being above / below the half width of the screen
-             */
-            let meshes = this.#cube.children.flatMap(c => c.type == 'Group' ? c.children : [c]); // intersection doesn't work on groups
-            let mesh = this.#intersect(event.target.position.current, meshes).object
-            if (mesh == undefined){
-                return;
-            }
-            this.#drag.piece = mesh.parent;
-            this.#drag.current = dragged.worldToLocal(intersection.point.clone())
-            this.#drag.total = new THREE.Vector3();
-            this.#drag.normal = intersection.face.normal
-            this.#drag.momentum = []
-
-            envelope.attach(dragged);
-            dragged.rotation.set( 0, 0, 0 ); 
-            dragged.position.set( 0, 0, 0 );
-            dragged.lookAt(intersection.face.normal.round());
-            dragged.translateZ(1.5)
-            dragged.updateMatrixWorld();
-
-            this.#scene.attach(dragged);
-            this.#drag.state = (this.#drag.state == 'finishing') ? 'selecting_next' : 'selecting'
-        }).on('drag:move', event => {
-            if (['done', 'finishing'].includes(this.#drag.state)) return;
-            let intersection = this.#intersect(event.target.position.current, dragged);
-
-            /* trag target local system */
-            const point = dragged.worldToLocal(intersection.point.clone());
-            this.#drag.delta = point.clone().sub(this.#drag.current).setZ(0); // only measure in the xy plane (that is facing the camera)
-            this.#drag.total.add(this.#drag.delta);
-            this.#drag.current = point;
-            const time = Date.now();
-            this.#drag.momentum = this.#drag.momentum.filter( moment => time - moment.time < 500 );
-            let delta = this.#drag.delta
-            this.#drag.momentum.push( { delta, time } )
-            if (this.#drag.state == 'selecting' && this.#drag.total.length() > 0.03) {
-                // choose an axis
-                this.#drag.main = [0,1,2].maxBy(i => Math.abs(this.#drag.total.getComponent(i)))
-                let direction = new THREE.Vector3();
-                direction.setComponent(this.#drag.main, 1);
-                direction = dragged.localToWorld(direction).sub(dragged.position); // relative to dragged in world 
-                direction = envelope.worldToLocal(direction).round();
-
-                this.#drag.axis = direction.cross(this.#drag.normal).negate();
-                this.#drag.rotated = this.#drag.piece.name == 'center' ? this.#cube.children : this.#cube.children.filter(p => p.position.dot(this.#drag.axis) == this.#drag.piece.position.dot(this.#drag.axis));
-                this.#rotation.rotation.set(0,0,0)
-                move(this.#drag.rotated, this.#rotation)
-                this.#drag.angle = 0;
-                this.#drag.state = 'rotating'
-            } else if (this.#drag.state == "rotating") { // flipping
-                let delta = this.#drag.delta.getComponent(this.#drag.main) / 3;
-                this.#rotation.rotateOnAxis(this.#drag.axis, delta)
-                this.#drag.angle += delta;
-                this.#animate();
-            }
-        }).on('drag:end', event => {
-            if (['done', 'selecting'].includes(this.#drag.state)) {// small touch not enough to create a rotation
-                this.#drag.state = 'done'
-                return;
-            }
-
-            if (this.#drag.state == 'selecting_next') {
-                this.#drag.state = 'finishing'
-                return;
-            }
-            
-            this.#drag.state = 'finishing'
-
-            const time = Date.now();
-            this.#drag.momentum = this.#drag.momentum.filter( moment => time - moment.time < 500 );
-            let momentum = this.#drag.momentum.reduce((acc, cur, idx) => {
-                return acc.add( cur.delta.multiplyScalar( idx / this.#drag.momentum.length ) );
-            }, new THREE.Vector2())
-
-            if( Math.abs( momentum ) > 0.05 && Math.abs( this.#drag.angle ) < Math.PI / 2 ) {
-                this.#drag.angle += Math.sign(this.#drag.angle) * ( Math.PI / 4 )
-            }
-
-            this.#rotateGroup(roundAngle(this.#drag.angle))
-                
-    
-        })                
 
         this.#render();  
         
@@ -557,114 +375,86 @@ class ThreeCube {
     // axis: 0 - x, 1 - y, 2 - z
     // turns
     // layers: 0 left, 1 middle, 2 right (for x rotation)
-    rotate(axis, turns, layers, no_undo) {
-        if (this.#drag.state == 'selecting') return;
-        if (this.#drag.state == 'rotating') {
-            this.#rotationQueue.push({axis: axis, turns: turns, layers: layers, no_undo: no_undo});
+    rotate(axis, turns, layers, options = {animate: true, undo: true}) {
+        if (turns == 0) {
             return;
         }
 
-        this.#rotation.rotation.set(0,0,0)
-        this.#drag.state = 'rotating'
-        this.#drag.axis = new THREE.Vector3().setComponent(axis, 1)
-        
-        let index = this.#drag.axis.dot(new THREE.Vector3(0, 1, 2));
-        this.#drag.angle = 0
-        
+        if (this.#rotation.state == 'rotating') {
+            this.#rotation.queue.push({axis: axis, turns: turns, layers: layers, options: options});
+            return;
+        }
+
+        if (options.undo) this.#moves.push({axis: axis, turns: turns, layers: layers})
+
+        this.#rotation.group.rotation.set(0,0,0)
+        this.#rotation.state = 'rotating'
+
         let angle = -turns * Math.PI/2
-        let selected = this.#cube.children.filter(p => layers === undefined || layers.includes(p.position.getComponent(index) +1));
+        let selected = this.#cube.children.filter(p => layers === undefined || layers.includes(p.position.getComponent(axis) +1));
         
-        move(selected, this.#rotation);
-        this.#rotateGroup(angle, 0.5 * Math.abs(angle / (Math.PI / 2)), no_undo, _ => {
-            let move = this.#rotationQueue.pop();
-            if (move === undefined) {
+        move(selected, this.#rotation.group);
+        
+        let onComplete = _ => {
+            const round = (x) => {
+                const half = Math.PI / 2
+                return Math.round( x  / half ) * half;
+            }
+
+            let selected = this.#rotation.group.children.slice() // after move, positions change
+            move(this.#rotation.group.children, this.#cube)
+
+            selected.forEach(piece => {
+                piece.rotation.set(round(piece.rotation.x), round(piece.rotation.y), round(piece.rotation.z))
+                piece.position.round();
+            });
+            
+            this.#rotation.state = 'done'
+
+            let next = this.#rotation.queue.pop();
+            if (next === undefined) {
                 return;
             }
-            this.rotate(move.axis, move.turns, move.layers, move.no_undo)
-        })
+            this.rotate(next.axis, next.turns, next.layers, next.options)
+        }
+
+        let axisv = new THREE.Vector3().setComponent(axis, 1)
+        if (!options.animate) {
+            this.#rotation.group.rotateOnAxis(axisv, angle)
+            this.#animate();
+            onComplete();
+            return;
+        }
+    
+        let proxy = {
+            target: angle,
+            current: 0,
+            previous: 0
+        }
+
+        const duration = 0.5
+
+        let tweener = this.#rotation.tl;
+        tweener.to(proxy, duration, {
+            current: proxy.target,
+            ease: Linear.easeNone,
+            onUpdate: _ => {
+                this.#rotation.group.rotateOnAxis(axisv, proxy.current - proxy.previous)
+                proxy.previous = proxy.current
+            },
+            onComplete: onComplete
+        })    
 
     }
 
     abortRotation() {
-        this.#rotationQueue = []
+        this.#rotation.queue = []
     }
 
     undoRotation() {
         let move = this.#moves.pop();
         rotate(move.axis, -move.turns, move.layer, true);
     }
-
-    #intersect(position, object) {
-        this.#raycaster.setFromCamera(position, this.#camera);
-
-        let intersect = (Array.isArray(object))
-            ? this.#raycaster.intersectObjects(object)
-            : this.#raycaster.intersectObject(object);
-
-        return (intersect.length > 0) ? intersect[0] : false;
-    }
-
-    #rotateGroup(to, duration, no_undo, onComplete2) {
-        to = roundAngle(to)
-
-        if (to != 0 && no_undo == undefined) {
-            let axis = [0,1,2].maxBy(i => Math.abs(this.#drag.axis.getComponent(i)))
-            let layer = this.#rotation.children.length == 27 ? undefined : (this.#rotation.children[0].position.getComponent(axis) + 1);
-            let counter = to > 0;
-            this.#moves.push({axis: this.#drag.axis, layer: layer, turns: Math.round(to / (Math.PI / 2))})
-        }
-
-        let onComplete = _ => {
-            let selected = this.#rotation.children.slice()
-            move(this.#rotation.children, this.#cube)
-            selected.forEach(piece => {
-                piece.rotation.set(roundAngle(piece.rotation.x), roundAngle(piece.rotation.y), roundAngle(piece.rotation.z))
-                piece.position.round();
-            });
-            if (this.#drag.state == 'preparing_next') {
-                this.#drag.state = 'preparing'
-            } else {
-                this.#drag.state = 'done'
-            }
-
-            if(onComplete2) onComplete2()
-
-        }
-
-        if (duration === 0 && this.#drag.state == "rotating") {
-            this.#rotation.rotateOnAxis(this.#drag.axis, to)
-            this.#animate();
-            onComplete();
-            return;
-        }
-
-        let proxy = {
-            target: to,
-            current: this.#drag.angle,
-            previous: this.#drag.angle
-        }
-        if (duration === undefined) {
-            duration = Math.abs(proxy.target - proxy.current) / 3; // full Math.PI/2 should take 0.5 seconds.
-        } 
-
-        let tweener = this.#tl;
-        if (this.#drag.tween !== undefined) {
-            tweener = this.#drag.tween   
-        }
-
-        this.#drag.tween = tweener.to(proxy, duration, {
-            current: proxy.target,
-            ease: "power3.out",
-            onUpdate: _ => {
-                const delta = proxy.current - proxy.previous
-                this.#rotation.rotateOnAxis(this.#drag.axis, delta)
-                proxy.previous = proxy.current
-            },
-            onComplete: onComplete
-        })
-
-    }
-
 }
 
 export default ThreeCube;
