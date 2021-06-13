@@ -6,7 +6,7 @@ import bootstrap from 'https://cdn.skypack.dev/bootstrap';
 import jqueryStickytabs from 'https://cdn.skypack.dev/jquery-stickytabs';
 
 import Train from './train.mjs';
-import Control from './control.mjs';
+import Control from './randelshofer-control.mjs';
 import Keyboard from './keyboard.mjs'
 import Buttons from './buttons.mjs';
 
