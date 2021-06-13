@@ -313,10 +313,17 @@ class ThreeCube {
 //        this.#rotation.tl.then(_ => this.#rotation.tween = undefined)
 
         let pick = (ev) => {
+            return picker.pick(ev.clientX * window.devicePixelRatio, ev.clientY * window.devicePixelRatio, obj => obj.type === "Mesh")
+        }
+
+        let resolve = (id) => {
+            if (id === undefined) return
             const faceDot = new THREE.Vector3(0,-1,-2);
-            let obj = this.#scene.getObjectById(picker.pick(ev.clientX * window.devicePixelRatio, ev.clientY * window.devicePixelRatio, obj => obj.type === "Mesh"))
+            let obj = this.#scene.getObjectById(id)
             if (obj == undefined) return 
             return {
+                id: id,
+                pid: obj.parent.id,
                 // 0 is the face around x (r), 1 is y (u), 2 is z (f)
                 face:  obj.getWorldDirection(new THREE.Vector3()).round().dot(faceDot),
                 position: obj.parent.position.toArray()
@@ -329,18 +336,23 @@ class ThreeCube {
         let length_square = (a) => a.reduce((a, e) => a += e*e, 0)
 
         let downPick 
-        let movePick;
+        let ignore = true;
         $(this.#renderer.domElement).on('pointerdown', ev => {
-            downPick = pick(ev);
+            ignore = false;
+            downPick = undefined;
         }).on('pointermove', ev => {
-            movePick = pick(ev) || movePick
-        }).on('pointerup', ev => {
-            movePick = pick(ev) || movePick;
-            if (downPick === undefined || movePick === undefined) return 
+            if (ignore) return;
 
-            const subv = new THREE.Vector3()
-            let length = length_square(sub(movePick.position, downPick.position))
-            if (length == 0) return;
+            if (downPick == undefined) {
+                downPick = resolve(pick(ev))
+                return;
+            }
+            let moveId = pick(ev)
+            if (downPick === undefined || moveId == downPick.id || moveId === undefined) return;
+            
+            let movePick = resolve(moveId)
+
+            if (movePick.pid === downPick.pid) return;
 
             // if the click is on the face around axis x (right), then it can only rotate y (up) or z (front)
             const axisOptions = [[0,1,1], [1,0,1], [1,1,0]]
@@ -362,10 +374,12 @@ class ThreeCube {
 
             let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
 
-            let layer = movePick.position[axis] + 1
+            let layers = [movePick.position[axis] + 1]
+            if (length_square(downPick.position) == 1) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
+                layers = [0,1,2]
 
-
-            this.rotate(axis, direction, [layer])
+            ignore = true;
+            this.rotate(axis, direction, layers)
         })
 
         this.#render();  
@@ -434,7 +448,7 @@ class ThreeCube {
             previous: 0
         }
 
-        const duration = 0.5
+        const duration = 0.1
 
         let tweener = this.#rotation.tl;
         tweener.to(proxy, duration, {
