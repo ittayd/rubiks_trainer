@@ -13,6 +13,7 @@
 			PR2 head from <a href="http://www.ros.org/wiki/pr2_description">www.ros.org</a>
         </div>
         
+        <div id="container" style="height: 100vh; touch-action: none;"></div>
 
 		<script type="module">
             import ThreeCube from './js/three-cube.mjs'
@@ -20,10 +21,7 @@
             import $ from 'https://cdn.skypack.dev/jquery';
 
 
-            let  container = document.createElement( 'div' );
-            document.body.appendChild( container );
-            $(container).css('height', "100vh")
-            let cube = await new ThreeCube(container).load();
+            let cube = await new ThreeCube($('#container')).load();
             // cube.rotate(new THREE.Vector3(1,0,0), 1, 2)
             window.cube = cube
 

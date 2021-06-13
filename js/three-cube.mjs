@@ -16,8 +16,7 @@ import $ from 'https://cdn.skypack.dev/jquery';
 
 // import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
 
-// https://raw.githack.com/bennlich/three_js_gpu_picking/master/gpupicker.js is not compatible with three 0.12.7
-import {GPUPicker} from 'https://rawcdn.githack.com/ittayd/three_js_gpu_picking/e22cb7fc9ed0a10d6e01edf2f1e44eff957c499b/gpupicker.js' //'https://raw.githack.com/ittayd/three_js_gpu_picking/master/gpupicker.js';
+import {GPUPicker} from /*'https://rawcdn.githack.com/ittayd/three_js_gpu_picking/e22cb7fc9ed0a10d6e01edf2f1e44eff957c499b/gpupicker.js'*/ 'https://raw.githack.com/ittayd/three_js_gpu_picking/master/gpupicker.js';
 
 
 Array.prototype.minBy = function (fn) { return this.extremumBy(fn, Math.min); };
@@ -315,7 +314,8 @@ class ThreeCube {
 
         let pick = (ev) => {
             const faceDot = new THREE.Vector3(0,-1,-2);
-            let obj = this.#scene.getObjectById(picker.pick(ev.clientX / window.devicePixelRatio, ev.clientY / window.devicePixelRatio, obj => obj.type === "Mesh"))
+            let obj = this.#scene.getObjectById(picker.pick(ev.clientX * window.devicePixelRatio, ev.clientY * window.devicePixelRatio, obj => obj.type === "Mesh"))
+            console.log('pick', obj, ev.clientX, ev.clientY)
             if (obj == undefined) return 
             return {
                 // 0 is the face around x (r), 1 is y (u), 2 is z (f)
@@ -331,10 +331,14 @@ class ThreeCube {
 
         let downPick 
 
+        console.log('hi')
         $(this.#renderer.domElement).on('pointerdown', ev => {
+            console.log('start picking', ev)
             downPick = pick(ev);
         }).on('pointerup', ev => {
+            console.log('end picking', ev)
             let upPick = pick(ev)
+            console.log('end', downPick, upPick)
             if (downPick === undefined || upPick === undefined) return 
 
             const subv = new THREE.Vector3()
@@ -362,6 +366,7 @@ class ThreeCube {
             let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
 
             let layer = upPick.position[axis] + 1
+
 
             this.rotate(axis, direction, [layer])
         })
