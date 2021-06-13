@@ -109,6 +109,7 @@ class Randelshofer {
         this.canvas3d.reset();
     }
 
+    /*
     reposition() {
         let c = this.canvas3d;
         c.currentAngle = 0;
@@ -117,9 +118,7 @@ class Randelshofer {
         c.rotationMatrix.makeIdentity();
         c.smoothRotationFunction = null;
         c.repaint();
-    }
-
-    
+    }*/
 
     move(moves, quiet = false) {
         if (typeof moves == "string") {

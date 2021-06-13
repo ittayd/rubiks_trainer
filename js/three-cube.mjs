@@ -88,9 +88,8 @@ class ThreeCube {
     #scene
     #renderer;
     #cube;
-    #moves = [];
     #rotation = {state: "", group: undefined, queue: [], tl: undefined}
-
+    #pieces = new Array(3).fill().map(_ => new Array(3).fill().map(_ => new Array(3).fill().map(_ => new THREE.Group())))
 
     #onContainerResize() {
 
@@ -258,15 +257,13 @@ class ThreeCube {
         faces.forEach(face => move(face.children, this.#cube ))
         this.#cube.remove(...faces)
     
-        let pieces = new Array(3).fill().map(_ => new Array(3).fill().map(_ => new Array(3).fill().map(_ => new THREE.Group())))
-
         this.#cube.children.slice().forEach(facelet => {
             if (facelet.type == "Group")  {
                 return;
             }
             facelet.position.round();
             // position is -1,0,1
-            let piece = pieces[facelet.position.x + 1][facelet.position.y + 1][facelet.position.z + 1]
+            let piece = this.#pieces[facelet.position.x + 1][facelet.position.y + 1][facelet.position.z + 1]
 
             piece.position.set(facelet.position.x, facelet.position.y, facelet.position.z);
             this.#cube.add(piece) // will not really add multiple times (otherwise can use pieces.flat().forEach...)
@@ -387,11 +384,21 @@ class ThreeCube {
         return this;
     }
 
+    reset() {
+        for(let i = 0; i < 3; i++)
+            for(let j = 0; j < 3; j++)
+                for(let k = 0; k < 3; k++) {
+                    let piece = this.#pieces[i][j][k]
+                    piece.position.set(i - 1, j - 1, k - 1)
+                    piece.rotation.set(0,0,0)
+                }
+        this.#render();
+    }
 
     // axis: 0 - x, 1 - y, 2 - z
     // turns
     // layers: 0 left, 1 middle, 2 right (for x rotation)
-    rotate(axis, turns, layers, options = {animate: true, undo: true}) {
+    async rotate(axis, turns, layers, options = {duration: 0.1}) {
         if (turns == 0) {
             return;
         }
@@ -400,8 +407,6 @@ class ThreeCube {
             this.#rotation.queue.push({axis: axis, turns: turns, layers: layers, options: options});
             return;
         }
-
-        if (options.undo) this.#moves.push({axis: axis, turns: turns, layers: layers})
 
         this.#rotation.group.rotation.set(0,0,0)
         this.#rotation.state = 'rotating'
@@ -426,8 +431,8 @@ class ThreeCube {
             });
             
             this.#rotation.state = 'done'
-
-            let next = this.#rotation.queue.pop();
+            //this.#duration = Math.min(0.5, 0.1 * gsap.ticker.deltaRatio(20))
+            let next = this.#rotation.queue.shift();
             if (next === undefined) {
                 return;
             }
@@ -435,11 +440,11 @@ class ThreeCube {
         }
 
         let axisv = new THREE.Vector3().setComponent(axis, 1)
-        if (!options.animate) {
+        if (!options.duration) {
             this.#rotation.group.rotateOnAxis(axisv, angle)
             this.#animate();
             onComplete();
-            return;
+            return ;
         }
     
         let proxy = {
@@ -448,10 +453,10 @@ class ThreeCube {
             previous: 0
         }
 
-        const duration = 0.1
+        
 
         let tweener = this.#rotation.tl;
-        tweener.to(proxy, duration, {
+        return tweener.to(proxy, options.duration, {
             current: proxy.target,
             ease: Linear.easeNone,
             onUpdate: _ => {
@@ -459,17 +464,12 @@ class ThreeCube {
                 proxy.previous = proxy.current
             },
             onComplete: onComplete
-        })    
+        })   
 
     }
 
     abortRotation() {
         this.#rotation.queue = []
-    }
-
-    undoRotation() {
-        let move = this.#moves.pop();
-        rotate(move.axis, -move.turns, move.layer, true);
     }
 }
 

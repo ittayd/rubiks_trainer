@@ -1,4 +1,5 @@
 import $ from 'https://cdn.skypack.dev/jquery';
+import * as algos from './algos.mjs'
 
 var nop = event => { }
     
