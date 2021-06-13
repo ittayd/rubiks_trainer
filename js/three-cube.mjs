@@ -329,25 +329,27 @@ class ThreeCube {
         let length_square = (a) => a.reduce((a, e) => a += e*e, 0)
 
         let downPick 
-
+        let movePick;
         $(this.#renderer.domElement).on('pointerdown', ev => {
             downPick = pick(ev);
+        }).on('pointermove', ev => {
+            movePick = pick(ev) || movePick
         }).on('pointerup', ev => {
-            let upPick = pick(ev)
-            if (downPick === undefined || upPick === undefined) return 
+            movePick = pick(ev) || movePick;
+            if (downPick === undefined || movePick === undefined) return 
 
             const subv = new THREE.Vector3()
-            let length = length_square(sub(upPick.position, downPick.position))
+            let length = length_square(sub(movePick.position, downPick.position))
             if (length == 0) return;
 
             // if the click is on the face around axis x (right), then it can only rotate y (up) or z (front)
             const axisOptions = [[0,1,1], [1,0,1], [1,1,0]]
 
             // get the common faces for the down and up events
-            let faceAxes = and(axisOptions[downPick.face], axisOptions[upPick.face]);
+            let faceAxes = and(axisOptions[downPick.face], axisOptions[movePick.face]);
 
             // if the move changed the x coordinate, then it can't be a rotation around x. so only pick coordinates that didn't change
-            let positionAxes = xnor(downPick.position, upPick.position)
+            let positionAxes = xnor(downPick.position, movePick.position)
 
             // combine the above to get an axis that won
             let axes = and(faceAxes, positionAxes)
@@ -356,11 +358,11 @@ class ThreeCube {
 
             if (axis == 0 && axes[0] == 0) return // no candidate axis
 
-            let delta = sub(upPick.position, downPick.position)
+            let delta = sub(movePick.position, downPick.position)
 
             let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
 
-            let layer = upPick.position[axis] + 1
+            let layer = movePick.position[axis] + 1
 
 
             this.rotate(axis, direction, [layer])
