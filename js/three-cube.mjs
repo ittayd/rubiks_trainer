@@ -6,8 +6,6 @@ import { STLLoader } from 'https://threejs.org/examples/jsm/loaders/STLLoader.js
 
 import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js'
 
-import { Reflector } from 'https://threejs.org/examples/jsm/objects/Reflector.js';
-
 import { TransformControls } from 'https://threejs.org/examples/jsm/controls/TransformControls.js';
 
 import {gsap, Linear, Sine} from 'https://cdn.skypack.dev/gsap';
@@ -87,6 +85,8 @@ class ThreeCube {
     #camera
     #scene
     #renderer;
+    #mirrorTarget;
+    #mirrorCamera;
     #cube;
     #rotation = {state: "", group: undefined, queue: [], tl: undefined}
     #pieces = new Array(3).fill().map(_ => new Array(3).fill().map(_ => new Array(3).fill().map(_ => new THREE.Group())))
@@ -130,7 +130,27 @@ class ThreeCube {
     #render() {
         this.#needRender = false;
         // stats.begin();
-    
+
+        // Render
+
+		this.#mirrorTarget.texture.encoding = this.#renderer.outputEncoding;
+
+		const currentXrEnabled = this.#renderer.xr.enabled;
+		const currentShadowAutoUpdate = this.#renderer.shadowMap.autoUpdate;
+
+		this.#renderer.xr.enabled = false; // Avoid camera modification
+		this.#renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
+
+        this.#renderer.setRenderTarget( this.#mirrorTarget );
+		this.#renderer.state.buffers.depth.setMask( true ); // make sure the depth buffer is writable so it can be properly cleared, see #18897
+
+		if ( this.#renderer.autoClear === false ) this.#renderer.clear();
+        this.#renderer.render( this.#scene, this.#mirrorCamera );
+
+		this.#renderer.xr.enabled = currentXrEnabled;
+        this.#renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+
+        this.#renderer.setRenderTarget( null );
         this.#renderer.render( this.#scene, this.#camera );
         // stats.end();
     
@@ -139,10 +159,7 @@ class ThreeCube {
     constructor(container) {
         this.#container = $(container)
         let aspect = this.#container.innerWidth() / this.#container.innerHeight();
-/*        this.#camera = new THREE.OrthographicCamera(-1.5*aspect, 1.5*aspect, 1.5, -1.5, 0.1, 20)
-        this.#camera.position.x = 3
-        this.#camera.lookAt(0,0,0)
-*/        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 40 );
+        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 40 );
         this.#scene = new THREE.Scene();
         this.#scene.background = new THREE.Color(0xd1d5db);
         //this.#scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
@@ -170,21 +187,42 @@ class ThreeCube {
         this.#scene.add(lights)
     
         // mirror
-        let geometry = new THREE.PlaneBufferGeometry(3, 3);
-        let leftMirror = new Reflector( geometry, {
-            clipBias: 0.003,
-            textureWidth: window.innerWidth * window.devicePixelRatio,
-            textureHeight: window.innerHeight * window.devicePixelRatio,
-            color: 0x777777
-        } );
-        leftMirror.position.set(-3.2, 1.2, 1.4);
-        leftMirror.rotation.y = Math.PI / 2;
-        leftMirror.name = "mirror"
-        this.#scene.add( leftMirror );
-        
-        let backMirror = leftMirror.clone
-        
+        this.#mirrorCamera = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.1, 20)
+        this.#mirrorCamera.position.x = -3
+        this.#mirrorCamera.lookAt(0,0,0)
+        this.#mirrorTarget = new THREE.WebGLRenderTarget( 512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat } )
+        const geometry = new THREE.PlaneBufferGeometry(3, 3);
+        // first line in main is to mirror
+        const fragmentShader = `
+            uniform sampler2D tDiffuse;
+            varying vec2 vUv;
+            void main() {
+                vec2 mvUv = vec2(1.-vUv.x, vUv.y);
+                gl_FragColor = texture2D( tDiffuse, mvUv );
+            }
+        ` 
+        const vertexShader = `
+            varying vec2 vUv;
 
+            void main() {
+                vUv = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		    }
+        `
+
+        let material = new THREE.ShaderMaterial( {
+			uniforms: {tDiffuse: {value: this.#mirrorTarget.texture}} , // this is where we pass the rendered content to this material
+			fragmentShader: fragmentShader,
+			vertexShader: vertexShader
+		});
+
+        let mirror = new THREE.Mesh(geometry, material)        
+        mirror.position.set(-3.2, 1.2, 1.4)
+        mirror.rotation.y = Math.PI/2;
+        mirror.name = "mirror"
+        this.#scene.add( mirror )
+
+        
 
         // renderer
 
