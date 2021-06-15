@@ -359,7 +359,7 @@ class ThreeCube {
                 return;
             }
             let moveId = pick(ev)
-            if (downPick === undefined || moveId == downPick.id || moveId === undefined) return;
+            if (downPick === undefined || moveId == downPick.id || moveId === -1) return;
             
             let movePick = resolve(moveId)
 
@@ -391,6 +391,8 @@ class ThreeCube {
 
             ignore = true;
             this.rotate(axis, direction, layers)
+        }).on('pointerup', ev => {
+            ignore = true;
         })
 
         this.#render();  
