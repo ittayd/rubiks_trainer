@@ -10,7 +10,7 @@ import { Reflector } from 'https://threejs.org/examples/jsm/objects/Reflector.js
 
 import { TransformControls } from 'https://threejs.org/examples/jsm/controls/TransformControls.js';
 
-import {gsap, Linear} from 'https://cdn.skypack.dev/gsap';
+import {gsap, Linear, Sine} from 'https://cdn.skypack.dev/gsap';
 
 import $ from 'https://cdn.skypack.dev/jquery';
 
@@ -138,23 +138,37 @@ class ThreeCube {
     
     constructor(container) {
         this.#container = $(container)
-        this.#camera = new THREE.PerspectiveCamera( 10, this.#container.innerWidth() / this.#container.innerHeight(), 1, 1000 );
-        
+        let aspect = this.#container.innerWidth() / this.#container.innerHeight();
+/*        this.#camera = new THREE.OrthographicCamera(-1.5*aspect, 1.5*aspect, 1.5, -1.5, 0.1, 20)
+        this.#camera.position.x = 3
+        this.#camera.lookAt(0,0,0)
+*/        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 40 );
         this.#scene = new THREE.Scene();
         this.#scene.background = new THREE.Color(0xd1d5db);
         //this.#scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
 
         // Lights
+/*
         let ambient = new THREE.AmbientLight( 0xffffff, 0.7)
         let front = createShadowedLight(6, 6, 6, 0xeeeece, 0.35)
         let back = createShadowedLight(-6, 0, -4, 0xeeeece, 0.35)
-
+*/
+        let ambient = new THREE.AmbientLight( 0xffffff, 0.5 )
+        let front = new THREE.DirectionalLight( 0xffffff, 0.3 )
+        let right = new THREE.DirectionalLight( 0xffffff, 0.3 )
+        let up = new THREE.DirectionalLight( 0xffffff, 0.3 )
+        let left = new THREE.DirectionalLight( 0xffffff, 0.4 )
+        
+        front.position.set( 0, 0, 5 );
+        right.position.set( 5, 0, 0 );
+        up.position.set( 0, 5, 0 );
+        left.position.set( -5, 0, 0 );
+        
         let lights = new THREE.Group()
-        lights.add(ambient, front, back)
+        lights.add(ambient, front, right, up, left)
 
         this.#scene.add(lights)
-
-        
+    
         // mirror
         let geometry = new THREE.PlaneBufferGeometry(3, 3);
         let leftMirror = new Reflector( geometry, {
@@ -207,10 +221,10 @@ class ThreeCube {
         let corner_g = await load('resources/corner.stl')
         let edge_g = await load('resources/edge.stl')
         let center_g = await load('resources/center.stl')
-        let core_g = await load('resources/core.stl')
+        // let core_g = await load('resources/core.stl')
         
-        let core = new THREE.Mesh(core_g);
-        core.name = 'core'
+        // let core = new THREE.Mesh(core_g);
+        // core.name = 'core'
                     
         let face = new THREE.Group();
 
@@ -250,7 +264,7 @@ class ThreeCube {
         }
         this.#cube = new THREE.Group();
         this.#cube.add(...faces)
-        this.#cube.add(core)
+        //this.#cube.add(core)
         this.#scene.add(this.#cube)
 
         // attach to scene so it updates position to world
@@ -277,7 +291,7 @@ class ThreeCube {
     
         this.#cube.traverse(mesh => {
             if ( mesh instanceof THREE.Mesh) {
-                mesh.material =  new THREE.MeshPhysicalMaterial({metalness:0, roughness: 0.7, reflectivity: 0.5, transmission: 0.5})
+                mesh.material =  new THREE.MeshLambertMaterial()//MeshPhysicalMaterial({metalness:0, roughness: 0.7, reflectivity: 0.5, transmission: 0.5})
                 mesh.updateWorldMatrix(true);
                 mesh.getWorldDirection(direction).round()
                 let face = direction.dot(coder);
