@@ -86,6 +86,7 @@ class ThreeCube {
     #scene
     #renderer;
     #mirrorTarget;
+    #mirror;
     #mirrorCamera;
     #cube;
     #rotation = {state: "", group: undefined, queue: [], tl: undefined}
@@ -145,7 +146,9 @@ class ThreeCube {
 		this.#renderer.state.buffers.depth.setMask( true ); // make sure the depth buffer is writable so it can be properly cleared, see #18897
 
 		if ( this.#renderer.autoClear === false ) this.#renderer.clear();
+        this.#mirror.visible = false
         this.#renderer.render( this.#scene, this.#mirrorCamera );
+        this.#mirror.visible = true
 
 		this.#renderer.xr.enabled = currentXrEnabled;
         this.#renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
@@ -216,11 +219,11 @@ class ThreeCube {
 			vertexShader: vertexShader
 		});
 
-        let mirror = new THREE.Mesh(geometry, material)        
-        mirror.position.set(-3.2, 1.2, 1.4)
-        mirror.rotation.y = Math.PI/2;
-        mirror.name = "mirror"
-        this.#scene.add( mirror )
+        this.#mirror = new THREE.Mesh(geometry, material)        
+        this.#mirror.position.set(-3.2, 1.2, 1.4)
+        this.#mirror.rotation.y = Math.PI/2;
+        this.#mirror.name = "mirror"
+        this.#scene.add( this.#mirror )
 
         
 
