@@ -34,6 +34,43 @@ Array.prototype.extremumBy = function (pluck, extremum) {
     }, null)[1];
 }
 
+function getRelativeCoordinates(event, referenceElement) {
+    const position = {
+        x: event.pageX,
+        y: event.pageY,
+    };
+
+    const offset = {
+        left: referenceElement.offsetLeft,
+        top: referenceElement.offsetTop,
+    };
+
+    let reference = referenceElement.offsetParent ;
+
+    while (reference) {
+        offset.left += reference.offsetLeft;
+        offset.top += reference.offsetTop;
+        reference = reference.offsetParent ;
+    }
+
+    const scrolls = {
+        left: 0,
+        top: 0,
+    };
+
+    reference = event.target ;
+    while (reference) {
+        scrolls.left += reference.scrollLeft;
+        scrolls.top += reference.scrollTop;
+        reference = reference.parentElement ;
+    }
+
+    return {
+        x: position.x + scrolls.left - offset.left,
+        y: position.y + scrolls.top - offset.top,
+    };
+}
+
 let world = {
     width: 9,
     height: 7.2
@@ -367,7 +404,8 @@ class ThreeCube {
 //        this.#rotation.tl.then(_ => this.#rotation.tween = undefined)
 
         let pick = (ev) => {
-            return picker.pick(ev.clientX * window.devicePixelRatio, ev.clientY * window.devicePixelRatio, obj => obj.type === "Mesh")
+            let {x: x, y: y} = getRelativeCoordinates(ev, this.#renderer.domElement)
+            return picker.pick(x * window.devicePixelRatio, y * window.devicePixelRatio, obj => obj.type === "Mesh")
         }
 
         let resolve = (id) => {
@@ -392,9 +430,11 @@ class ThreeCube {
         let originPick 
         let ignore = true;
         $(this.#renderer.domElement).on('pointerdown', ev => {
+            ev.preventDefault()
             ignore = false;
             originPick = undefined;
         }).on('pointermove', ev => {
+            ev.preventDefault()
             if (ignore) return;
 
             if (originPick == undefined) {

@@ -186,6 +186,7 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	top: -30px;
 	object-fit:contain; /* required for mobile */
 	/* border:1px solid #CCCCCC; */
+	touch-action: none;
 }
 
 #debug {
