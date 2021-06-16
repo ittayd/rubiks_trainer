@@ -500,17 +500,17 @@ class ThreeCube {
     // axis: 0 - x, 1 - y, 2 - z
     // turns
     // layers: 0 left, 1 middle, 2 right (for x rotation)
-    async rotate(axis, turns, layers, options = {duration: 0.25}) {
+    async rotate(axis, turns, layers, {duration = 0.25, trigger = true} = {}) {
         if (turns == 0) {
             return;
         }
 
         if (this.#rotation.state == 'rotating') {
-            this.#rotation.queue.push({axis: axis, turns: turns, layers: layers, options: options});
+            this.#rotation.queue.push({axis: axis, turns: turns, layers: layers, options: {duration: duration, trigger: trigger}});
             return;
         }
 
-        $(this).triggerHandler('cube:rotation', [axis, turns, layers])
+        if (trigger) $(this).triggerHandler('cube:rotation', [axis, turns, layers])
 
         this.#rotation.group.rotation.set(0,0,0)
         this.#rotation.state = 'rotating'
@@ -545,7 +545,7 @@ class ThreeCube {
         }
 
         let axisv = new THREE.Vector3().setComponent(axis, 1)
-        if (!options.duration) {
+        if (!duration) {
             this.#rotation.group.rotateOnAxis(axisv, angle)
             this.#animate();
             onComplete();
@@ -561,7 +561,7 @@ class ThreeCube {
         
 
         this.#rotation.tweener = this.#rotation.tweener || this.#rotation.tl;
-        return this.#rotation.tweener = this.#rotation.tweener.to(proxy, options.duration, {
+        return this.#rotation.tweener = this.#rotation.tweener.to(proxy, duration, {
             current: proxy.target,
             ease: Linear.easeNone,
             onUpdate: _ => {

@@ -29,13 +29,12 @@ class Move {
     this.turns = turns
   }
 
-  applyTo(cube) {
-    cube.rotate(this.axis, this.turns, this.layers)
+  applyTo(cube, options) {
+    cube.rotate(this.axis, this.turns, this.layers, options)
   }
 
-  applyInverseTo(cube) {
-    cube.rotate(this.axis, -this.turns, this.layers)
-
+  applyInverseTo(cube, options) {
+    cube.rotate(this.axis, -this.turns, this.layers, options)
   }
 }
 
@@ -69,7 +68,6 @@ let cube = await new ThreeCube($('#three-cube')).load();
 class ThreeControl {
     #moves = []
     #undoIndex = -1;
-    #doing;
 
     constructor() {
       $(cube).on('cube:rotation', this.#rotated.bind(this))
@@ -102,20 +100,15 @@ class ThreeControl {
 
     undo() {
       if (this.#undoIndex == -1) return;
-      this.#doing = true
-      this.#moves[this.#undoIndex--].applyInverseTo(cube)
-      this.#doing = false
+      this.#moves[this.#undoIndex--].applyInverseTo(cube, {trigger: false})
     }
 
     redo() {
       if (this.#undoIndex == this.#moves.length - 1) return
-      this.#doing = true
-      this.#moves[++this.#undoIndex].applyTo(cube)
-      this.#doing = false
+      this.#moves[++this.#undoIndex].applyTo(cube, {trigger: false})
     }
 
     #rotated(ev, axis, turns, layers) {
-      if (this.#doing) return;
       this.#moves.splice(this.#undoIndex + 1, this.#moves.length - this.#undoIndex - 1)
       this.#moves.push(new Move(axis, layers, turns))
       this.#undoIndex = this.#moves.length - 1
