@@ -389,33 +389,36 @@ class ThreeCube {
         let sub = (a, b) => a.map((e, i) => e - b[i])
         let length_square = (a) => a.reduce((a, e) => a += e*e, 0)
 
-        let downPick 
+        let originPick 
         let ignore = true;
         $(this.#renderer.domElement).on('pointerdown', ev => {
             ignore = false;
-            downPick = undefined;
+            originPick = undefined;
         }).on('pointermove', ev => {
             if (ignore) return;
 
-            if (downPick == undefined) {
-                downPick = resolve(pick(ev))
+            if (originPick == undefined) {
+                let id = pick(ev);
+                originPick = resolve(id)
                 return;
             }
-            let moveId = pick(ev)
-            if (downPick === undefined || moveId == downPick.id || moveId === -1) return;
+            let targetId = pick(ev)
+            if (originPick === undefined || targetId == originPick.id || targetId === -1) return;
             
-            let movePick = resolve(moveId)
+            let targetPick = resolve(targetId)
 
-            if (movePick.pid === downPick.pid) return;
+            if (targetPick.pid === originPick.pid) return;
+
+            ignore = true; // picked another cubelet, so if it doesn't show an intent in rotation, skip the rest of the drag
 
             // if the click is on the face around axis x (right), then it can only rotate y (up) or z (front)
             const axisOptions = [[0,1,1], [1,0,1], [1,1,0]]
 
             // get the common faces for the down and up events
-            let faceAxes = and(axisOptions[downPick.face], axisOptions[movePick.face]);
+            let faceAxes = and(axisOptions[originPick.face], axisOptions[targetPick.face]);
 
             // if the move changed the x coordinate, then it can't be a rotation around x. so only pick coordinates that didn't change
-            let positionAxes = xnor(downPick.position, movePick.position)
+            let positionAxes = xnor(originPick.position, targetPick.position)
 
             // combine the above to get an axis that won
             let axes = and(faceAxes, positionAxes)
@@ -424,19 +427,18 @@ class ThreeCube {
 
             if (axis == 0 && axes[0] == 0) return // no candidate axis
 
-            let delta = sub(movePick.position, downPick.position)
+            let delta = sub(targetPick.position, originPick.position)
 
             let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
 
-            let layers = [movePick.position[axis] + 1]
-            if (length_square(downPick.position) == 1) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
+            let layers = [targetPick.position[axis] + 1]
+            if (length_square(originPick.position) == 1) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
                 layers = [0,1,2]
 
-            ignore = true;
             this.rotate(axis, direction, layers, {duration: 0.1})
         }).on('pointerup', ev => {
             ignore = true;
-            downPick = undefined;
+            originPick = undefined;
         })
 
         this.#render();  
