@@ -162,9 +162,9 @@ class ThreeCube {
     constructor(container) {
         this.#container = $(container)
         let aspect = this.#container.innerWidth() / this.#container.innerHeight();
-        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 40 );
+        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 100 );
         this.#scene = new THREE.Scene();
-        this.#scene.background = new THREE.Color(0xd1d5db);
+        this.#scene.background = null; //new THREE.Color(0xd1d5db);
         //this.#scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
 
         // Lights
@@ -229,9 +229,11 @@ class ThreeCube {
 
         // renderer
 
-        this.#renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+        this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
         this.#renderer.setPixelRatio( window.devicePixelRatio );
         this.#renderer.setSize( container.innerWidth, container.innerHeight );
+        this.#renderer.setClearColor( 0xffffff, 0 );
+
         // renderer.outputEncoding = THREE.sRGBEncoding;
 
         //renderer.shadowMap.enabled = true;
@@ -431,9 +433,10 @@ class ThreeCube {
                 layers = [0,1,2]
 
             ignore = true;
-            this.rotate(axis, direction, layers)
+            this.rotate(axis, direction, layers, {duration: 0.1})
         }).on('pointerup', ev => {
             ignore = true;
+            downPick = undefined;
         })
 
         this.#render();  
@@ -455,7 +458,7 @@ class ThreeCube {
     // axis: 0 - x, 1 - y, 2 - z
     // turns
     // layers: 0 left, 1 middle, 2 right (for x rotation)
-    async rotate(axis, turns, layers, options = {duration: 0.1}) {
+    async rotate(axis, turns, layers, options = {duration: 0.25}) {
         if (turns == 0) {
             return;
         }
@@ -464,6 +467,8 @@ class ThreeCube {
             this.#rotation.queue.push({axis: axis, turns: turns, layers: layers, options: options});
             return;
         }
+
+        $(this).triggerHandler('cube:rotation', [axis, turns, layers])
 
         this.#rotation.group.rotation.set(0,0,0)
         this.#rotation.state = 'rotating'
@@ -491,6 +496,7 @@ class ThreeCube {
             //this.#duration = Math.min(0.5, 0.1 * gsap.ticker.deltaRatio(20))
             let next = this.#rotation.queue.shift();
             if (next === undefined) {
+                this.#rotation.tweener = undefined;
                 return;
             }
             this.rotate(next.axis, next.turns, next.layers, next.options)
@@ -512,8 +518,8 @@ class ThreeCube {
 
         
 
-        let tweener = this.#rotation.tl;
-        return tweener.to(proxy, options.duration, {
+        this.#rotation.tweener = this.#rotation.tweener || this.#rotation.tl;
+        return this.#rotation.tweener = this.#rotation.tweener.to(proxy, options.duration, {
             current: proxy.target,
             ease: Linear.easeNone,
             onUpdate: _ => {
@@ -523,7 +529,7 @@ class ThreeCube {
             onComplete: onComplete
         })   
 
-    }
+   }
 
     abortRotation() {
         this.#rotation.queue = []
