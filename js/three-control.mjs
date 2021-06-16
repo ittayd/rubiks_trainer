@@ -95,7 +95,7 @@ class ThreeControl {
 
         let options = quiet ? {duration: 0} : (moves.length == 1 ? undefined : {duration: 1})
 
-        moves.forEach(m => m.applyTo(cube))
+        moves.forEach(m => m.applyTo(cube, options))
     }
 
     undo() {
