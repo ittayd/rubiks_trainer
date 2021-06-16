@@ -72,7 +72,7 @@ function getRelativeCoordinates(event, referenceElement) {
 }
 
 let world = {
-    width: 9,
+    width: 7.7,
     height: 7.2
 }
 
@@ -146,10 +146,10 @@ class ThreeCube {
             ? ( world.height / 2 ) / Math.tan( fovRad / 2 )
             : ( world.width / this.#camera.aspect ) / ( 2 * Math.tan( fovRad / 2 ) );
     
-        distance *= 0.5;
+        distance *= 0.45;
     
-        this.#camera.position.set(distance, distance * 0.8, distance)
-        this.#camera.lookAt(-1.5, 0, 0);
+        this.#camera.position.set(distance , distance * 0.8, distance)
+        this.#camera.lookAt(-1, 0, 0);
         //this.#camera.lookAt( -1, 0.4, 0.7 /* 0.3, -8/3, 2*/ /*this.#scene.position*/ );
     
         this.#camera.updateProjectionMatrix();
@@ -231,7 +231,7 @@ class ThreeCube {
         this.#mirrorCamera.position.x = -3
         this.#mirrorCamera.lookAt(0,0,0)
         this.#mirrorTarget = new THREE.WebGLRenderTarget( 512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat } )
-        const geometry = new THREE.PlaneBufferGeometry(3, 3);
+        const geometry = new THREE.PlaneBufferGeometry(2, 2);
         // first line in main is to mirror
         const fragmentShader = `
             uniform sampler2D tDiffuse;
@@ -257,7 +257,7 @@ class ThreeCube {
 		});
 
         this.#mirror = new THREE.Mesh(geometry, material)        
-        this.#mirror.position.set(-3.2, 1.2, 1.4)
+        this.#mirror.position.set(-2.4, 1.2, 1.4)
         this.#mirror.rotation.y = Math.PI/2;
         this.#mirror.name = "mirror"
         this.#scene.add( this.#mirror )
