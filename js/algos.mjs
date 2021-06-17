@@ -764,7 +764,7 @@ function renderItem(default_stage, items, $container) {
 	}
 
 	async function img_blob(url) {
-		let response = await fetch('https://cors-anywhere.herokuapp.com/https:' + url)
+		let response = await fetch(`https://cors.bridged.cc/https:${url}`)
 		let blob = await response.blob()
 		return blob; //URL.createObjectURL(blob);
 	}
@@ -797,7 +797,7 @@ function renderItem(default_stage, items, $container) {
 		}
 		
 		const turns = ((image && image.stage) || default_stage) == 'pll' ? ["", " y", " y2", " y'"] : [""]
-		img_comments = (image_comment || '').split("|")
+		const img_comments = (image_comment || '').split("|")
 		let $images = $('<div class="images"></div>').appendTo($container)
 		let images = turns.map((_, i) => {
 			let $div = $(`<div class="image"></div>`).appendTo($images);
@@ -817,7 +817,7 @@ function renderItem(default_stage, items, $container) {
 		turns.forEach((turn, i) => {
 			let url = check_and_set(formula  + turn, async function() {
 			try {
-				algo = algo || algos.parse(formula).inverted
+				algo = algo || parse(formula).inverted
 				face = face || algo.permutation.faceU // we actually want to rotate back, visualcube 'case' argument does that
 				//formula = algo.toMoves({string: true})
 				let parameters = $.extend({
@@ -858,7 +858,7 @@ function renderItem(default_stage, items, $container) {
 			move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${data.triggers[match].moves}">${match}</span>`)
 			let $move = $(`<span>${move}</span>`)
 			$move.find('[data-toggle="tooltip"]').tooltip();
-			$div = $(`<div class="formula ${known}"></div>`)
+			const $div = $(`<div class="formula ${known}"></div>`)
 			$div.append($move)
 			$div.appendTo($subcontainer)/*.click(function () {
 				setDemoAlgo(formula, $(this));
@@ -873,7 +873,7 @@ function renderItem(default_stage, items, $container) {
 	items.forEach(({ name, algs }) => {
 		$container.append(`<li class="title">${name ? name : "<p>"}</li>`)
 		algs.forEach(alg => {
-			$alg = $(`<li class="algo"></li>`).appendTo($container)
+			let $alg = $(`<li class="algo"></li>`).appendTo($container)
 			$alg.append(`<div class="name">${alg.name ? alg.name : "<p>"}</name>`)
 			if (alg.grouping) {
 				alg.grouping.forEach(alg => renderImageAndMoves($alg, alg))

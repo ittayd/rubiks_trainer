@@ -63,22 +63,21 @@ addTranslation("y", false, axes.y, layers.all, turns.counter);
 addTranslation("z", false, axes.z, layers.all, turns.counter);
 
   
-let cube = await new ThreeCube($('#three-cube')).load();
-
 class ThreeControl {
+    #cube = new ThreeCube($('#three-cube'))
     #moves = []
     #undoIndex = -1;
 
-    constructor() {
-      $(cube).on('cube:rotation', this.#rotated.bind(this))
+    constructor() {     
+      $(this.#cube).on('this.#cube:rotation', this.#rotated.bind(this))
     }
 
-    async load() {
-      
+    async init() {
+      return this.#cube.load()      
     }
 
     reset() {
-        cube.reset();
+        this.#cube.reset();
         this.#moves = []
     }
 
@@ -95,17 +94,17 @@ class ThreeControl {
 
         let options = quiet ? {duration: 0} : (moves.length == 1 ? undefined : {duration: 1})
 
-        moves.forEach(m => m.applyTo(cube, options))
+        moves.forEach(m => m.applyTo(this.#cube, options))
     }
 
     undo() {
       if (this.#undoIndex == -1) return;
-      this.#moves[this.#undoIndex--].applyInverseTo(cube, {trigger: false})
+      this.#moves[this.#undoIndex--].applyInverseTo(this.#cube, {trigger: false})
     }
 
     redo() {
       if (this.#undoIndex == this.#moves.length - 1) return
-      this.#moves[++this.#undoIndex].applyTo(cube, {trigger: false})
+      this.#moves[++this.#undoIndex].applyTo(this.#cube, {trigger: false})
     }
 
     #rotated(ev, axis, turns, layers) {
