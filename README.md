@@ -1,10 +1,11 @@
-rubiks_cube_html5
+Rubik's Trainer
 =================
 
 Rubik's cube trainer
-using html5/javascript and Randelshofer's cube model: https://www.randelshofer.ch/rubik/virtual_cubes/rubik/instructions/instructions.html
 
-See it live: https://ittayd.github.io/rubiks_cube_html5/index.html
+using html5/javascript and a three.js based cube 
+
+See it live: https://ittayd.github.io/rubiks_trainer/index.html
 
 (Note: originally based on http://cube.vipe.re/ but completely rewritten since then)
 
