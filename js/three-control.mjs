@@ -72,10 +72,6 @@ class ThreeControl {
       $(this.#cube).on('this.#cube:rotation', this.#rotated.bind(this))
     }
 
-    async init() {
-      return this.#cube.load()      
-    }
-
     reset() {
         this.#cube.reset();
         this.#moves = []

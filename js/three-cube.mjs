@@ -58,12 +58,12 @@ function getRelativeCoordinates(event, referenceElement) {
         top: 0,
     };
 
-    reference = event.target ;
+   /* reference = event.target ;
     while (reference) {
         scrolls.left += reference.scrollLeft;
         scrolls.top += reference.scrollTop;
         reference = reference.parentElement ;
-    }
+    } */
 
     return {
         x: position.x + scrolls.left - offset.left,
@@ -94,27 +94,21 @@ function move(objs, to) {
     objs.slice().forEach(o => to.attach(o))
 }
 
-function createShadowedLight( x, y, z, color, intensity ) {
+const loader = new STLLoader();
 
-    var light = new THREE.SpotLight( color, intensity );
-    light.position.set( x, y, z );
+async function load(url) {
+    const resource = await new Promise((resolve, reject) => {
+        loader.load(url, resolve, undefined, reject);
+    })
+    resource.scale(0.5, 0.5, 0.5)
+    return resource;
+};
 
-    light.castShadow = true;
+const corner_g = await load('resources/corner.stl')
+const edge_g = await load('resources/edge.stl')
+const center_g = await load('resources/center.stl')
+// let core_g = await load('resources/core.stl')
 
-    var d = 2;
-    light.shadow.camera.left = - d;
-    light.shadow.camera.right = d;
-    light.shadow.camera.top = d;
-    light.shadow.camera.bottom = - d;
-
-    light.shadow.camera.near = 1;
-    light.shadow.camera.far = 4;
-
-    light.shadow.bias = - 0.002;
-    
-    return light;
-
-}
 
 class ThreeCube {
     #needRender = false;
@@ -128,73 +122,6 @@ class ThreeCube {
     #cube;
     #rotation = {state: "", group: undefined, queue: [], tl: undefined}
     #pieces = new Array(3).fill().map(_ => new Array(3).fill().map(_ => new Array(3).fill().map(_ => new THREE.Group())))
-
-    #onContainerResize() {
-
-        let width = this.#container.width() // this.#renderer.domElement.offsetWidth;
-        let height = this.#container.height() // this.#renderer.domElement.offsetHeight;
-
-        this.#renderer.setSize( width, height );
-    
-        this.#camera.fov = 10;
-        this.#camera.aspect = width / height;
-    
-        const aspect = world.width / world.height;
-        const fovRad = 10 * THREE.Math.DEG2RAD;
-    
-        let distance = ( aspect < this.#camera.aspect )
-            ? ( world.height / 2 ) / Math.tan( fovRad / 2 )
-            : ( world.width / this.#camera.aspect ) / ( 2 * Math.tan( fovRad / 2 ) );
-    
-        distance *= 0.45;
-    
-        this.#camera.position.set(distance , distance * 0.8, distance)
-        this.#camera.lookAt(-1, 0, 0);
-        //this.#camera.lookAt( -1, 0.4, 0.7 /* 0.3, -8/3, 2*/ /*this.#scene.position*/ );
-    
-        this.#camera.updateProjectionMatrix();
-    
-        this.#animate();
-    
-    }
-    
-    #animate() {
-        if (!this.#needRender) {
-            this.#needRender = true;
-            requestAnimationFrame( this.#render.bind(this) );
-        }
-    }
-    
-    #render() {
-        this.#needRender = false;
-        // stats.begin();
-
-        // Render
-
-		this.#mirrorTarget.texture.encoding = this.#renderer.outputEncoding;
-
-		const currentXrEnabled = this.#renderer.xr.enabled;
-		const currentShadowAutoUpdate = this.#renderer.shadowMap.autoUpdate;
-
-		this.#renderer.xr.enabled = false; // Avoid camera modification
-		this.#renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
-
-        this.#renderer.setRenderTarget( this.#mirrorTarget );
-		this.#renderer.state.buffers.depth.setMask( true ); // make sure the depth buffer is writable so it can be properly cleared, see #18897
-
-		if ( this.#renderer.autoClear === false ) this.#renderer.clear();
-        this.#mirror.visible = false
-        this.#renderer.render( this.#scene, this.#mirrorCamera );
-        this.#mirror.visible = true
-
-		this.#renderer.xr.enabled = currentXrEnabled;
-        this.#renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
-
-        this.#renderer.setRenderTarget( null );
-        this.#renderer.render( this.#scene, this.#camera );
-        // stats.end();
-    
-    }
     
     constructor(container) {
         this.#container = $(container)
@@ -285,24 +212,6 @@ class ThreeCube {
 
         this.#onContainerResize();
 
-    }
-
-    async load() {
-        var loader = new STLLoader();
-
-        async function load(url) {
-            let resource = await new Promise((resolve, reject) => {
-                loader.load(url, resolve, undefined, reject);
-            })
-            resource.scale(0.5, 0.5, 0.5)
-            return resource;
-        };
-
-        let corner_g = await load('resources/corner.stl')
-        let edge_g = await load('resources/edge.stl')
-        let center_g = await load('resources/center.stl')
-        // let core_g = await load('resources/core.stl')
-        
         // let core = new THREE.Mesh(core_g);
         // core.name = 'core'
                     
@@ -409,7 +318,7 @@ class ThreeCube {
         }
 
         let resolve = (id) => {
-            if (id === undefined) return
+            if (id === -1) return
             const faceDot = new THREE.Vector3(0,-1,-2);
             let obj = this.#scene.getObjectById(id)
             if (obj == undefined) return 
@@ -475,6 +384,9 @@ class ThreeCube {
             if (length_square(originPick.position) == 1) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
                 layers = [0,1,2]
 
+            if (ev.shiftKey && layers.length == 1 && layers[0] != 1) {
+                layers.push(1)
+            }
             this.rotate(axis, direction, layers, {duration: 0.1})
         }).on('pointerup', ev => {
             ignore = true;
@@ -576,6 +488,74 @@ class ThreeCube {
     abortRotation() {
         this.#rotation.queue = []
     }
+
+    #onContainerResize() {
+
+        let width = this.#container.width() // this.#renderer.domElement.offsetWidth;
+        let height = this.#container.height() // this.#renderer.domElement.offsetHeight;
+
+        this.#renderer.setSize( width, height );
+    
+        this.#camera.fov = 10;
+        this.#camera.aspect = width / height;
+    
+        const aspect = world.width / world.height;
+        const fovRad = 10 * THREE.Math.DEG2RAD;
+    
+        let distance = ( aspect < this.#camera.aspect )
+            ? ( world.height / 2 ) / Math.tan( fovRad / 2 )
+            : ( world.width / this.#camera.aspect ) / ( 2 * Math.tan( fovRad / 2 ) );
+    
+        distance *= 0.45;
+    
+        this.#camera.position.set(distance , distance * 0.8, distance)
+        this.#camera.lookAt(-1, 0, 0);
+        //this.#camera.lookAt( -1, 0.4, 0.7 /* 0.3, -8/3, 2*/ /*this.#scene.position*/ );
+    
+        this.#camera.updateProjectionMatrix();
+    
+        this.#animate();
+    
+    }
+    
+    #animate() {
+        if (!this.#needRender) {
+            this.#needRender = true;
+            requestAnimationFrame( this.#render.bind(this) );
+        }
+    }
+    
+    #render() {
+        this.#needRender = false;
+        // stats.begin();
+
+        // Render
+
+		this.#mirrorTarget.texture.encoding = this.#renderer.outputEncoding;
+
+		const currentXrEnabled = this.#renderer.xr.enabled;
+		const currentShadowAutoUpdate = this.#renderer.shadowMap.autoUpdate;
+
+		this.#renderer.xr.enabled = false; // Avoid camera modification
+		this.#renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
+
+        this.#renderer.setRenderTarget( this.#mirrorTarget );
+		this.#renderer.state.buffers.depth.setMask( true ); // make sure the depth buffer is writable so it can be properly cleared, see #18897
+
+		if ( this.#renderer.autoClear === false ) this.#renderer.clear();
+        this.#mirror.visible = false
+        this.#renderer.render( this.#scene, this.#mirrorCamera );
+        this.#mirror.visible = true
+
+		this.#renderer.xr.enabled = currentXrEnabled;
+        this.#renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+
+        this.#renderer.setRenderTarget( null );
+        this.#renderer.render( this.#scene, this.#camera );
+        // stats.end();
+    
+    }
+
 }
 
 export default ThreeCube;

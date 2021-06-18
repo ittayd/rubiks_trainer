@@ -21,12 +21,10 @@ $(document).ready(function () {
 
 
     var control = new Control()
-    control.init().then(_ => {
-        var train = new Train(control)
-        var keybaord = new Keyboard(train, control)
-        var buttons = new Buttons(control)
-    })
-    
+    var train = new Train(control)
+    var keybaord = new Keyboard(train, control)
+    var buttons = new Buttons(control)
+
     $(document).click(e => {
         if($(e.target).is(':button,:checkbox')) {  
             document.activeElement.blur()
