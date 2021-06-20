@@ -1,5 +1,7 @@
 import $ from 'https://cdn.skypack.dev/jquery';
 import ThreeCube from './three-cube.mjs'
+import * as algos from './algos.mjs'
+
 
 const translations = {
 }
@@ -64,12 +66,13 @@ addTranslation("z", false, axes.z, layers.all, turns.counter);
 
   
 class ThreeControl {
-    #cube = new ThreeCube($('#three-cube'))
+    #cube
     #moves = []
     #undoIndex = -1;
 
-    constructor() {     
-      $(this.#cube).on('this.#cube:rotation', this.#rotated.bind(this))
+    constructor(container, options = {mirror: true}) {     
+      this.#cube = new ThreeCube($(container), options)
+      $(this.#cube).on('cube:rotation', this.#rotated.bind(this))
     }
 
     reset() {

@@ -1,6 +1,7 @@
 import $ from 'https://cdn.skypack.dev/jquery';
 import pegjs from 'https://cdn.skypack.dev/pegjs';
 import * as data from './algos-data.mjs';
+import Control from './three-control.mjs'
 
 class LRU {
 	constructor(max=10) {
@@ -724,25 +725,32 @@ function cleanMarkup(algo, {tags = true, braces = true, spaces = true} = {}) {
 	return algo;
 }
 
-/*
-function setDemoAlgo(formula, obj) {
-	rubik_cube.reset();
-	var $formula = $j('#canvas_formula')
-	$formula.html(formula);
-
-	formula = algos.parse(formula)
-
-	$formula.data('formula', formula)
-	rubik_cube.move(formula.inverted.toMoves(), true);
-
-	//var y_pos = $j(document.body).scrollTop();
-	var y_pos = obj.offset().top - 50;
-	$j('#div_canvas').show('fast').css('top', y_pos);
-}
-*/
 const ignoreLocalStorage = (new URL(document.location)).searchParams.has("clean")
 const externalImages = (new URL(document.location)).searchParams.has("external-images")
 
+const mini_cube = new Control('#demo_cube', {mirror:false})
+const $algo_demo = $('#algo_demo')
+$algo_demo.bind('blur change click dblclick error focus focusin focusout hover keydown keypress keyup load mousedown mouseenter mouseleave mousemove mouseout mouseover mouseup resize scroll select submit', function(event){
+    event.stopPropagation();
+});
+
+let demo_formula;
+function demoReset() {
+	mini_cube.reset();
+	mini_cube.move(demo_formula, true);
+}
+function showAlgoDemo(formula, $obj) {
+	$obj.append($algo_demo)
+	demo_formula = parse(formula).inverted
+	demoReset()
+	$algo_demo.css('visibility', 'visible')
+	
+}
+ $('#demo-start-btn').click(demoReset)
+ $('#demo-back-btn').click(ev => mini_cube.redo())
+ $('#demo-forward-btn').click(ev => mini_cube.undo())
+ $('#demo-close-btn').click(ev => 	$algo_demo.css('visibility', 'hidden'))
+ 
 
 /*
 	<li class="title">white on the top</li>
@@ -855,19 +863,19 @@ function renderItem(default_stage, items, $container) {
 		let known = 'known';
 		[].concat(moves).forEach(move => {
 			// data-toggle="tooltip" data-placement="top" title="Tooltip on top"
-			move = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${data.triggers[match].moves}">${match}</span>`)
-			let $move = $(`<span>${move}</span>`)
+			const htmlMove = move.replace(triggersPattern, match => `<span data-toggle="tooltip" data-placement="bottom" title="${data.triggers[match].moves}">${match}</span>`)
+			let $move = $(`<span>${htmlMove}</span>`)
+			$move.click(ev => {showAlgoDemo(move, $move)})
 			$move.find('[data-toggle="tooltip"]').tooltip();
 			const $div = $(`<div class="formula ${known}"></div>`)
 			$div.append($move)
-			$div.appendTo($subcontainer)/*.click(function () {
-				setDemoAlgo(formula, $(this));
-			});*/
+			$div.appendTo($subcontainer)
 			known = '';
 		})
 		if (comment) {
 			$subcontainer.append(`<div class="comment">${comment}</div>`)
 		}
+		const self = this
 	}
 
 	items.forEach(({ name, algs }) => {
@@ -883,7 +891,7 @@ function renderItem(default_stage, items, $container) {
 		});
 	});
 
-	$container.click(e => $(event.target).is('img') && 	$container.toggleClass('expand-images'))
+	$container.click(e => $(e.target).is('img') && 	$container.toggleClass('expand-images'))
 
 }
 

@@ -123,20 +123,14 @@ class ThreeCube {
     #rotation = {state: "", group: undefined, queue: [], tl: undefined}
     #pieces = new Array(3).fill().map(_ => new Array(3).fill().map(_ => new Array(3).fill().map(_ => new THREE.Group())))
     
-    constructor(container) {
+    constructor(container, {mirror = true} = {}) {
         this.#container = $(container)
         let aspect = this.#container.innerWidth() / this.#container.innerHeight();
         this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 100 );
         this.#scene = new THREE.Scene();
-        this.#scene.background = null; //new THREE.Color(0xd1d5db);
-        //this.#scene.fog = new THREE.Fog( 0x72645b, 2, 15 );
-
+        this.#scene.background = null; //new THREE.Color(0,0,0); 
+        
         // Lights
-/*
-        let ambient = new THREE.AmbientLight( 0xffffff, 0.7)
-        let front = createShadowedLight(6, 6, 6, 0xeeeece, 0.35)
-        let back = createShadowedLight(-6, 0, -4, 0xeeeece, 0.35)
-*/
         let ambient = new THREE.AmbientLight( 0xffffff, 0.5 )
         let front = new THREE.DirectionalLight( 0xffffff, 0.3 )
         let right = new THREE.DirectionalLight( 0xffffff, 0.3 )
@@ -154,41 +148,42 @@ class ThreeCube {
         this.#scene.add(lights)
     
         // mirror
-        this.#mirrorCamera = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.1, 20)
-        this.#mirrorCamera.position.x = -3
-        this.#mirrorCamera.lookAt(0,0,0)
-        this.#mirrorTarget = new THREE.WebGLRenderTarget( 512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat } )
-        const geometry = new THREE.PlaneBufferGeometry(2, 2);
-        // first line in main is to mirror
-        const fragmentShader = `
-            uniform sampler2D tDiffuse;
-            varying vec2 vUv;
-            void main() {
-                vec2 mvUv = vec2(1.-vUv.x, vUv.y);
-                gl_FragColor = texture2D( tDiffuse, mvUv );
-            }
-        ` 
-        const vertexShader = `
-            varying vec2 vUv;
+        if (mirror) {
+            this.#mirrorCamera = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.1, 20)
+            this.#mirrorCamera.position.x = -3
+            this.#mirrorCamera.lookAt(0,0,0)
+            this.#mirrorTarget = new THREE.WebGLRenderTarget( 512, 512, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat } )
+            const geometry = new THREE.PlaneBufferGeometry(2, 2);
+            // first line in main is to mirror
+            const fragmentShader = `
+                uniform sampler2D tDiffuse;
+                varying vec2 vUv;
+                void main() {
+                    vec2 mvUv = vec2(1.-vUv.x, vUv.y);
+                    gl_FragColor = texture2D( tDiffuse, mvUv );
+                }
+            ` 
+            const vertexShader = `
+                varying vec2 vUv;
 
-            void main() {
-                vUv = uv;
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-		    }
-        `
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                }
+            `
 
-        let material = new THREE.ShaderMaterial( {
-			uniforms: {tDiffuse: {value: this.#mirrorTarget.texture}} , // this is where we pass the rendered content to this material
-			fragmentShader: fragmentShader,
-			vertexShader: vertexShader
-		});
+            let material = new THREE.ShaderMaterial( {
+                uniforms: {tDiffuse: {value: this.#mirrorTarget.texture}} , // this is where we pass the rendered content to this material
+                fragmentShader: fragmentShader,
+                vertexShader: vertexShader
+            });
 
-        this.#mirror = new THREE.Mesh(geometry, material)        
-        this.#mirror.position.set(-2.4, 1.2, 1.4)
-        this.#mirror.rotation.y = Math.PI/2;
-        this.#mirror.name = "mirror"
-        this.#scene.add( this.#mirror )
-
+            this.#mirror = new THREE.Mesh(geometry, material)        
+            this.#mirror.position.set(-2.4, 1.2, 1.4)
+            this.#mirror.rotation.y = Math.PI/2;
+            this.#mirror.name = "mirror"
+            this.#scene.add( this.#mirror )
+        }
         
 
         // renderer
@@ -196,11 +191,7 @@ class ThreeCube {
         this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
         this.#renderer.setPixelRatio( window.devicePixelRatio );
         this.#renderer.setSize( container.innerWidth, container.innerHeight );
-        this.#renderer.setClearColor( 0xffffff, 0 );
-
-        // renderer.outputEncoding = THREE.sRGBEncoding;
-
-        //renderer.shadowMap.enabled = true;
+        //this.#renderer.setClearColor( 0xffffff, 0 );
 
         this.#container.append( this.#renderer.domElement );
 
@@ -212,9 +203,6 @@ class ThreeCube {
 
         this.#onContainerResize();
 
-        // let core = new THREE.Mesh(core_g);
-        // core.name = 'core'
-                    
         let face = new THREE.Group();
 
         let center = new THREE.Mesh(center_g);
@@ -340,6 +328,8 @@ class ThreeCube {
         let ignore = true;
         $(this.#renderer.domElement).on('pointerdown', ev => {
             ev.preventDefault()
+            ev.stopPropagation();
+
             ignore = false;
             originPick = undefined;
         }).on('pointermove', ev => {
@@ -406,7 +396,7 @@ class ThreeCube {
                     piece.position.set(i - 1, j - 1, k - 1)
                     piece.rotation.set(0,0,0)
                 }
-        this.#render();
+        this.#onContainerResize()
     }
 
     // axis: 0 - x, 1 - y, 2 - z
@@ -509,7 +499,7 @@ class ThreeCube {
         distance *= 0.45;
     
         this.#camera.position.set(distance , distance * 0.8, distance)
-        this.#camera.lookAt(-1, 0, 0);
+        this.#camera.lookAt(this.#mirror ? -1 : 0, 0, 0);
         //this.#camera.lookAt( -1, 0.4, 0.7 /* 0.3, -8/3, 2*/ /*this.#scene.position*/ );
     
         this.#camera.updateProjectionMatrix();
@@ -531,26 +521,28 @@ class ThreeCube {
 
         // Render
 
-		this.#mirrorTarget.texture.encoding = this.#renderer.outputEncoding;
+        if (this.#mirror) {
+            this.#mirrorTarget.texture.encoding = this.#renderer.outputEncoding;
 
-		const currentXrEnabled = this.#renderer.xr.enabled;
-		const currentShadowAutoUpdate = this.#renderer.shadowMap.autoUpdate;
+            const currentXrEnabled = this.#renderer.xr.enabled;
+            const currentShadowAutoUpdate = this.#renderer.shadowMap.autoUpdate;
 
-		this.#renderer.xr.enabled = false; // Avoid camera modification
-		this.#renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
+            this.#renderer.xr.enabled = false; // Avoid camera modification
+            this.#renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
 
-        this.#renderer.setRenderTarget( this.#mirrorTarget );
-		this.#renderer.state.buffers.depth.setMask( true ); // make sure the depth buffer is writable so it can be properly cleared, see #18897
+            this.#renderer.setRenderTarget( this.#mirrorTarget );
+            this.#renderer.state.buffers.depth.setMask( true ); // make sure the depth buffer is writable so it can be properly cleared, see #18897
 
-		if ( this.#renderer.autoClear === false ) this.#renderer.clear();
-        this.#mirror.visible = false
-        this.#renderer.render( this.#scene, this.#mirrorCamera );
-        this.#mirror.visible = true
+            if ( this.#renderer.autoClear === false ) this.#renderer.clear();
+            this.#mirror.visible = false
+            this.#renderer.render( this.#scene, this.#mirrorCamera );
+            this.#mirror.visible = true
 
-		this.#renderer.xr.enabled = currentXrEnabled;
-        this.#renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
+            this.#renderer.xr.enabled = currentXrEnabled;
+            this.#renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
 
-        this.#renderer.setRenderTarget( null );
+            this.#renderer.setRenderTarget( null );
+        }
         this.#renderer.render( this.#scene, this.#camera );
         // stats.end();
     

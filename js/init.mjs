@@ -20,7 +20,7 @@ $(document).ready(function () {
     $('.nav-tabs').stickyTabs();
 
 
-    var control = new Control()
+    var control = new Control('#three-cube')
     var train = new Train(control)
     var keybaord = new Keyboard(train, control)
     var buttons = new Buttons(control)
