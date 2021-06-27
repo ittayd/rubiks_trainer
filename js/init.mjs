@@ -1,5 +1,5 @@
 import './jquery-global.mjs'
-import bootstrap from 'https://cdn.skypack.dev/bootstrap';
+import bootstrap from 'https://cdn.skypack.dev/bootstrap@5.0.1';
 import $ from 'https://cdn.skypack.dev/jquery';
 import select2 from 'https://cdn.skypack.dev/select2';
 select2(undefined, $);

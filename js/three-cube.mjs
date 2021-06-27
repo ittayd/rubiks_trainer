@@ -1,15 +1,10 @@
 import * as THREE from 'https://threejs.org/build/three.module.js';
-
 import Stats from 'https://threejs.org/examples/jsm/libs/stats.module.js';
-
 import { STLLoader } from 'https://threejs.org/examples/jsm/loaders/STLLoader.js';
-
+import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js'
-
 import { TransformControls } from 'https://threejs.org/examples/jsm/controls/TransformControls.js';
-
 import {gsap, Linear, Sine} from 'https://cdn.skypack.dev/gsap';
-
 import $ from 'https://cdn.skypack.dev/jquery';
 
 // import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
@@ -78,11 +73,11 @@ let world = {
 
 let colors = {
     C: 0x999999, // core piece
-    D: 0xfff7ff, // white
+    D: 0xffffff, // white
     U: 0xffff41, // yellow
     R: 0xff1836, // red
     F: 0x00b6ff, // blue
-    L: 0xffA500, // orange
+    L: 0xffA100, // orange
     B: 0x00fd55, // green
 }
 
@@ -94,21 +89,40 @@ function move(objs, to) {
     objs.slice().forEach(o => to.attach(o))
 }
 
-const loader = new STLLoader();
+const stlLoader = new STLLoader();
+const gltfLoader = new GLTFLoader();
 
-async function load(url) {
+async function loadStl(url) {
     const resource = await new Promise((resolve, reject) => {
-        loader.load(url, resolve, undefined, reject);
+        stlLoader.load(url, resolve, undefined, reject);
     })
     resource.scale(0.5, 0.5, 0.5)
+    resource.normalizeNormals();
+    resource.computeVertexNormals();
+    resource.computeFaceNormals();
     return resource;
 };
 
-const corner_g = await load('resources/corner.stl')
-const edge_g = await load('resources/edge.stl')
-const center_g = await load('resources/center.stl')
-// let core_g = await load('resources/core.stl')
+async function loadGltf(url) {
+    const gltf = await new Promise((resolve, reject) => {
+        gltfLoader.load(url, resolve, undefined, reject);
+    })
+    
+    return gltf.scene.children[0];
+};
 
+// const corner_g = await loadStl('resources/corner.stl')
+const corner_m = await loadGltf('resources/corner.glb')
+corner_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
+corner_m.position.set(-1, -1, 1)
+const edge_m = await loadGltf('resources/edge.glb')
+edge_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
+edge_m.position.set(0, .5, 1)
+//const center_g =  await loadStl('resources/center.stl')
+const center_m = await loadGltf('resources/center.glb')
+center_m.rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2)
+center_m.position.set(0,0,-0.5)
+//const core_g = await load('resources/core.stl')
 
 class ThreeCube {
     #needRender = false;
@@ -125,27 +139,28 @@ class ThreeCube {
     
     constructor(container, {mirror = true} = {}) {
         this.#container = $(container)
-        let aspect = this.#container.innerWidth() / this.#container.innerHeight();
+        const aspect = this.#container.innerWidth() / this.#container.innerHeight();
         this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 100 );
         this.#scene = new THREE.Scene();
         this.#scene.background = null; //new THREE.Color(0,0,0); 
         
         // Lights
-        let ambient = new THREE.AmbientLight( 0xffffff, 0.5 )
-        let front = new THREE.DirectionalLight( 0xffffff, 0.3 )
-        let right = new THREE.DirectionalLight( 0xffffff, 0.3 )
-        let up = new THREE.DirectionalLight( 0xffffff, 0.3 )
-        let left = new THREE.DirectionalLight( 0xffffff, 0.4 )
-        
-        front.position.set( 0, 0, 5 );
-        right.position.set( 5, 0, 0 );
-        up.position.set( 0, 5, 0 );
-        left.position.set( -5, 0, 0 );
-        
-        let lights = new THREE.Group()
-        lights.add(ambient, front, right, up, left)
-
+        const lights = new THREE.Group()
         this.#scene.add(lights)
+
+        let ambient = new THREE.AmbientLight( 0xfffff0, 1)
+        lights.add(ambient)
+        
+/*        function createFaceLight(x,y,z, i) {
+            let directional = new THREE.DirectionalLight( 0x808080, i )
+            directional.position.set(x,y,z)
+            //directional.castShadow = true
+            lights.add(directional)
+        }
+
+        createFaceLight(1000, 1000, 1000, 1.5)
+        createFaceLight(-10, 0, 0, 0.8)
+*/        
     
         // mirror
         if (mirror) {
@@ -191,6 +206,9 @@ class ThreeCube {
         this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
         this.#renderer.setPixelRatio( window.devicePixelRatio );
         this.#renderer.setSize( container.innerWidth, container.innerHeight );
+        // this.#renderer.shadowMap.enabled = true;
+
+        //this.#renderer.physicallyCorrectLights = true
         //this.#renderer.setClearColor( 0xffffff, 0 );
 
         this.#container.append( this.#renderer.domElement );
@@ -205,18 +223,22 @@ class ThreeCube {
 
         let face = new THREE.Group();
 
-        let center = new THREE.Mesh(center_g);
-        center.name = 'center'
+       
+        function createFacelet(mesh, name) {
+            let facelet = new THREE.Object3D().add(mesh); 
+            facelet.name = name
+            // facelet.castShadow = true;
+            // facelet.receiveShadow = true;
+            return facelet;
+        }
 
-        let corner_facelet = new THREE.Mesh(corner_g);
-        corner_facelet.name = 'corner_facelet'
-
-        let edge_facelet = new THREE.Mesh(edge_g);
-        edge_facelet.name = 'edge_facelet'
-
+        let center = createFacelet(center_m, 'center') 
+        let corner_facelet = createFacelet(corner_m, 'corner_facelet')
+        let edge_facelet = createFacelet(edge_m, 'edge_facelet');
+        // let core = createFacelet(core_g, 'core')
         face.add(center)
 
-        for (let i = 0; i < 4; i++) {                        
+        for (let i = 0; i < 4; i++) { // FIX: iteration start is 0
             let corner_facelet2 = corner_facelet.clone()
             let edge_facelet2 = edge_facelet.clone()
             corner_facelet2.position.set(1, 1, 0);
@@ -229,8 +251,8 @@ class ThreeCube {
         let start = new THREE.Vector3(0, 0, -1)
         face.position.copy(start)
         let faces = [];
-        for(let i = 0; i < 3; i++) {
-            for (let s = -1; s < 2; s += 2) {
+        for(let i = 0; i < 3; i++) { // FIX: iteration start is 0
+            for (let s = -1; s < 2; s += 2) { // FIX: iteration start is -1
                 let axis = new THREE.Vector3().setComponent(i, s);
                 let q = new THREE.Quaternion().setFromUnitVectors(start, axis);
                 let another = face.clone()
@@ -255,7 +277,7 @@ class ThreeCube {
             facelet.position.round();
             // position is -1,0,1
             let piece = this.#pieces[facelet.position.x + 1][facelet.position.y + 1][facelet.position.z + 1]
-
+    
             piece.position.set(facelet.position.x, facelet.position.y, facelet.position.z);
             this.#cube.add(piece) // will not really add multiple times (otherwise can use pieces.flat().forEach...)
 
@@ -268,9 +290,9 @@ class ThreeCube {
     
         this.#cube.traverse(mesh => {
             if ( mesh instanceof THREE.Mesh) {
-                mesh.material =  new THREE.MeshLambertMaterial()//MeshPhysicalMaterial({metalness:0, roughness: 0.7, reflectivity: 0.5, transmission: 0.5})
-                mesh.updateWorldMatrix(true);
-                mesh.getWorldDirection(direction).round()
+                mesh.material =  mesh.material.clone();//new THREE.MeshPhongMaterial()
+                mesh.parent.updateWorldMatrix(true);
+                mesh.parent.getWorldDirection(direction).round()
                 let face = direction.dot(coder);
                 if (mesh.name == 'core') face = 0;
                 let color = {0: colors.C, '1': colors.L, '-1': colors.R, '2': colors.D, '-2': colors.U, '3': colors.B, '-3': colors.F }[face]
@@ -310,8 +332,9 @@ class ThreeCube {
             const faceDot = new THREE.Vector3(0,-1,-2);
             let obj = this.#scene.getObjectById(id)
             if (obj == undefined) return 
+            obj = obj.parent
             return {
-                id: id,
+                id: obj.id,
                 pid: obj.parent.id,
                 // 0 is the face around x (r), 1 is y (u), 2 is z (f)
                 face:  obj.getWorldDirection(new THREE.Vector3()).round().dot(faceDot),
