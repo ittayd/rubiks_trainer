@@ -74,11 +74,11 @@ let world = {
 let colors = {
     C: 0x999999, // core piece
     D: 0xffffff, // white
-    U: 0xfcfc00, // yellow
-    R: 0xff1836, // red
+    U: 0xFFFF4E, // yellow
+    R: 0xFD354D, // red
     F: 0x00b6ff, // blue
-    L: 0xffA100, // orange
-    B: 0x00fd55, // green
+    L: 0xFF992D, // orange
+    B: 0x59eE68, // green
 }
 
 
@@ -148,7 +148,7 @@ class ThreeCube {
         const lights = new THREE.Group()
         this.#scene.add(lights)
 
-        let ambient = new THREE.AmbientLight( 0xfffff0, 1)
+        let ambient = new THREE.AmbientLight( 0xffffff, 1)
         lights.add(ambient)
         
 /*        function createFaceLight(x,y,z, i) {
