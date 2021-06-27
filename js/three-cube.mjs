@@ -74,7 +74,7 @@ let world = {
 let colors = {
     C: 0x999999, // core piece
     D: 0xffffff, // white
-    U: 0xffff41, // yellow
+    U: 0xfcfc00, // yellow
     R: 0xff1836, // red
     F: 0x00b6ff, // blue
     L: 0xffA100, // orange
@@ -117,11 +117,11 @@ corner_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
 corner_m.position.set(-1, -1, 1)
 const edge_m = await loadGltf('resources/edge.glb')
 edge_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
-edge_m.position.set(0, .5, 1)
+edge_m.position.set(0, -1, 1)
 //const center_g =  await loadStl('resources/center.stl')
 const center_m = await loadGltf('resources/center.glb')
 center_m.rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2)
-center_m.position.set(0,0,-0.5)
+center_m.position.set(0,0,1)
 //const core_g = await load('resources/core.stl')
 
 class ThreeCube {
