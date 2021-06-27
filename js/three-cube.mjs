@@ -104,24 +104,25 @@ async function loadStl(url) {
 };
 
 async function loadGltf(url) {
-    const gltf = await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         gltfLoader.load(url, resolve, undefined, reject);
-    })
-    
-    return gltf.scene.children[0];
+    })   
 };
 
-// const corner_g = await loadStl('resources/corner.stl')
-const corner_m = await loadGltf('resources/corner.glb')
+const model = await loadGltf('resources/pieces.glb')
+
+const corner_m = model.scene.children[0]
 corner_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
 corner_m.position.set(-1, -1, 1)
-const edge_m = await loadGltf('resources/edge.glb')
+
+const edge_m = model.scene.children[1]
 edge_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
 edge_m.position.set(0, -1, 1)
-//const center_g =  await loadStl('resources/center.stl')
-const center_m = await loadGltf('resources/center.glb')
+
+const center_m = model.scene.children[2]
 center_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
 center_m.position.set(0,0,1)
+
 //const core_g = await load('resources/core.stl')
 
 class ThreeCube {
