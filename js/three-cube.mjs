@@ -36,11 +36,11 @@ function getRelativeCoordinates(event, referenceElement) {
     };
 
     const offset = {
-        left: referenceElement.offsetLeft,
-        top: referenceElement.offsetTop,
+        left: 0,
+        top: 0,
     };
 
-    let reference = referenceElement.offsetParent ;
+    let reference = referenceElement ;
 
     while (reference) {
         offset.left += reference.offsetLeft;
@@ -224,9 +224,18 @@ class ThreeCube {
 
         let face = new THREE.Group();
 
+        const pick_g = new THREE.PlaneBufferGeometry(1,1)
+        pick_g.computeFaceNormals();
+        
+        //DEBUG: const pick_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
+        const pick_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
+        let pickTarget = new THREE.Mesh(pick_g, pick_m);
+        pickTarget.name = "pick"
+        pickTarget.position.set(0, 0, -0.5)
+        pickTarget.rotateY(Math.PI)
        
         function createFacelet(mesh, name) {
-            let facelet = new THREE.Object3D().add(mesh); 
+            let facelet = new THREE.Group().add(mesh).add(pickTarget.clone()); 
             facelet.name = name
             // facelet.castShadow = true;
             // facelet.receiveShadow = true;
@@ -237,6 +246,7 @@ class ThreeCube {
         let corner_facelet = createFacelet(corner_m, 'corner_facelet')
         let edge_facelet = createFacelet(edge_m, 'edge_facelet');
         // let core = createFacelet(core_g, 'core')
+        
         face.add(center)
 
         for (let i = 0; i < 4; i++) { // FIX: iteration start is 0
@@ -272,9 +282,6 @@ class ThreeCube {
         this.#cube.remove(...faces)
     
         this.#cube.children.slice().forEach(facelet => {
-            if (facelet.type == "Group")  {
-                return;
-            }
             facelet.position.round();
             // position is -1,0,1
             let piece = this.#pieces[facelet.position.x + 1][facelet.position.y + 1][facelet.position.z + 1]
@@ -324,8 +331,9 @@ class ThreeCube {
 //        this.#rotation.tl.then(_ => this.#rotation.tween = undefined)
 
         let pick = (ev) => {
-            let {x: x, y: y} = getRelativeCoordinates(ev, this.#renderer.domElement)
-            return picker.pick(x * window.devicePixelRatio, y * window.devicePixelRatio, obj => obj.type === "Mesh")
+            let {x: x, y: y} = {x: ev.offsetX, y: ev.offsetY}//getRelativeCoordinates(ev, this.#renderer.domElement)
+            //console.log('pick', x, y)
+            return picker.pick(x * window.devicePixelRatio, y * window.devicePixelRatio, obj => obj.name == "pick" /*obj.type === "Mesh" && obj.name != "mirror"*/)
         }
 
         let resolve = (id) => {
@@ -333,9 +341,12 @@ class ThreeCube {
             const faceDot = new THREE.Vector3(0,-1,-2);
             let obj = this.#scene.getObjectById(id)
             if (obj == undefined) return 
+            // console.log('pick', obj)
             obj = obj.parent
             return {
-                id: obj.id,
+                obj: obj,
+                parent: obj.parent,
+                id: obj.id,                
                 pid: obj.parent.id,
                 // 0 is the face around x (r), 1 is y (u), 2 is z (f)
                 face:  obj.getWorldDirection(new THREE.Vector3()).round().dot(faceDot),
@@ -363,13 +374,14 @@ class ThreeCube {
             if (originPick == undefined) {
                 let id = pick(ev);
                 originPick = resolve(id)
+                // console.log('origin', originPick)
                 return;
             }
             let targetId = pick(ev)
             if (originPick === undefined || targetId == originPick.id || targetId === -1) return;
             
             let targetPick = resolve(targetId)
-
+            //console.log('target', targetPick)
             if (targetPick.pid === originPick.pid) return;
 
             ignore = true; // picked another cubelet, so if it doesn't show an intent in rotation, skip the rest of the drag
@@ -498,7 +510,7 @@ class ThreeCube {
         
 
         this.#rotation.tweener = this.#rotation.tweener || this.#rotation.tl;
-        return this.#rotation.tweener = this.#rotation.tweener.to(proxy, duration, {
+        return this.#rotation.tweener = this.#rotation.tweener.to(proxy, duration * Math.abs(turns), {
             current: proxy.target,
             ease: Linear.easeNone,
             onUpdate: _ => {
