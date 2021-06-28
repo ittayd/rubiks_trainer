@@ -226,7 +226,6 @@ class ThreeCube {
 
         const pick_g = new THREE.PlaneBufferGeometry(1,1)
         pick_g.computeFaceNormals();
-        
         //DEBUG: const pick_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
         const pick_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
         let pickTarget = new THREE.Mesh(pick_g, pick_m);
@@ -235,7 +234,7 @@ class ThreeCube {
         pickTarget.rotateY(Math.PI)
        
         function createFacelet(mesh, name) {
-            let facelet = new THREE.Group().add(mesh).add(pickTarget.clone()); 
+            let facelet = new THREE.Group().add(mesh, pickTarget.clone()); 
             facelet.name = name
             // facelet.castShadow = true;
             // facelet.receiveShadow = true;

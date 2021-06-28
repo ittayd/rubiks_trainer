@@ -199,10 +199,14 @@ class Train {
         renderSelect('#pll-group', data.pll);
         renderSelect('#oll-group', data.oll);
         
+        function persist(id) {
+            $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val())) 
+        }
         ['pll', 'oll'].forEach(type => {
-            let id = `#${type}-weight`
-            $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val()))
+            persist(`#${type}-weight`)
         })
+
+        persist('#f2l-cnt')
 
         $('#pll-btn').click(_ => self.pll_scramble())
 
@@ -351,14 +355,13 @@ class Train {
 
         var train_moves = pre_moves + algo
 
-        var moves = train_moves + ' y '
-        for (var i = 0; i < 3; i++) {
-            if (true) {
-                moves = moves + '/*f2l*/ ' + alg_move(random_alg(data.f2l, '#f2l-tips'))
-            };
-            moves = moves + " y "
+        var moves = train_moves
+        for (var i = 4 - $('#f2l-cnt').val(); i < 3; i++) {
+            moves += ' y /*f2l*/ ' + alg_move(random_alg(data.f2l, '#f2l-tips'))
         }
-        moves = moves + " " + this.oll_scramble()
+
+        const remainingTurns = [undefined, " ", " y' ", " y2 ", " y "][$('#f2l-cnt').val()]
+        moves += remainingTurns + this.oll_scramble()
         this.train_moves = algos.cleanMarkup(train_moves, {braces: false});
         this.all_moves = algos.cleanMarkup(moves, {braces: false});
         this.advance({reset: true})
