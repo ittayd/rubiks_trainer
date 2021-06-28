@@ -91,7 +91,7 @@ class ThreeControl {
 
         moves = moves.map(m => translations[m]);
 
-        let options = quiet ? {duration: 0} : (moves.length == 1 ? undefined : {duration: 1})
+        let options = quiet ? {duration: 0} : (moves.length == 1 ? undefined : {duration: 0.4})
 
         moves.forEach(m => m.applyTo(this.#cube, options))
     }

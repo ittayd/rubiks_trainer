@@ -73,7 +73,7 @@ let world = {
 
 let colors = {
     C: 0x999999, // core piece
-    D: 0xffffff, // white
+    D: 0xf0f0f0, // white
     U: 0xFFFF4E, // yellow
     R: 0xFD354D, // red
     F: 0x00b6ff, // blue
@@ -413,6 +413,12 @@ class ThreeCube {
     }
 
     reset() {
+        if (this.#rotation.state == 'rotating') {
+            this.#rotation.queue = [{reset: true}]
+            return;
+        }
+
+        
         for(let i = 0; i < 3; i++)
             for(let j = 0; j < 3; j++)
                 for(let k = 0; k < 3; k++) {
@@ -420,6 +426,7 @@ class ThreeCube {
                     piece.position.set(i - 1, j - 1, k - 1)
                     piece.rotation.set(0,0,0)
                 }
+
         this.#onContainerResize()
     }
 
@@ -467,7 +474,11 @@ class ThreeCube {
                 this.#rotation.tweener = undefined;
                 return;
             }
-            this.rotate(next.axis, next.turns, next.layers, next.options)
+            if (next.reset) {
+                this.reset();
+            } else {
+                this.rotate(next.axis, next.turns, next.layers, next.options)
+            }
         }
 
         let axisv = new THREE.Vector3().setComponent(axis, 1)

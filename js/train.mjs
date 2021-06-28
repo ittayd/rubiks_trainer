@@ -230,7 +230,7 @@ class Train {
 
         
         $('#end-btn').click(function () {
-            self.advance({ to: (self.train_moves.split(' ').length), jump: true })
+            self.advance({ to: (algos.parse(self.train_moves).toMoves({keepTriggers: false}).length), jump: true })
         })
 
         $('#do-btn').click(_ => self.doAlgo());
@@ -276,7 +276,9 @@ class Train {
     }
 
     advance({to = 0, delta = undefined, jump = false, reset = false} = {}) {
-        var all_moves_arr = algos.parse(this.all_moves).toMoves({keepTriggers: true})
+        to = to ? parseInt(to) : 0;
+        delta = delta === undefined ? delta : parseInt(delta)
+        const all_moves_arr = algos.parse(this.all_moves).toMoves({keepTriggers: false})
 
         if (reset) {
             this.current_idx = all_moves_arr.length

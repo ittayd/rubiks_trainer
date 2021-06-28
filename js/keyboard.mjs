@@ -77,6 +77,7 @@ class Keyboard {
             }
             var result = handlers[event.key].call(self, event)
             if ((typeof result) == "boolean") {
+                if (!result) event.preventDefault()
                 return result
             }
             return true;
