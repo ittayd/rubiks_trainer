@@ -276,6 +276,7 @@ class Train {
     }
 
     advance({to = 0, delta = undefined, jump = false, reset = false} = {}) {
+        if (!this.all_moves) return;
         to = to ? parseInt(to) : 0;
         delta = delta === undefined ? delta : parseInt(delta)
         const all_moves_arr = algos.parse(this.all_moves).toMoves({keepTriggers: false})

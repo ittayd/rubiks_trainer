@@ -44,17 +44,17 @@ class Keyboard {
                     let move = this.move
                     try {
                         this.control.move(algos.parse(move).toMoves());
+                        this.update_move()
                     } catch (e) {
                         console.log("Exception ", e);
-                        this.control.wobble();
+                        $('#keyboard').html(`<span class="yellow-fade">${$('#keyboard').text()}</span>`)
                     }
                 }
-                this.update_move()
                 return !(event.target == document.body);
             },
             "Enter": " ",
-            "ArrowLeft": event => {if (!event.altKey) train.advance(event.shiftKey ? { reset: true } : { delta: -1 })},
-            "ArrowRight": event => {if (!event.altKey) train.advance(event.shiftKey ? { to: (this.$algo.val().split(' ').length), jump: true } : { delta: 1 })},
+            "ArrowLeft": event => {if (!event.altKey) {train.advance(event.shiftKey ? { reset: true } : { delta: -1 });return false;}},
+            "ArrowRight": event => {if (!event.altKey) {train.advance(event.shiftKey ? { to: (this.$algo.val().split(' ').length), jump: true } : { delta: 1 }); return false;}},
             "__default__": event => {
                 if (event.key == 'u' && event.ctrlKey) {
                     this.update_move()

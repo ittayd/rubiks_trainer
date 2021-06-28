@@ -179,6 +179,16 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	pointer-events: none;
 }
 
+@keyframes yellowfade {
+    from { background: red; }
+    to { background: transparent; }
+}
+
+.yellow-fade {
+    animation-name: yellowfade;
+    animation-duration: 1.5s;
+}
+
 #redo-move-btn {
 	z-index: 100;
 	grid-column-start: -1;
