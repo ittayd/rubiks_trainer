@@ -11,9 +11,14 @@ class Buttons {
             $("#triggers").click(e => 
                 this.control.move(algos.parse($(e.target).val()).toMoves())
             )
-            $("#moves").click(e => 
+            
+            $("#moves").hide().click(e => 
                 this.control.move([$(e.target).val()])
             )	
+            $('#moves-toggle').change(e => {
+                $('#moves').toggle();
+            })
+            
         })
     }
     
@@ -34,18 +39,14 @@ class Buttons {
     }
 
     /** TODO: button to toggle extended move buttons which should also toggle the negative margin (in index.html) so it doesn't go over the cube */
-    render_moves(extended = false) {
+    render_moves(extended = true) {
         let render_base = (base, lower) => {
             let a = move => $('<input type="button" class="btn btn-mine btn-sm">').val(move)[0]
             let row = base => [a(base), a(base + "'"), a(base + "2")]
-            return [row(base).concat(lower ? row(base.toLowerCase()) : [])]
+            return [row(base).concat(lower ? (typeof(lower) == "boolean" ? row(base.toLowerCase()) : row(lower)) : [])]
         }
-        let array = "xyz".split("").flatMap(move => render_base(move, false))
-        if (extended) {
-            array = "ULFRBD".split("").flatMap(move => render_base(move, true)).
-                concat("MES".split("").flatMap(move => render_base(move, false))).
-                concat(array)
-        }
+        let array = "ULFRBD".split("").flatMap(move => render_base(move, true)).
+            concat(["Mx", "Ey", "Sz"].map(s => s.split("")).flatMap(moves => render_base(moves[0], moves[1])))
         array = array[0].map((col, i) => array.map(row => row[i])); // transpose
         array = array.reduce((tbody, row) => tbody.append(row.reduce((tr, move) => tr.append($('<td>').append(move)), $('<tr>'))), $('<tbody>'))
         $("#moves").append(array)

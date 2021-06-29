@@ -7,8 +7,8 @@
 
 @media only screen and (max-width: 400px) {
 	:root {
-		--vc-width: 225px;
-		--vc-height: 260px;
+		--vc-width: 300px;
+		--vc-height: 350px;
 		--vc-row: 2;
 		--tr-columns: 1;
 	}
@@ -26,6 +26,11 @@
 
 	#algo-controls div > :nth-child(n+6) {
 		display: none;
+	}
+
+	#three-cube {
+		margin-top: -70px;
+		margin-bottom: -30px;
 	}
 }
 
@@ -142,30 +147,17 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 #demo_buttons {
 	text-align: center;
 }
+
 #cube-controls {
-	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	height: 355px;
+	margin-left: 20px;
+
+}
+#cube-controls > * {
+	z-index: 100;
 }
 
-/* make cells square */ 
-#cube-controls::before {
-    content: '';
-    width: 0;
-    padding-bottom: 100%;
-    grid-row: 1 / 1;
-    grid-column: 1 / 1;
-}
-
-#cube-controls > *:first-child {
-    grid-row: 1 / 1;
-    grid-column: 1 / 1;
-}
-
-/* end square */
 
 #undo-move-btn {
-	z-index: 100;
 	grid-column-start: 1;
 	grid-row-start: 1;
 	width: fit-content;
@@ -173,7 +165,6 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 }
 
 #keyboard {
-	z-index: 100;
 	grid-column: 2/-2;
 	grid-row-start: 1;
 	pointer-events: none;
@@ -190,30 +181,25 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 }
 
 #redo-move-btn {
-	z-index: 100;
 	grid-column-start: -1;
 	grid-row-start: 1;
 	width: fit-content;
 	height: fit-content;
 }
 
-.virtualcube {
-	grid-column: 1/-1;
-	grid-row: var(--vc-row);
-	height: var(--vc-height);
-	width: var(--vc-width);
-	position: relative;
-	top: -30px;
-	object-fit:contain; /* required for mobile */
-	/* border:1px solid #CCCCCC; */
+.flip-v {  
+	display: inline-block;
+	transform: translate(2px, 2px) scale(1.5, -1.5);
 }
+
 #three-cube {
 	grid-column: 1/-1;
 	grid-row: var(--vc-row);
 	height: var(--vc-height);
 	width: var(--vc-width);
-	position: relative;
-	top: -30px;
+	margin-top: -40px;
+	margin-bottom: -40px;
+	margin-left: 20px;
 	object-fit:contain; /* required for mobile */
 	/* border:1px solid #CCCCCC; */
 	touch-action: none;
@@ -229,9 +215,9 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	z-index: 100;
 	grid-column: -4/span 3;
 	grid-row: 3;
-	position: relative;
-	right: -20px;
-	top: -27px;
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
 /*
