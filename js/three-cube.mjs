@@ -319,6 +319,11 @@ class ThreeCube {
 
         this.#scene.add(helpers);  
         
+        const geometry = new THREE.SphereGeometry( 0.8, 32, 32 );
+        const material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+        const sphere = new THREE.Mesh( geometry, material );
+        this.#scene.add( sphere );
+
         let picker = new GPUPicker(THREE, this.#renderer, this.#scene, this.#camera);
 
         // done -> selecting -> rotating -> finishing -> done 
