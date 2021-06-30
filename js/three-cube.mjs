@@ -29,43 +29,6 @@ Array.prototype.extremumBy = function (pluck, extremum) {
     }, null)[1];
 }
 
-function getRelativeCoordinates(event, referenceElement) {
-    const position = {
-        x: event.pageX,
-        y: event.pageY,
-    };
-
-    const offset = {
-        left: 0,
-        top: 0,
-    };
-
-    let reference = referenceElement ;
-
-    while (reference) {
-        offset.left += reference.offsetLeft;
-        offset.top += reference.offsetTop;
-        reference = reference.offsetParent ;
-    }
-
-    const scrolls = {
-        left: 0,
-        top: 0,
-    };
-
-   /* reference = event.target ;
-    while (reference) {
-        scrolls.left += reference.scrollLeft;
-        scrolls.top += reference.scrollTop;
-        reference = reference.parentElement ;
-    } */
-
-    return {
-        x: position.x + scrolls.left - offset.left,
-        y: position.y + scrolls.top - offset.top,
-    };
-}
-
 let world = {
     width: 7.7,
     height: 7.2
@@ -335,7 +298,7 @@ class ThreeCube {
 //        this.#rotation.tl.then(_ => this.#rotation.tween = undefined)
 
         let pick = (ev) => {
-            let {x: x, y: y} = {x: ev.offsetX, y: ev.offsetY}//getRelativeCoordinates(ev, this.#renderer.domElement)
+            let {x: x, y: y} = {x: ev.offsetX, y: ev.offsetY}
             //console.log('pick', x, y)
             return picker.pick(x * window.devicePixelRatio, y * window.devicePixelRatio, obj => obj.name == "pick" /*obj.type === "Mesh" && obj.name != "mirror"*/)
         }
@@ -428,11 +391,13 @@ class ThreeCube {
         return this;
     }
 
-    reset() {
+    reset({trigger = true} = {}) {
         if (this.#rotation.state == 'rotating') {
             this.#rotation.queue = [{reset: true}]
             return;
         }
+
+        if (trigger) $(this).triggerHandler('cube:reset')
 
         
         for(let i = 0; i < 3; i++)

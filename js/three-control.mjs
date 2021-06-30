@@ -40,6 +40,23 @@ class Move {
   }
 }
 
+class Reset {
+  constructor(moves) {
+    this.moves = moves
+  }
+
+  applyTo(cube, options) {
+    options = $.extend({duration:0}, options)
+    cube.reset(options);
+  }
+
+  applyInverseTo(cube, options) {
+    options = $.extend({duration:0}, options)
+    this.moves.forEach(m => m.applyTo(cube, options)) // apply all moves from last reset to get to the state before this one
+  }
+
+}
+
 function addTranslation(letter, wide, axis, layers, angle) {
     translations[letter] = new Move(axis, layers, angle)
     translations[letter + "'"] = new Move(axis, layers, -angle)
@@ -69,15 +86,16 @@ class ThreeControl {
     #cube
     #moves = []
     #undoIndex = -1;
+    #resetIndexes = []
 
     constructor(container, options = {mirror: true}) {     
       this.#cube = new ThreeCube($(container), options)
       $(this.#cube).on('cube:rotation', this.#rotated.bind(this))
+      $(this.#cube).on('cube:reset', this.#resetted.bind(this))
     }
 
     reset() {
         this.#cube.reset();
-        this.#moves = []
     }
 
     move(moves, quiet = false) {
@@ -106,10 +124,27 @@ class ThreeControl {
       this.#moves[++this.#undoIndex].applyTo(this.#cube, {trigger: false})
     }
 
-    #rotated(ev, axis, turns, layers) {
+    #clearRedo() {
       this.#moves.splice(this.#undoIndex + 1, this.#moves.length - this.#undoIndex - 1)
-      this.#moves.push(new Move(axis, layers, turns))
       this.#undoIndex = this.#moves.length - 1
+      for(let i = this.#resetIndexes.length - 1; i > -1; i--) {
+        if(this.#resetIndexes[i] > this.#undoIndex) {
+          this.#resetIndexes.splice(i, 1);
+        }
+      }
+    }
+
+    #rotated(ev, axis, turns, layers) {
+      this.#clearRedo();
+      this.#moves.push(new Move(axis, layers, turns))
+      this.#undoIndex++
+    }
+
+    #resetted(ev) {
+      this.#clearRedo();
+      this.#moves.push(new Reset(this.#moves.slice(this.#resetIndexes[this.#resetIndexes.length - 1] + 1)))
+      this.#undoIndex++
+      this.#resetIndexes.push(this.#undoIndex);
     }
 
 }

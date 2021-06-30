@@ -139,15 +139,9 @@
 								<div class="form-group">							
 										<input id="f2l-btn" type="button" value="F2L" class="btn btn-mine btn-sm "></input>
 										<input id="f2l-cnt" class="form-control form-control-sm " type="number" value="1" style="width: 45px;" min="1" max="4">
-										<select id="f2l-group" class="form-control form-control-sm col-10">
-											<option value="-1">-- random --</option>
-											<option value="-2">-- algo --</option>
-											<option value="0" >Corner on top, FL color facing side, edge colors match</option>
-											<option value="1" >Corner on top, FL color facing side, edge colors opposite</option>
-											<option value="2">Corner on top, FL color facing up</option>
-											<option value="3">Corner down, edge on top</option>
-											<option value="4">Edge down, corner on top</option>
-											<option value="5">Corner down, edge down</option>
+										<select id="f2l-group" class="form-control form-control-sm col-10" multiple="multiple">
+											<option value="-2">-- random --</option>
+											<option value="-1">-- algo --</option>
 										</select>
 										<input id="f2l-tips-btn" type="button" class="btn btn-mine btn-sm " value="tip">
 										<div id="f2l-tips" class=""></div>
@@ -172,8 +166,8 @@
 									<input id="pll-btn" class="btn btn-mine btn-sm align-self-start " type="button" value="PLL">
 									<select id="pll-group" class="form-control form-control-sm col-10" multiple="multiple">
 										<option value="-3" selected>-- 2 look --</option>
-										<option value="-1">-- random --</option>
-										<option value="-2">-- algo --</option>
+										<option value="-2">-- random --</option>
+										<option value="-1">-- algo --</option>
 									</select>
 									<label class=" ml-n2 mr-2" for="pll-weight">weight</label>
 									<input class="form-control form-control-sm col-4 " type="range" id="pll-weight" name="oll-weight" min="-1" max="10" step="1" value="6">								  

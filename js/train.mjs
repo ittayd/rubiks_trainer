@@ -109,19 +109,16 @@ class Train {
         let self = this;
         this.$algo.keyup(function(){
             self.all_moves = self.algotext();
-        })
-
-        $('#f2l-btn').click(_ => self.f2l_scramble())
-
-        $('#oll-btn').click(_ => self.oll_scramble())
-        
+        })     
 
         function renderSelect($select, coll) {
             $select = $($select)
             coll.forEach((group, gidx) => {
                 $select.append($('<option>').val(gidx).text(group.name).addClass('opt-l1'));
                 group.algs.forEach((alg, aidx) => {
-                    $select.append($('<option>').val(`${gidx}.${aidx}`).text(alg.name).addClass('opt-l2'));
+                    if (alg.name) {
+                        $select.append($('<option>').val(`${gidx}.${aidx}`).text(alg.name).addClass('opt-l2'));
+                    }
                 })
             })
             let id = $select.attr('id')
@@ -142,6 +139,22 @@ class Train {
                     $wrapper.text(data.text);
 
                     return $wrapper;
+                },
+                sorter: data => {
+                    return data.sort((a1,a2) =>  {
+                        const arr1 = a1.id.split('.')
+                        const arr2 = a2.id.split('.')
+                        if (arr1[0] - arr2[0] != 0) { // assume these are numbers
+                            return arr1[0] - arr2[0];
+                        }
+                        if (arr1[1] === undefined) {
+                            return -1
+                        }
+                        if (arr2[1] === undefined) {
+                            return 1
+                        }
+                        return arr1[1] - arr2[1]
+                    })
                 }
             }).on('select2:select select2:unselect', function(e) {
                 let data = e.params.data
@@ -156,22 +169,28 @@ class Train {
                     s2options = s2options.filter(id => id != data.id);
                 }
                     
-                    // save selections to local storage
-                    localStorage.setItem(id, JSON.stringify(s2options));
-                });
+                // save selections to local storage
+                localStorage.setItem(id, JSON.stringify(s2options));
+            });
 
 
             /* disable subitems of groups when they are selected and enable when they are unselected */
             $select.on('select2:select', function (e) {
                 var data = e.params.data;
                 if (data.id < 0) {
-                    $select.val(data.id).trigger('change')
-                    $select.children().filter((i, e) => e.id != data.id).attr('disabled', 'disabled')
+                    $select.val(data.id).change() // remove others
+                    $select.children().filter((i, e) => e.value != data.id).attr('disabled', 'disabled')
+                }
+                if (data.id.indexOf('.') == -1) {
+                    $select.children().filter((i, e) => e.value != data.id && e.value.split('.')[0] == data.id).attr('disabled', 'disabled')
                 }
             }).on('select2:unselect', function (e) {
                 var data = e.params.data;
                 if (data.id < 0) {
                     $select.children().removeAttr('disabled')
+                }
+                if (data.id.indexOf('.') == -1) {
+                    $select.children().filter((i, e) => e.value != data.id && e.value.split('.')[0] == data.id).removeAttr('disabled')
                 }
             });
 
@@ -179,8 +198,7 @@ class Train {
             $select.on('select2:select', function(e){
                 var id = e.params.data.id;
                 var option = $(e.target).children(`[value="${id}"]`);
-                option.detach();
-                $(e.target).append(option).change();
+                $(this).append(option).change();
             });
             
             let init = localStorage.getItem(id);
@@ -196,6 +214,13 @@ class Train {
                 $select.trigger('change')
             }
         }
+        $('#f2l-btn').click(_ => self.f2l_scramble())
+
+        $('#oll-btn').click(_ => self.oll_scramble())
+
+        $('#pll-btn').click(_ => self.pll_scramble())
+
+        renderSelect('#f2l-group', data.f2l);
         renderSelect('#pll-group', data.pll);
         renderSelect('#oll-group', data.oll);
         
@@ -203,12 +228,11 @@ class Train {
             $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val())) 
         }
         ['pll', 'oll'].forEach(type => {
+
             persist(`#${type}-weight`)
         })
 
         persist('#f2l-cnt')
-
-        $('#pll-btn').click(_ => self.pll_scramble())
 
         $('#full-btn').click(function(){
             self.$algo.html(self.all_moves);
@@ -329,6 +353,8 @@ class Train {
     }
 
     f2l_scramble(algo) {
+        const algotext = this.algotext()
+
         tip(undefined, '#f2l-tips')
         var pre_moves = random(['U ', "U' ", 'U2 ', ''])
 
@@ -336,10 +362,10 @@ class Train {
             let groupIdx = parseInt($('#f2l-group').find(":selected").val());
             switch(groupIdx) {
                 case -2:
-                    algo = this.algotext();
+                    algo = alg_move(random_alg(data.f2l, '#f2l-tips'))
                     break;
                 case -1:
-                    algo = alg_move(random_alg(data.f2l, '#f2l-tips'))
+                    algo = algotext
                     break;
                 case NaN:
                     alert("could not parse selection");
@@ -370,6 +396,8 @@ class Train {
     }
 
     oll_scramble(algo) {
+        const algotext = this.algotext()
+
         tip(undefined, '#oll-tips')
         var pre_moves = random(['U ', "U' ", 'U2 ', ''])
 
@@ -392,10 +420,10 @@ class Train {
                     break;
                 }
                 case '-2':
-                    algo = this.algotext();
+                    algo = alg_move(random_alg(data.oll, '#oll-tips'))
                     break;
                 case '-1':
-                    algo = alg_move(random_alg(data.oll, '#oll-tips'))
+                    algo = algotext;
                     break;
                 case NaN:
                     alert("could not parse selection");
@@ -426,6 +454,7 @@ class Train {
     }
 
     pll_scramble(algo) {
+        const algotext = this.algotext()
         tip(undefined, '#pll-tips')
         var [pre_moves, pre_move_i] = random_turn();
 
@@ -447,7 +476,7 @@ class Train {
                     algo = alg_move(random_alg(data.pll, '#pll-tips'))
                     break;
                 case '-1': // algorithm from input box
-                    algo = this.algotext();
+                    algo = algotext;
                     break;
                 default: { // from multi-selected algorithms
                     let algs = selected.flatMap(s => {

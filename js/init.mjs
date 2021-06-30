@@ -10,7 +10,9 @@ import Control from './three-control.mjs';
 import Keyboard from './keyboard.mjs'
 import Buttons from './buttons.mjs';
 
+
 $(document).ready(function () {
+
     /*
     rubik_cube = new RubikCube('canvas', 3, null, null, 600);
     rubik_cube.reset();
