@@ -268,6 +268,9 @@ class Train {
 
         let $result = $('#result')
 
+        $('#atomic-btn').click(_ => {
+            $result.text(algos.parse(self.algotext()).toMoves({nested: true, keepTriggers: false, string:true}))
+        })
         $('#reverse-btn').click(_ => {
             $result.text(algos.parse(self.algotext()).inverted.toMoves({nested: true, keepTriggers: true, string:true}))
         })

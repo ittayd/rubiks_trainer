@@ -346,9 +346,9 @@ var classes = (function(){
 					return toStr(result)
 				}
 				return options.sequence ? new Sequence(result, this.amount) : result
-				} 
+			} 
 
-				return options.sequence ? new Sequence([this.toAtomic]) : this.toString() 
+			return options.sequence ? new Sequence([this.toIndividual()]) : this.toIndividual().toString() 
 		}
 
 		get stringAmount() {
@@ -432,16 +432,22 @@ var classes = (function(){
 		}
 
 		resolveShallow(options) {
-			return this.repeatable_unit.resolveShallow(options).map(x => x.inverted);
+			return this.repeatable_unit.resolveShallow(options).map(x => new InvertEach(x, Math.abs(this.amount) )); // resolveShallow is used by toMove that will do the invert action if amount < 0
 		}
 
 		innerString(options) {
-			if (this.repeatable_unit.constructor === Atomic) return this.repeatable_unit.inverted.toString(options)
+			if (this.repeatable_unit.constructor === Atomic) {
+				return this.toIndividual().toString(options)
+			}
 			return this.repeatable_unit.toString(options) + "^";
 		}
 
 		selfPermutation() {
 			return this.repeatable_unit.permutation
+		}
+
+		toIndividual() {
+			return new Atomic(this.repeatable_unit.character, this.repeatable_unit.inner, this.repeatable_unit.outer, this.repeatable_unit.amount * (-this.amount))
 		}
 
 	}
@@ -475,7 +481,7 @@ var classes = (function(){
 			}
 		}
 
-		toAtomic() {
+		toIndividual() {
 			return this;
 		}
 

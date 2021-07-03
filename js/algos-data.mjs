@@ -139,8 +139,8 @@ var oll = [
 	{
 		name: "All Edges Correctly Oriented",
 		algs: [ /* http://badmephisto.com/2LookOLL.pdf */
-			{ type: "oll", moves: "Match U LeftSlot", name: "27-Sune" },
-			{ type: "oll", moves: "Match^ U' LeftSlot^", name: "26-AntiSune" },
+			{ type: "oll", moves: "Match U LeftSlot", name: "27-Sune", comment: "fish like, head is front-left, front side sticker adjacent" },
+			{ type: "oll", moves: "(Match U LeftSlot)^", name: "26-AntiSune", comment: "fish like, head is left-back, left side sticker opposite" },
 			{ type: "oll", moves: "F Sexy3 F'", name: "21-Car" },
 			{ type: "oll", moves: "[f (Sexy) f'] [F (Sexy) F']", name: "22-Blinker" },
 			{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },

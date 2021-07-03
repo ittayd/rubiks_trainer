@@ -50,7 +50,7 @@ class Keyboard {
                         $('#keyboard').html(`<span class="yellow-fade">${$('#keyboard').text()}</span>`)
                     }
                 }
-                return !(event.target == document.body);
+                return false;
             },
             "Enter": " ",
             "ArrowLeft": event => {if (!event.altKey) {train.advance(event.shiftKey ? { reset: true } : { delta: -1 });return false;}},
@@ -58,10 +58,10 @@ class Keyboard {
             "__default__": event => {
                 if (event.key == 'u' && event.ctrlKey) {
                     this.update_move()
-                    event.preventDefault()
-                    return;
+                    return false;
                 } 
                 this.update_move(this.move + event.key)
+                return false
             }
         })
 
