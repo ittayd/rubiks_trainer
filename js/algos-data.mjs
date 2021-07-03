@@ -141,10 +141,10 @@ var oll = [
 		algs: [ /* http://badmephisto.com/2LookOLL.pdf */
 			{ type: "oll", moves: "Match U LeftSlot", name: "27-Sune", comment: "fish like, head is front-left, front side sticker adjacent" },
 			{ type: "oll", moves: "(Match U LeftSlot)^", name: "26-AntiSune", comment: "fish like, head is left-back, left side sticker opposite" },
-			{ type: "oll", moves: "F Sexy3 F'", name: "21-Car" },
-			{ type: "oll", moves: "[f (Sexy) f'] [F (Sexy) F']", name: "22-Blinker" },
+			{ type: "oll", moves: "[F: Sexy3]", name: "21-Car" },
+			{ type: "oll", moves: "[f: Sexy] [F: Sexy]", name: "22-Blinker" },
 			{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },
-			{ type: "oll", moves: "(FatSexy) (FatSledge)", name: "24-Chameleon" },
+			{ type: "oll", moves: "FatSexy FatSledge", name: "24-Chameleon" },
 			{ type: "oll", moves: "F' (FatSexy) (r' F R )", name: "25-Bowtie" },
 		]
 	},
@@ -152,9 +152,9 @@ var oll = [
 		name: "No Edges Correctly Oriented",
 		algs: [
 			{ type: "oll", moves: "R U2 [R2' F R F'] U2 [Sledge]", name: "1-No" },
-			{ type: "oll", moves: "[F Sexy F'] [f Sexy f']", name: "2-No" },
-			{ type: "oll", moves: "(f Sexy f') U' (F Sexy F')", name: "3-No" },
-			{ type: "oll", moves: "(f Sexy f') U (F Sexy F')", name: "4-No" },
+			{ type: "oll", moves: "[F: Sexy] [f: Sexy]", name: "2-No" },
+			{ type: "oll", moves: "[f: Sexy] U' [F: Sexy]", name: "3-No" },
+			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-No" },
 			{ type: "oll", moves: "[Match U] [Sledge] U2 [Sledge]", name: "17-No" },
 			{ type: "oll", moves: "M U Sexy M2 [U R U' r']", name: "20-No" },
 			{ type: "oll", moves: "[F Match U] y' R' U2 [Sledge]", name: "18-No" },
@@ -164,7 +164,7 @@ var oll = [
 	{
 		name: "C shapes",
 		algs: [
-			{ type: "oll", moves: "R' U' [Sledge] U R", name: "46-C" },
+			{ type: "oll", moves: "[(R' U'): Sledge]", name: "46-C" },
 			{ type: "oll", moves: "R U R2 U' R' F R U R U' F'", name: "34-C" },
 		]
 	},
@@ -173,7 +173,7 @@ var oll = [
 		algs: [
 			{ type: "oll", moves: "R U2 R2 U' Slot U2 F R F'", name: "55-I" },
 			{ type: "oll", moves: "Match U R d' Slot F'", name: "52-I" },
-			{ type: "oll", moves: "f Sexy2 f'", name: "51-I" },
+			{ type: "oll", moves: "[f: Sexy2]", name: "51-I" },
 			{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'", name: "56-I" },
 		]
 	},
@@ -191,7 +191,7 @@ var oll = [
 	{
 		name: "P shapes",
 		algs: [
-			{ type: "oll", moves: "f [Sexy] f'", name: "44-P" },
+			{ type: "oll", moves: "[f: Sexy]", name: "44-P" },
 			{ type: "oll", moves: "f' (L' U' L U) f", name: "43-P" },
 			{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-P" },
 			{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-P" },
@@ -200,8 +200,8 @@ var oll = [
 	{
 		name: "T shapes",
 		algs: [
-			{ type: "oll", moves: "F [Sexy] F'", name: "45-T" },
-			{ type: "oll", moves: "[Sexy] [Sledge]", name: "33-T" },
+			{ type: "oll", moves: "[F: Sexy]", name: "45-T" },
+			{ type: "oll", moves: "Sexy Sledge", name: "33-T" },
 		]
 	},
 	{
