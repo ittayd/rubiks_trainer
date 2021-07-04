@@ -12,13 +12,9 @@ class Buttons {
                 this.control.move(algos.parse($(e.target).val()).toMoves())
             )
             
-            $("#moves").hide().click(e => 
+            $("#moves").click(e => 
                 this.control.move([$(e.target).val()])
             )	
-            $('#moves-toggle').change(e => {
-                $('#moves').toggle();
-            })
-            
         })
     }
     

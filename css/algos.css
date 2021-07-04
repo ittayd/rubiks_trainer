@@ -23,16 +23,24 @@
 	#triggers .btn, #moves .btn {
 		font-size: 8.75px;
 	}
-
+/*
 	#algo-controls div > :nth-child(n+6) {
 		display: none;
 	}
-
+*/
 	#three-cube {
 		margin-top: -70px;
 		margin-bottom: -30px;
 	}
 }
+
+@media (min-width: 400px) {
+	.collapse.dont-collapse-sm {
+	  display: block;
+	  height: auto !important;
+	  visibility: visible;
+	}
+  }
 
 #result g, #algo g, .algo g {
 	color: mediumseagreen;
@@ -230,7 +238,7 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	display: none;
 }
 
-
+/*
 #train-controls {
 	display: grid;
 	grid-template-columns: repeat(var(--tr-columns), 1fr);
@@ -247,9 +255,6 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	display: contents;
 }
 
-#train-controls .select2 {
-	line-height: 1.2;
-}
 
 #train-controls > * > * > *{
 	margin-right: 2px;
@@ -258,6 +263,12 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 
 #advance-controls > * > * {
 	flex: 1;
+}
+*/
+
+#train-controls .select2 {
+	line-height: 1.2;
+	width: 100%;
 }
 
 #div_menu {
@@ -291,9 +302,20 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 
 .btn-mine {
 	background-color: #e4e4e4;
-	border-bottom: 2px solid #cccccc;
-	border-right: 2px solid #cccccc;
-
 	outline: none;
 	height: fit-content;
+}
+
+.btn-mine:not(.btn-toggle) {
+	border-bottom: 2px solid #cccccc;
+	border-right: 2px solid #cccccc;
+}
+
+.btn-toggle.collapsed {
+	border-bottom: 2px solid #cccccc;
+	border-right: 2px solid #cccccc;
+}
+.btn-toggle:not(.collapsed) {
+	border-top: 2px solid #cccccc;
+	border-left: 2px solid #cccccc;
 }

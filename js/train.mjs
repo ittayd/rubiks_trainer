@@ -124,6 +124,7 @@ class Train {
             let id = $select.attr('id')
 
             $select.select2({
+                width: 'style',
                 /* render items with the css class of the original */
                 templateResult: function (data) {    
                     // We only really care if there is an element to pull classes from

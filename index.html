@@ -36,17 +36,17 @@
 	<div id="algo_demo" >
 		<div id="demo_cube" ></div>
 		<div id="demo_buttons">
-			<input id="demo-start-btn" class="btn btn-mine btn-sm " type="button" value="↞">
-			<input id="demo-back-btn" class="btn btn-mine btn-sm " type="button" value="←">
-			<input id="demo-forward-btn" class="btn btn-mine btn-sm " type="button" value="→">
-			<input id="demo-close-btn" class="btn btn-mine btn-sm " type="button" value="X">
+			<input id="demo-start-btn" class="btn btn-mine  " type="button" value="↞">
+			<input id="demo-back-btn" class="btn btn-mine  " type="button" value="←">
+			<input id="demo-forward-btn" class="btn btn-mine  " type="button" value="→">
+			<input id="demo-close-btn" class="btn btn-mine  " type="button" value="X">
 		</div>
 	</div>
 	<div>
 		<div id="div_menu">
 			<nav>
 				<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-					<a class="nav-item nav-link active show" id="nav-intro-tab" data-bs-toggle="tab" data-bs-target="#nav-intro" href="#nav-intro" role="tab" aria-controls="nav-intro" aria-selected="true">Intro</a>
+					<a class="nav-item nav-link active show" id="nav-train-tab" data-bs-toggle="tab" data-bs-target="#nav-train" href="#nav-train" role="tab" aria-controls="nav-train" aria-selected="true">Train</a>
 					<a class="nav-item nav-link"             id="nav-f2l-tab"   data-bs-toggle="tab" data-bs-target="#nav-f2l"   href="#nav-f2l"   role="tab" aria-controls="nav-f2l"   aria-selected="false">F2L</a>
 					<a class="nav-item nav-link"             id="nav-oll2-tab"  data-bs-toggle="tab" data-bs-target="#nav-oll2"  href="#nav-oll2"  role="tab" aria-controls="nav-oll2"  aria-selected="false">OLL2L</a>
 					<a class="nav-item nav-link"             id="nav-oll-tab"   data-bs-toggle="tab" data-bs-target="#nav-oll"   href="#nav-oll"   role="tab" aria-controls="nav-oll"   aria-selected="false">OLL</a>
@@ -60,29 +60,26 @@
 
 	<div class="well">
 		<div id="nav-tabContent" class="tab-content">
-			<div class="tab-pane fade active show" id="nav-intro" role="tabpanel" aria-labelledby="nav-intro-tab">
+			<div class="tab-pane fade active show" id="nav-train" role="tabpanel" aria-labelledby="nav-train-tab">
 				<fieldset>
 					<div class="container-fluid px-1 mt-3">
 						<div class="row " id="cube-controls">
-								<button id="undo-move-btn" type="button" class="col-1 btn btn-mine btn-sm"><span class="flip-v">⤾</span></button>
-								<div id="keyboard" class="col-1 d-xl-inline "></div>
-								<button id="redo-move-btn" type="button" class="col-1 btn btn-mine btn-sm"><span class="flip-v">⤿</span></button>
-								<div class="col-3 col-xl-1">
-									<label for="moves-toggle">vkeyboard</label>
-									<input type="checkbox" id="moves-toggle" name="moves-toggle"/>
-								</div>
-								<div id="triggers-dropdown" class="col-2 col-xl-1 pl-1 pr-3 dropdown">
-									<button class="btn btn-mine btn-sm dropdown-toggle" type="button" id="triggers-btn" data-bs-toggle="dropdown" aria-expanded="false">Triggers</button>
-									<table id="triggers" class="table-sm text-left table-bordered dropdown-menu" aria-labelledby="triggers-btn"">
-										<thead>
-										<tr>
-											<th>Name</th>
-											<th>Moves</th>
-											<th>Inverse</th>
-										</tr>
-										</thead>	
-									</table>
-								</div>
+							<button id="undo-move-btn" type="button" class="col-auto btn btn-mine "><span class="flip-v">⤾</span></button>
+							<div id="keyboard" class="col-1 d-xl-inline "></div>
+							<button id="redo-move-btn" type="button" class="col-auto btn btn-mine "><span class="flip-v">⤿</span></button>
+							<button class="btn btn-mine btn-toggle collapsed col-auto" type="button" data-bs-toggle="collapse" data-bs-target="#moves" aria-expanded="false" aria-controls="moves">Keyboard</button>
+							<div id="triggers-dropdown" class="col-auto gx-0 dropdown">
+								<button class="btn btn-mine  dropdown-toggle" type="button" id="triggers-btn" data-bs-toggle="dropdown" aria-expanded="false">Triggers</button>
+								<table id="triggers" class="table-sm text-left table-bordered dropdown-menu" aria-labelledby="triggers-btn">
+									<thead>
+									<tr>
+										<th>Name</th>
+										<th>Moves</th>
+										<th>Inverse</th>
+									</tr>
+									</thead>	
+								</table>
+							</div>
 						</div>
 						<div id="cube-container" class="row mb-3">
 							<div class="col-7 col-xl-4 pl-3 pr-1">
@@ -90,90 +87,142 @@
 							</div>
 						</div>
 						<div class="row mb-3">
-							<table id="moves" class="col-7 xol-xl-4 table-sm text-left table-bordered"></table>
+							<table id="moves" class="col-7 xol-xl-4 table-sm text-left table-bordered collapse"></table>
 						</div>
 
-						<div id="train-controls" class="mx-4">
-							<div id="algo-controls">
-								<div class="form-group"> 
-									<div class="form-control form-control-sm " contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
-									<div class=" form-check form-check-inline">
-										<input class="form-check-input" type="checkbox" value="" id="fast-chk">
-										<label class="form-check-label" for="fast-chk">fast</label>						
+						<div id="train-controls" class="mx-1 row">
+							<div class="col-xl col-12">
+								<div id="algo-controls" class="container-fluid gx-1 gy-2">
+									<div class="form-group row">
+										<div class="col-auto form-control form-control-sm " contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
 									</div>
-  									<input class="btn btn-mine btn-sm col" type="button" id="do-btn" value="Do">
-									<input class="btn btn-mine btn-sm col" type="button" id="undo-btn" value="Undo">
-									<input class="btn btn-mine btn-sm col" type="button" id="reset-btn" value="Reset">
-									<div class="w-100"></div>
-									<input id="atomic-btn" class="btn btn-mine btn-sm " type="button" value="Atomic">
-									<input id="reverse-btn" class="btn btn-mine btn-sm " type="button" value="Reverse">
-									<input id="order-btn" class="btn btn-mine btn-sm " type="button" value="Order">
-									<label class="">mirror</label>
-									<input type="button" id="mirror-x-btn" class="btn btn-mine btn-sm " value="x" >
-									<input type="button" id="mirror-y-btn" class="btn btn-mine btn-sm " value="y" >
-									<input type="button" id="mirror-z-btn" class="btn btn-mine btn-sm " value="z" >
-									<div class="w-100"></div>
-									<label class="col">clockwise</label>
-									<input type="button" id="clockwise-x-btn" class="btn btn-mine btn-sm " value="x" >
-									<input type="button" id="clockwise-y-btn" class="btn btn-mine btn-sm " value="y" >
-									<input type="button" id="clockwise-z-btn" class="btn btn-mine btn-sm " value="z" >
-									<label class="col">counter</label>
-									<input type="button" id="counter-x-btn" class="btn btn-mine btn-sm " value="x" >
-									<input type="button" id="counter-y-btn" class="btn btn-mine btn-sm " value="y" >
-									<input type="button" id="counter-z-btn" class="btn btn-mine btn-sm " value="z" >
-									<div class="w-100"></div>
-									<div id="result" class=""></div>
-									<input type="button" id="copy-btn" class="btn btn-mine btn-sm align-self-start " value="copy" >
+									<div class="form-group row d-xl-none">
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#do-controls" aria-expanded="false" aria-controls="do-controls">Do</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#analysis-controls" aria-expanded="false" aria-controls="analysis-controls">Analysis</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#advance-controls" aria-expanded="false" aria-controls="advance-controls">Advance</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#f2l-controls" aria-expanded="false" aria-controls="f2l-controls">F2L</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#oll-controls" aria-expanded="false" aria-controls="oll-controls">OLL</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#pll-controls" aria-expanded="false" aria-controls="pll-controls">PLL</button>
+									</div>
+									<div id="do-controls" class="form-group row collapse mt-2 dont-collapse-sm"> 
+										<div class="col-auto form-check form-check-inline">
+											<input class="form-check-input" type="checkbox" value="" id="fast-chk">
+											<label class="form-check-label" for="fast-chk">fast</label>						
+										</div>
+										<input class="col-auto btn btn-mine  col" type="button" id="do-btn" value="Do">
+										<input class="col-auto btn btn-mine  col" type="button" id="undo-btn" value="Undo">
+										<input class="col-auto btn btn-mine  col" type="button" id="reset-btn" value="Reset">
+									</div>
+									<div id="analysis-controls" class="row collapse mt-2 dont-collapse-sm">
+										<div class="form-group row"> 
+											<input id="atomic-btn" class="btn btn-mine  col-auto " type="button" value="Atomic">
+											<input id="reverse-btn" class="btn btn-mine  col-auto" type="button" value="Reverse">
+											<input id="order-btn" class="btn btn-mine  col-auto" type="button" value="Order">
+											<label class="col-auto">mirror
+												<input type="button" id="mirror-x-btn" class="btn btn-mine  " value="x" >
+												<input type="button" id="mirror-y-btn" class="btn btn-mine " value="y" >
+												<input type="button" id="mirror-z-btn" class="btn btn-mine " value="z" >
+											</label>
+										</div>
+										<div class="form-group row"> 
+											<label class="col-auto">clockwise
+												<input type="button" id="clockwise-x-btn" class="btn btn-mine  " value="x" >
+												<input type="button" id="clockwise-y-btn" class="btn btn-mine  " value="y" >
+												<input type="button" id="clockwise-z-btn" class="btn btn-mine  " value="z" >
+											</label>
+											<label class="col-auto">counter
+												<input type="button" id="counter-x-btn" class="btn btn-mine  " value="x" >
+												<input type="button" id="counter-y-btn" class="btn btn-mine  " value="y" >
+												<input type="button" id="counter-z-btn" class="btn btn-mine  " value="z" >
+											</label>
+										</div>
+										<div class="form-group row"> 
+											<div id="result" class="col-10"></div>
+											<input type="button" id="copy-btn" class="col-2 btn btn-mine   " value="copy" >
+										</div>
+									</div>
 								</div>
 							</div>
-							<div id="advance-controls">
-								<div class="form-group">
-									<input id="full-btn" class="btn btn-mine btn-sm " type="button" value="Full">
-									<input id="start-btn" class="btn btn-mine btn-sm " type="button" value="↞">
-									<input id="back-btn" class="btn btn-mine btn-sm " type="button" value="←">
-									<input id="move_idx" class="form-control form-control-sm " type="text" value="0" style="width: 30px;">
-									<input id="forward-btn" class="btn btn-mine btn-sm " type="button" value="→">
-									<input id="end-btn" class="btn btn-mine btn-sm " type="button" value="↠">
+							<div class="col-xl col-12">
+								<div id="advance-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
+									<div class="form-group row">
+										<input id="full-btn" class="btn btn-mine  col-2" type="button" value="Full">
+										<input id="start-btn" class="btn btn-mine  col-2" type="button" value="↞">
+										<input id="back-btn" class="btn btn-mine  col-2" type="button" value="←">
+										<div class="col-2">
+											<input id="move_idx" class="form-control form-control-sm" type="text" value="0" >
+										</div>
+										<input id="forward-btn" class="btn btn-mine  col-2" type="button" value="→">
+										<input id="end-btn" class="btn btn-mine  col-2" type="button" value="↠">
+									</div>
 								</div>
 							</div>
-							<div id="f2l-controls">
-								<div class="form-group">							
-										<input id="f2l-btn" type="button" value="F2L" class="btn btn-mine btn-sm "></input>
-										<input id="f2l-cnt" class="form-control form-control-sm " type="number" value="1" style="width: 45px;" min="1" max="4">
-										<select id="f2l-group" class="form-control form-control-sm col-10" multiple="multiple">
-											<option value="-2">-- random --</option>
-											<option value="-1">-- algo --</option>
-										</select>
-										<input id="f2l-tips-btn" type="button" class="btn btn-mine btn-sm " value="tip">
-										<div id="f2l-tips" class=""></div>
+							<div class="col-xl col-12">
+								<div id="f2l-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
+									<div class="form-group row">
+										<input id="f2l-btn" type="button" value="F2L" class="btn btn-mine  col-auto"></input>
+										<div class="col-2">
+											<input id="f2l-cnt" class="form-control form-control-sm" type="number" value="1" min="1" max="4">
+										</div>
+										<input id="f2l-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
+										<div id="f2l-tips" class="col"></div>
+									</div>
+									<div class="form-group row">
+										<div class="col gx-1" id="f2l-select">
+											<select id="f2l-group" class="form-control form-control-sm" multiple="multiple">
+												<option value="-2">-- random --</option>
+												<option value="-1">-- algo --</option>
+											</select>
+										</div>
+									</div>
 								</div>
 							</div>
-							<div id="oll-controls">
-								<div class="form-group">
-									<input id="oll-btn" class="btn btn-mine btn-sm align-self-start " type="button" value="OLL">
-									<select id="oll-group" class="form-control form-control-sm col-10 " multiple="multiple">
-										<option value="-3" selected>-- 2 look --</option>
-										<option value="-2">-- random --</option>
-										<option value="-1">-- algo --</option>
-									</select>
-									<label class="" for="oll-weight">weight</label>
-									<input class="form-control form-control-sm col-4" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="6">								  
-									<input id="oll-tips-btn" type="button" class="btn btn-mine btn-sm " value="tip">
-									<div id="oll-tips" class=""></div>
+							<div class="col-xl col-12">
+								<div id="oll-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
+									<div class="form-group row">
+										<input id="oll-btn" class="btn btn-mine  align-self-start col-auto " type="button" value="OLL">
+										<input id="oll-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
+										<div id="oll-tips" class="col"></div>
+									</div>
+									<div class="form-group row">
+										<div class="col gx-1">
+											<select id="oll-group" class="form-control form-control-sm col-10 " multiple="multiple">
+												<option value="-3" selected>-- 2 look --</option>
+												<option value="-2">-- random --</option>
+												<option value="-1">-- algo --</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class="col-auto" for="oll-weight">weight</label>
+										<div class="col">
+											<input class="form-control form-control-sm col-4" type="range" id="oll-weight" name="oll-weight" min="0" max="10" step="1" value="6">								  
+										</div>
+									</div>
 								</div>
 							</div>
-							<div id="pll-controls">
-								<div class="align-items-center">
-									<input id="pll-btn" class="btn btn-mine btn-sm align-self-start " type="button" value="PLL">
-									<select id="pll-group" class="form-control form-control-sm col-10" multiple="multiple">
-										<option value="-3" selected>-- 2 look --</option>
-										<option value="-2">-- random --</option>
-										<option value="-1">-- algo --</option>
-									</select>
-									<label class=" ml-n2 mr-2" for="pll-weight">weight</label>
-									<input class="form-control form-control-sm col-4 " type="range" id="pll-weight" name="oll-weight" min="-1" max="10" step="1" value="6">								  
-									<input id="pll-tips-btn" type="button" class="btn btn-mine btn-sm " value="tip">
-									<div id="pll-tips" class="" ></div>
+							<div class="col-xl col-12">
+								<div id="pll-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
+									<div class="form-group row">
+										<input id="pll-btn" class="btn btn-mine  align-self-start col-auto" type="button" value="PLL">
+										<input id="pll-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
+										<div id="pll-tips" class="col" ></div>
+									</div>
+									<div class="form-group row">
+										<div class="col gx-1">
+											<select id="pll-group" class="form-control form-control-sm col-10" multiple="multiple">
+												<option value="-3" selected>-- 2 look --</option>
+												<option value="-2">-- random --</option>
+												<option value="-1">-- algo --</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group row">
+										<label class=" ml-n2 mr-2 col-auto" for="pll-weight">weight</label>
+										<div class="col">
+											<input class="form-control form-control-sm " type="range" id="pll-weight" name="oll-weight" min="-1" max="10" step="1" value="6">								  
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
