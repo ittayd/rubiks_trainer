@@ -1,16 +1,12 @@
 :root {
-	--vc-width: 450px;
-	--vc-height: 520px;
-	--vc-row: 1;
-	--tr-columns: 5;
+	--cube-width: 450px;
+	--cube-height: 520px;
 }
 
 @media only screen and (max-width: 400px) {
 	:root {
-		--vc-width: 300px;
-		--vc-height: 350px;
-		--vc-row: 2;
-		--tr-columns: 1;
+		--cube-width: 400px;
+		--cube-height: 250px;
 	}
 	html {
 		font-size: 12px;
@@ -22,15 +18,6 @@
 
 	#triggers .btn, #moves .btn {
 		font-size: 8.75px;
-	}
-/*
-	#algo-controls div > :nth-child(n+6) {
-		display: none;
-	}
-*/
-	#three-cube {
-		margin-top: -70px;
-		margin-bottom: -30px;
 	}
 }
 
@@ -156,15 +143,6 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	text-align: center;
 }
 
-#cube-controls {
-	margin-left: 20px;
-
-}
-#cube-controls > * {
-	z-index: 100;
-}
-
-
 #undo-move-btn {
 	grid-column-start: 1;
 	grid-row-start: 1;
@@ -201,15 +179,8 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 }
 
 #three-cube {
-	grid-column: 1/-1;
-	grid-row: var(--vc-row);
-	height: var(--vc-height);
-	width: var(--vc-width);
-	margin-top: -40px;
-	margin-bottom: -40px;
-	margin-left: 20px;
-	object-fit:contain; /* required for mobile */
-	/* border:1px solid #CCCCCC; */
+    height: var(--cube-height);
+    width: var(--cube-width);
 	touch-action: none;
 }
 

@@ -497,8 +497,8 @@ class ThreeCube {
 
     #onContainerResize() {
 
-        let width = this.#container.width() // this.#renderer.domElement.offsetWidth;
-        let height = this.#container.height() // this.#renderer.domElement.offsetHeight;
+        let width = this.#container.innerWidth() // this.#renderer.domElement.offsetWidth;
+        let height = this.#container.innerHeight() // this.#renderer.domElement.offsetHeight;
 
         this.#renderer.setSize( width, height );
     
@@ -515,8 +515,7 @@ class ThreeCube {
         distance *= 0.45;
     
         this.#camera.position.set(distance , distance * 0.8, distance)
-        this.#camera.lookAt(this.#mirror ? -1 : 0, 0, 0);
-        //this.#camera.lookAt( -1, 0.4, 0.7 /* 0.3, -8/3, 2*/ /*this.#scene.position*/ );
+        this.#camera.lookAt(this.#mirror ? -0.5 : 0, -0.1, 0);
     
         this.#camera.updateProjectionMatrix();
     

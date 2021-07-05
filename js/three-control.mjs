@@ -88,7 +88,7 @@ class ThreeControl {
     #undoIndex = -1;
     #resetIndexes = []
 
-    constructor(container, options = {mirror: true}) {     
+    constructor(container, options = {mirror: true}) {   
       this.#cube = new ThreeCube($(container), options)
       $(this.#cube).on('cube:rotation', this.#rotated.bind(this))
       $(this.#cube).on('cube:reset', this.#resetted.bind(this))
