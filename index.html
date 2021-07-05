@@ -70,15 +70,17 @@
 							<button class="btn btn-mine btn-toggle collapsed col-auto" type="button" data-bs-toggle="collapse" data-bs-target="#moves" aria-expanded="false" aria-controls="moves">Keyboard</button>
 							<div id="triggers-dropdown" class="col-auto gx-0 dropdown">
 								<button class="btn btn-mine  dropdown-toggle" type="button" id="triggers-btn" data-bs-toggle="dropdown" aria-expanded="false">Triggers</button>
-								<table id="triggers" class="table-sm text-left table-bordered dropdown-menu" aria-labelledby="triggers-btn">
-									<thead>
-									<tr>
-										<th>Name</th>
-										<th>Moves</th>
-										<th>Inverse</th>
-									</tr>
-									</thead>	
-								</table>
+								<div id="triggers-container" class="dropdown-menu border-0 py-0" aria-labelledby="triggers-btn">
+									<table id="triggers" class="table table-sm text-nowrap text-left table-bordered my-0" >
+										<thead>
+										<tr>
+											<th>Name</th>
+											<th>Moves</th>
+											<th>Inverse</th>
+										</tr>
+										</thead>	
+									</table>
+								</div>
 							</div>
 						</div>
 						<div id="cube-container" class="row mt-3">
