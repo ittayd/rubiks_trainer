@@ -1,6 +1,6 @@
 :root {
-	--cube-width: 450px;
-	--cube-height: 520px;
+	--cube-width: 550px;
+	--cube-height: 400px;
 }
 
 @media only screen and (max-width: 400px) {
@@ -19,6 +19,7 @@
 	#triggers .btn, #moves .btn {
 		font-size: 8.75px;
 	}
+
 }
 
 @media (min-width: 400px) {
@@ -27,7 +28,17 @@
 	  height: auto !important;
 	  visibility: visible;
 	}
-  }
+
+	.row.dont-collapse-sm {
+		display: flex;
+	}
+	.btn-mine {
+		padding: .25rem .5rem;
+    	font-size: .875rem;
+    	border-radius: .2rem;
+	}
+
+}
 
 #result g, #algo g, .algo g {
 	color: mediumseagreen;

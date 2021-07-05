@@ -93,7 +93,7 @@
 						<div id="train-controls" class="mx-1 row">
 							<div class="col-xl col-12">
 								<div id="algo-controls" class="container-fluid gx-1 gy-2">
-									<div class="form-group row">
+									<div class="form-group row mt-2">
 										<div class="col-auto form-control form-control-sm " contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
 									</div>
 									<div class="form-group row d-xl-none">
@@ -113,32 +113,34 @@
 										<input class="col-auto btn btn-mine  col" type="button" id="undo-btn" value="Undo">
 										<input class="col-auto btn btn-mine  col" type="button" id="reset-btn" value="Reset">
 									</div>
-									<div id="analysis-controls" class="row collapse mt-2 dont-collapse-sm">
+									<div id="analysis-controls" class="mt-2 dont-collapse-sm collapse show" style="">
 										<div class="form-group row"> 
-											<input id="atomic-btn" class="btn btn-mine  col-auto " type="button" value="Atomic">
-											<input id="reverse-btn" class="btn btn-mine  col-auto" type="button" value="Reverse">
-											<input id="order-btn" class="btn btn-mine  col-auto" type="button" value="Order">
-											<label class="col-auto">mirror
-												<input type="button" id="mirror-x-btn" class="btn btn-mine  " value="x" >
-												<input type="button" id="mirror-y-btn" class="btn btn-mine " value="y" >
-												<input type="button" id="mirror-z-btn" class="btn btn-mine " value="z" >
+											<input id="atomic-btn" class="btn btn-mine  col-2" type="button" value="Atomic">
+											<input id="reverse-btn" class="btn btn-mine  col-2" type="button" value="Reverse">
+											<input id="order-btn" class="btn btn-mine  col-2" type="button" value="Order">
+											<label class="col-auto  ms-auto px-0">mirror
+												<input type="button" id="mirror-x-btn" class="btn btn-mine  " value="x">
+												<input type="button" id="mirror-y-btn" class="btn btn-mine " value="y">
+												<input type="button" id="mirror-z-btn" class="btn btn-mine " value="z">
 											</label>
 										</div>
 										<div class="form-group row"> 
-											<label class="col-auto">clockwise
-												<input type="button" id="clockwise-x-btn" class="btn btn-mine  " value="x" >
-												<input type="button" id="clockwise-y-btn" class="btn btn-mine  " value="y" >
-												<input type="button" id="clockwise-z-btn" class="btn btn-mine  " value="z" >
+											<label class="col-6 px-0">clockwise
+												<span class="float-end">
+													<input type="button" id="clockwise-x-btn" class="btn btn-mine  " value="x">
+													<input type="button" id="clockwise-y-btn" class="btn btn-mine  " value="y">
+													<input type="button" id="clockwise-z-btn" class="btn btn-mine  " value="z">
+   												</span>
 											</label>
-											<label class="col-auto">counter
-												<input type="button" id="counter-x-btn" class="btn btn-mine  " value="x" >
-												<input type="button" id="counter-y-btn" class="btn btn-mine  " value="y" >
-												<input type="button" id="counter-z-btn" class="btn btn-mine  " value="z" >
+											<label class="col-auto ms-auto px-0">counter
+												<input type="button" id="counter-x-btn" class="btn btn-mine  " value="x">
+												<input type="button" id="counter-y-btn" class="btn btn-mine  " value="y">
+												<input type="button" id="counter-z-btn" class="btn btn-mine  " value="z">
 											</label>
 										</div>
 										<div class="form-group row"> 
-											<div id="result" class="col-10"></div>
-											<input type="button" id="copy-btn" class="col-2 btn btn-mine   " value="copy" >
+											<div id="result" class="col"></div>
+											<input type="button" id="copy-btn" class="col-auto ms-auto btn btn-mine   " value="copy">
 										</div>
 									</div>
 								</div>
