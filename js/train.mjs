@@ -29,20 +29,18 @@ function random_turn() {
 }
 
 function random_weight(algs, weight) {
-    /* kludgy probability definition */
-    let power = weight / 2.5  - 2
-    let add = Math.pow(10, power)
+    // powers of weight, e.g. for 5 algs and weight 2: [1, 2, 4, 8, 16]. So the last one is twice more likely than the previous and 16 more than the first
+    // the actual weight is 1 to 10 where for 1 the factor should be 1 and for 10 it should be 2 so 1/9*weight+8/9
+    weight = 1/9*weight+8/9
     let weights = algs.map((a, i) => {
-        i = algs.length - i - 1
-        return 1/(i * add + 1)
+        return Math.pow(weight, i); 
     });
+
+    // turn into a distribution
     let sum = weights.reduce((a,b) => a+b, 0)
-    let last = weights[weights.length - 1]
-    weights = weights.map(w => {
-        return w * ((1*(sum + weights.length -1) - 1)/last) + 1
-    })
-    sum = weights.reduce((a,b) => a+b, 0)
     weights = weights.map(w => w / sum)
+
+    // sample
     return random(algs, weights)
 }
 
