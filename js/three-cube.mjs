@@ -114,7 +114,6 @@ class ThreeCube {
         // Lights
         const lights = new THREE.Group()
         this.#scene.add(lights)
-
         let ambient = new THREE.AmbientLight( 0xffffff, 1)
         lights.add(ambient)
         
@@ -157,20 +156,13 @@ class ThreeCube {
         }
         
 
-        // renderer
-
-        this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
-        this.#renderer.setPixelRatio( window.devicePixelRatio );
-        this.#renderer.setSize( container.innerWidth, container.innerHeight );
-
-
-        this.#container.append( this.#renderer.domElement );
-
+        // Build the cube
         let face = new THREE.Group();
 
         const pick_g = new THREE.PlaneBufferGeometry(1,1)
         pick_g.computeFaceNormals();
 
+        // transparent "stickers" that will capture user touch/drag events
         //DEBUG: const pick_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
         const pick_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
         let pickTarget = new THREE.Mesh(pick_g, pick_m);
@@ -178,6 +170,7 @@ class ThreeCube {
         pickTarget.position.set(0, 0, -0.5)
         pickTarget.rotateY(Math.PI)
        
+        // a facelet is one face of a cublet
         function createFacelet(mesh, name) {
             let facelet = new THREE.Group().add(mesh, pickTarget.clone()); 
             facelet.name = name
@@ -189,6 +182,7 @@ class ThreeCube {
         let edge_facelet = createFacelet(edge_m, 'edge_facelet');
         // let core = createFacelet(core_g, 'core')
         
+        // build a face. it has a center and then 4 pairs of corner and edge facelets
         face.add(center)
 
         for (let i = 0; i < 4; i++) { // FIX: iteration start is 0
@@ -201,6 +195,7 @@ class ThreeCube {
             face.rotateZ(Math.PI/2)
         }
 
+        // construct a cube by attaching all faces. 3 pairs (top bottom, left right, front back)
         let start = new THREE.Vector3(0, 0, -1)
         face.position.copy(start)
         let faces = [];
@@ -219,13 +214,14 @@ class ThreeCube {
         //this.#cube.add(core)
         this.#scene.add(this.#cube)
 
+        // now need to build the cubelets. by identifying facelets located in the same position
         // attach to scene so it updates position to world
         faces.forEach(face => move(face.children, this.#cube ))
         this.#cube.remove(...faces)
     
         this.#cube.children.slice().forEach(facelet => {
             facelet.position.round();
-            // position is -1,0,1
+            // position coordinates are one of -1,0,1
             let piece = this.#pieces[facelet.position.x + 1][facelet.position.y + 1][facelet.position.z + 1]
     
             piece.position.set(facelet.position.x, facelet.position.y, facelet.position.z);
@@ -235,6 +231,8 @@ class ThreeCube {
             piece.name = facelet.name
         })
 
+        // here the cube is a group of cubelets
+        // color faces by iterating the meshes (facelets) and identifying their direction
         let coder = new THREE.Vector3(1, 2, 3); // to code faces
         let direction = new THREE.Vector3()
     
@@ -253,17 +251,26 @@ class ThreeCube {
         let helpers = new THREE.Group()
         helpers.name = "helpers"
 
+        // put cubelets in this group and then rotate it so all cubelets rotate together on a single axis
         this.#rotation.group = new THREE.Group();
         this.#rotation.group.name = "rotation";
         helpers.add(this.#rotation.group)
 
         this.#scene.add(helpers);  
         
+        // add a 'core' to prevent flickering as pieces from the back are seen through the holes
         const geometry = new THREE.SphereGeometry( 0.8, 32, 32 );
         const material = new THREE.MeshBasicMaterial( {color: 0x000000} );
         const sphere = new THREE.Mesh( geometry, material );
         this.#scene.add( sphere );
 
+
+        // renderer
+        this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
+        this.#renderer.setPixelRatio( window.devicePixelRatio );
+        this.#renderer.setSize( container.innerWidth, container.innerHeight );
+        this.#container.append( this.#renderer.domElement );
+       
         new ResizeObserver(this.#onContainerResize.bind(this)).observe(this.#container[0])
 
         this.#onContainerResize();
@@ -357,8 +364,6 @@ class ThreeCube {
             originPick = undefined;
         })
 
-        this.#render();  
-        
         return this;
     }
 
