@@ -4,6 +4,10 @@ import { STLLoader } from 'https://threejs.org/examples/jsm/loaders/STLLoader.js
 import { GLTFLoader } from 'https://threejs.org/examples/jsm/loaders/GLTFLoader.js';
 import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js'
 import { TransformControls } from 'https://threejs.org/examples/jsm/controls/TransformControls.js';
+import Dat from 'https://cdn.skypack.dev/dat.gui';
+import initThreeDatGui from 'https://cdn.skypack.dev/three-dat.gui';
+initThreeDatGui(Dat)
+
 import {gsap, Linear, Sine} from 'https://cdn.skypack.dev/gsap';
 import $ from 'https://cdn.skypack.dev/jquery';
 
@@ -86,8 +90,6 @@ const center_m = model.scene.children[2]
 center_m.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
 center_m.position.set(0,0,1)
 
-//const core_g = await load('resources/core.stl')
-
 class ThreeCube {
     #needRender = false;
     #container;
@@ -104,10 +106,11 @@ class ThreeCube {
     constructor(container, {mirror = true} = {}) {
         this.#container = $(container)
         const aspect = this.#container.innerWidth() / this.#container.innerHeight();
-        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 100 );
+        this.#camera = new THREE.PerspectiveCamera( 10, aspect, 1, 50 );
+
         this.#scene = new THREE.Scene();
         this.#scene.background = null; //new THREE.Color(0,0,0); 
-        
+
         // Lights
         const lights = new THREE.Group()
         this.#scene.add(lights)
@@ -115,17 +118,6 @@ class ThreeCube {
         let ambient = new THREE.AmbientLight( 0xffffff, 1)
         lights.add(ambient)
         
-/*        function createFaceLight(x,y,z, i) {
-            let directional = new THREE.DirectionalLight( 0x808080, i )
-            directional.position.set(x,y,z)
-            //directional.castShadow = true
-            lights.add(directional)
-        }
-
-        createFaceLight(1000, 1000, 1000, 1.5)
-        createFaceLight(-10, 0, 0, 0.8)
-*/        
-    
         // mirror
         if (mirror) {
             this.#mirrorCamera = new THREE.OrthographicCamera(-1.5, 1.5, 1.5, -1.5, 0.1, 20)
@@ -170,25 +162,15 @@ class ThreeCube {
         this.#renderer = new THREE.WebGLRenderer( { alpha: true } );
         this.#renderer.setPixelRatio( window.devicePixelRatio );
         this.#renderer.setSize( container.innerWidth, container.innerHeight );
-        // this.#renderer.shadowMap.enabled = true;
 
-        //this.#renderer.physicallyCorrectLights = true
-        //this.#renderer.setClearColor( 0xffffff, 0 );
 
         this.#container.append( this.#renderer.domElement );
-
-        // stats
-        // stats = new Stats();
-        // container.appendChild( stats.dom );
-        
-        new ResizeObserver(this.#onContainerResize.bind(this)).observe(this.#container[0])
-
-        this.#onContainerResize();
 
         let face = new THREE.Group();
 
         const pick_g = new THREE.PlaneBufferGeometry(1,1)
         pick_g.computeFaceNormals();
+
         //DEBUG: const pick_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
         const pick_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
         let pickTarget = new THREE.Mesh(pick_g, pick_m);
@@ -199,8 +181,6 @@ class ThreeCube {
         function createFacelet(mesh, name) {
             let facelet = new THREE.Group().add(mesh, pickTarget.clone()); 
             facelet.name = name
-            // facelet.castShadow = true;
-            // facelet.receiveShadow = true;
             return facelet;
         }
 
@@ -270,9 +250,6 @@ class ThreeCube {
             }
         })
 
-        //const helper_m = new THREE.MeshBasicMaterial( { depthWrite: false, transparent: true, opacity: 0, color: 0x0033ff } );
-        //const helper_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
-
         let helpers = new THREE.Group()
         helpers.name = "helpers"
 
@@ -287,19 +264,16 @@ class ThreeCube {
         const sphere = new THREE.Mesh( geometry, material );
         this.#scene.add( sphere );
 
-        let picker = new GPUPicker(THREE, this.#renderer, this.#scene, this.#camera);
+        new ResizeObserver(this.#onContainerResize.bind(this)).observe(this.#container[0])
 
-        // done -> selecting -> rotating -> finishing -> done 
-        //                                            - (drag start) -> selecting_next
-        // selecting_next - (finish animation) -> selecting 
+        this.#onContainerResize();
+
+        let picker = new GPUPicker(THREE, this.#renderer, this.#scene, this.#camera);
 
         this.#rotation.tl = gsap.timeline({onUpdate: this.#animate.bind(this)});
 
-//        this.#rotation.tl.then(_ => this.#rotation.tween = undefined)
-
         let pick = (ev) => {
             let {x: x, y: y} = {x: ev.offsetX, y: ev.offsetY}
-            //console.log('pick', x, y)
             return picker.pick(x * window.devicePixelRatio, y * window.devicePixelRatio, obj => obj.name == "pick" /*obj.type === "Mesh" && obj.name != "mirror"*/)
         }
 
@@ -308,7 +282,6 @@ class ThreeCube {
             const faceDot = new THREE.Vector3(0,-1,-2);
             let obj = this.#scene.getObjectById(id)
             if (obj == undefined) return 
-            // console.log('pick', obj)
             obj = obj.parent
             return {
                 obj: obj,
@@ -341,14 +314,12 @@ class ThreeCube {
             if (originPick == undefined) {
                 let id = pick(ev);
                 originPick = resolve(id)
-                // console.log('origin', originPick)
                 return;
             }
             let targetId = pick(ev)
             if (originPick === undefined || targetId == originPick.id || targetId === -1) return;
             
             let targetPick = resolve(targetId)
-            //console.log('target', targetPick)
             if (targetPick.pid === originPick.pid) return;
 
             ignore = true; // picked another cubelet, so if it doesn't show an intent in rotation, skip the rest of the drag
@@ -408,7 +379,6 @@ class ThreeCube {
                     piece.rotation.set(0,0,0)
                 }
 
-        this.#onContainerResize()
     }
 
     // axis: 0 - x, 1 - y, 2 - z
@@ -449,7 +419,6 @@ class ThreeCube {
             });
             
             this.#rotation.state = 'done'
-            //this.#duration = Math.min(0.5, 0.1 * gsap.ticker.deltaRatio(20))
             let next = this.#rotation.queue.shift();
             if (next === undefined) {
                 this.#rotation.tweener = undefined;
@@ -476,8 +445,6 @@ class ThreeCube {
             previous: 0
         }
 
-        
-
         this.#rotation.tweener = this.#rotation.tweener || this.#rotation.tl;
         return this.#rotation.tweener = this.#rotation.tweener.to(proxy, duration * Math.abs(turns), {
             current: proxy.target,
@@ -502,23 +469,76 @@ class ThreeCube {
 
         this.#renderer.setSize( width, height );
     
-        this.#camera.fov = 10;
-        this.#camera.aspect = width / height;
+        const aspect = width / height;
+        this.#camera.aspect = aspect;
     
-        const aspect = world.width / world.height;
-        const fovRad = 10 * THREE.Math.DEG2RAD;
-    
-        let distance = ( aspect < this.#camera.aspect )
-            ? ( world.height / 2 ) / Math.tan( fovRad / 2 )
-            : ( world.width / this.#camera.aspect ) / ( 2 * Math.tan( fovRad / 2 ) );
-    
-        distance *= 0.45;
-    
-        this.#camera.position.set(distance , distance * 0.8, distance)
-        this.#camera.lookAt(this.#mirror ? -0.5 : 0, -0.1, 0);
-    
+        const x = new THREE.Vector3()
+        const y = new THREE.Vector3()
+        const z = new THREE.Vector3()
+        const pos = new THREE.Vector3(16, 0.8*16, 16) // by experimentation
+        const lookAt = new THREE.Vector3(this.#mirror ? -0.5 : 0, -0.1, 0)
+        this.#camera.position.copy(pos)
+        this.#camera.lookAt(lookAt)
+        this.#camera.matrix.extractBasis(x, y, z)
+
+        // the points we want to make sure are in the furstrum
+        const extremes = [ // cube
+            new THREE.Vector3(-1.5, -1.5, -1.5),
+            new THREE.Vector3(-1.5, -1.5, 1.5),
+            new THREE.Vector3(-1.5, 1.5, -1.5),
+            new THREE.Vector3(-1.5, 1.5, 1.5),
+            new THREE.Vector3(1.5, -1.5, -1.5),
+            new THREE.Vector3(1.5, -1.5, 1.5),
+            new THREE.Vector3(1.5, 1.5, -1.5),
+            new THREE.Vector3(1.5, 1.5, 1.5),           
+        ].concat(!this.#mirror ? [] :
+            this.points = [
+            new THREE.Vector3(-2.4, 0.2, 0.4),
+            new THREE.Vector3(-2.4, 0.2, 2.4),
+            new THREE.Vector3(-2.4, 2.2, 0.4),
+            new THREE.Vector3(-2.4, 2.2, 2.4),
+        ]).map(p => p.sub(lookAt))
+
+        const tany = Math.tan(this.#camera.fov * THREE.Math.DEG2RAD/2)
+
+        // to calculate the distance, project each point to the x or y axis of the camera and calculate the distance it'll take to position the camera
+        // given its FOV so the point is in its furstrum. 
+        // point.dot(y) == length of projection on y
+        // point.dot(y)/tany = distance from camera to lookAt 
+        // for x, need to divide by aspect
+        // the maximum of all of these is the distance we need to set.
+        const distance = Math.max(...extremes.flatMap(p => [Math.abs(p.dot(x)/tany/aspect), Math.abs(p.dot(y)/tany)    ]))
+
+        /* IGNORE
+          lookAt ---------- origin
+                 \         |
+                  \        |
+                   \       |
+                    \      |
+            distance \     |
+                      \    |
+                       \   |
+                        \  |
+                         \ |
+                          \|
+                          pos
+        */
+        /*const lookAtLength = lookAt.length()
+        const originAngle = Math.acos(lookAt.dot(pos)/lookAtLength/pos.length())
+        const posAngle = Math.asin(lookAtLength/distance*Math.sin(originAngle))
+        const lookAtAngle = Math.PI - originAngle - posAngle
+        const posLength = Math.sqrt(lookAtLength * lookAtLength + distance * distance - 2 * lookAtLength * distance * Math.cos(lookAtAngle))
+        pos.normalize().multiplyScalar(posLength)*/
+
+        // move along the vector from lookAt to pos
+        pos.sub(lookAt).normalize().multiplyScalar(distance*1.01) // add a bit to avoid clipping
+
+        this.#camera.matrix.identity()
+        this.#camera.position.copy(pos)
+        this.#camera.lookAt(lookAt)
+        
         this.#camera.updateProjectionMatrix();
-    
+        
         this.#animate();
     
     }
@@ -532,9 +552,6 @@ class ThreeCube {
     
     #render() {
         this.#needRender = false;
-        // stats.begin();
-
-        // Render
 
         if (this.#mirror) {
             this.#mirrorTarget.texture.encoding = this.#renderer.outputEncoding;
@@ -558,11 +575,8 @@ class ThreeCube {
 
             this.#renderer.setRenderTarget( null );
         }
-        this.#renderer.render( this.#scene, this.#camera );
-        // stats.end();
-    
+        this.#renderer.render( this.#scene, window.testCamera ? this.camera : this.#camera );   
     }
-
 }
 
 export default ThreeCube;
