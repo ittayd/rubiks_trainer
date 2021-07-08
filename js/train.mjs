@@ -1,6 +1,8 @@
 import $ from 'https://cdn.skypack.dev/jquery';
 import * as algos from './algos.mjs'
 import * as data from './algos-data.mjs'
+import {Collapse} from 'https://cdn.skypack.dev/bootstrap@5.0.1';
+
 
 function random(arr, probabilities) {
     if (! probabilities) {
@@ -232,6 +234,18 @@ class Train {
         })
 
         persist('#f2l-cnt')
+
+        $('.collapse').each((i, e) => {
+            const $e = $(e)
+            const id = $e.attr('id');
+            const $collapse = Collapse.getInstance(e) || new Collapse(e, {toggle: false})
+            const state = localStorage.getItem(id)
+            if (state == 'hide') $collapse.hide()
+            if (state == 'show') $collapse.show()
+            $e.on('show.bs.collapse hide.bs.collapse', ev => {
+                localStorage.setItem(id, ev.type)
+            })
+        })
 
         $('#full-btn').click(function(){
             self.$algo.html(self.all_moves);

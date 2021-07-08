@@ -67,7 +67,7 @@
 							<button id="undo-move-btn" type="button" class="col-auto btn btn-mine "><span class="flip-v">⤾</span></button>
 							<div id="keyboard" class="col-1 d-xl-inline "></div>
 							<button id="redo-move-btn" type="button" class="col-auto btn btn-mine "><span class="flip-v">⤿</span></button>
-							<button class="btn btn-mine btn-toggle collapsed col-auto" type="button" data-bs-toggle="collapse" data-bs-target="#moves" aria-expanded="false" aria-controls="moves">Keyboard</button>
+							<button class="btn btn-mine btn-toggle collapsed col-auto" type="button" data-bs-toggle="collapse" data-bs-target="#moves" aria-expanded="false" aria-controls="moves" id="moves-toggle">Keyboard</button>
 							<div id="triggers-dropdown" class="col-auto gx-0 dropdown">
 								<button class="btn btn-mine  dropdown-toggle" type="button" id="triggers-btn" data-bs-toggle="dropdown" aria-expanded="false">Triggers</button>
 								<div id="triggers-container" class="dropdown-menu border-0 py-0" aria-labelledby="triggers-btn">
@@ -99,12 +99,12 @@
 										<div class="col-auto form-control form-control-sm " contenteditable id="algo">M2 y <bl>M2 z</bl> <bl>M2 z</bl></div>
 									</div>
 									<div class="form-group row d-xl-none">
-										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#do-controls" aria-expanded="false" aria-controls="do-controls">Do</button>
-										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#analysis-controls" aria-expanded="false" aria-controls="analysis-controls">Analysis</button>
-										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#advance-controls" aria-expanded="false" aria-controls="advance-controls">Advance</button>
-										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#f2l-controls" aria-expanded="false" aria-controls="f2l-controls">F2L</button>
-										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#oll-controls" aria-expanded="false" aria-controls="oll-controls">OLL</button>
-										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#pll-controls" aria-expanded="false" aria-controls="pll-controls">PLL</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#do-controls" aria-expanded="false" aria-controls="do-controls" id="do-controls-toggle">Do</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#analysis-controls" aria-expanded="false" aria-controls="analysis-controls" id="analysis-controls-toggle">Analysis</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#advance-controls" aria-expanded="false" aria-controls="advance-controls" id="advance-controls-toggle">Advance</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#f2l-controls" aria-expanded="false" aria-controls="f2l-controls" id="f2l-controls-toggle">F2L</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#oll-controls" aria-expanded="false" aria-controls="oll-controls" id="oll-controls-toggle">OLL</button>
+										<button class="btn btn-mine  btn-toggle collapsed col" type="button" data-bs-toggle="collapse" data-bs-target="#pll-controls" aria-expanded="false" aria-controls="pll-controls" id="pll-controls-toggle">PLL</button>
 									</div>
 									<div id="do-controls" class="form-group row collapse mt-2 dont-collapse-sm"> 
 										<div class="col-auto form-check form-check-inline">
@@ -115,7 +115,7 @@
 										<input class="col-auto btn btn-mine  col" type="button" id="undo-btn" value="Undo">
 										<input class="col-auto btn btn-mine  col" type="button" id="reset-btn" value="Reset">
 									</div>
-									<div id="analysis-controls" class="mt-2 dont-collapse-sm collapse show" style="">
+									<div id="analysis-controls" class="mt-2 dont-collapse-sm collapse">
 										<div class="form-group row"> 
 											<input id="atomic-btn" class="btn btn-mine  col-2" type="button" value="Atomic">
 											<input id="reverse-btn" class="btn btn-mine  col-2" type="button" value="Reverse">

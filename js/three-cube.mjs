@@ -480,7 +480,7 @@ class ThreeCube {
         const x = new THREE.Vector3()
         const y = new THREE.Vector3()
         const z = new THREE.Vector3()
-        const pos = new THREE.Vector3(16, 0.8*16, 16) // by experimentation
+        const pos = new THREE.Vector3(100, 80, 100) // by experimentation. large values so the pos direction and (pos - lookAt) (which is what I set) are very similar.
         const lookAt = new THREE.Vector3(this.#mirror ? -0.5 : 0, -0.1, 0)
         this.#camera.position.copy(pos)
         this.#camera.lookAt(lookAt)
