@@ -308,15 +308,22 @@ class ThreeCube {
 
         let originPick 
         let ignore = true;
+        let pointerId
+        let multitouch = false
         $(this.#renderer.domElement).on('pointerdown', ev => {
             ev.preventDefault()
             ev.stopPropagation();
-
-            ignore = false;
-            originPick = undefined;
+            if (pointerId === undefined) {
+                pointerId = ev.pointerId
+                ignore = false;
+                originPick = undefined;
+            } else {
+                multitouch = true
+            }
         }).on('pointermove', ev => {
             ev.preventDefault()
             if (ignore) return;
+            if (pointerId != ev.pointerId) return;
 
             if (originPick == undefined) {
                 let id = pick(ev);
@@ -352,16 +359,20 @@ class ThreeCube {
             let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
 
             let layers = [targetPick.position[axis] + 1]
-            if (length_square(originPick.position) == 1) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
+            if (multitouch || ev.ctrlKey/*length_square(originPick.position) == 1*/) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
                 layers = [0,1,2]
 
             if (ev.shiftKey && layers.length == 1 && layers[0] != 1) {
                 layers.push(1)
             }
             this.rotate(axis, direction, layers, {duration: 0.1})
-        }).on('pointerup', ev => {
-            ignore = true;
-            originPick = undefined;
+        }).on('pointerup pointercancel pointerleave pointerout', ev => {
+            if (pointerId == ev.pointerId) {
+                ignore = true;
+                originPick = undefined;
+                pointerId = undefined
+                multitouch = false
+            } 
         })
 
         return this;
@@ -384,6 +395,7 @@ class ThreeCube {
                     piece.rotation.set(0,0,0)
                 }
 
+        this.#render();
     }
 
     // axis: 0 - x, 1 - y, 2 - z
