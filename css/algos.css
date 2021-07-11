@@ -145,14 +145,6 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
     margin: 10px;
 }
 
-#demo_cube {
-	width: 100%;
-	height: 80%;
-}
-
-#demo_buttons {
-	text-align: center;
-}
 
 #undo-move-btn {
 	grid-column-start: 1;
@@ -195,6 +187,17 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	touch-action: none;
 }
 
+#demo_cube {
+	width: 100%;
+	height: 80%;
+	touch-action: none;
+}
+
+#demo_buttons {
+	text-align: center;
+}
+
+
 #debug {
 	background-color: yellow;
 	grid-column: 1;
@@ -209,44 +212,6 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
-
-/*
-.virtualcube canvas {
-	position: relative;
-	top: -50px;
-}*/
-
-.virtualcube .button-toolbar {
-	display: none;
-}
-
-/*
-#train-controls {
-	display: grid;
-	grid-template-columns: repeat(var(--tr-columns), 1fr);
-	column-gap: 5px;
-}
-
-#train-controls > * {
-	display: flex;
-	flex-wrap: wrap;
-	align-content: flex-start;
-}
-
-#train-controls > * > * {
-	display: contents;
-}
-
-
-#train-controls > * > * > *{
-	margin-right: 2px;
-	margin-bottom: 2px;
-}
-
-#advance-controls > * > * {
-	flex: 1;
-}
-*/
 
 #train-controls .select2 {
 	line-height: 1.2;
