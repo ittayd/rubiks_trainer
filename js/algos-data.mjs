@@ -74,9 +74,9 @@ var oll = [
 	{ "type": "oll", "name": "24", "imageFileName": "oll24.gif", "moves": "(r U) (R' U') (r' F) (R F')", "comments": "Custom." },
 	{ "type": "oll", "name": "25", "imageFileName": "oll25.gif", "moves": "F' (r U R' U') (r' F R)", "comments": "Custom. LeftSlot fast." },
 	{ "type": "oll", "name": "27", "imageFileName": "oll27.gif", "moves": "(Match U) (LeftSlot)", "comments": "This is the Sune. Your right hand should never come off of the cube during the execution at any time." },
-	{ "type": "oll", "name": "26", "imageFileName": "oll26.gif", "moves": "(R U2) (Match^ U' R')", "comments": "This is just the inverse of the Sune, called the Antisune." },
+	{ "type": "oll", "name": "26", "imageFileName": "oll26.gif", "moves": "(R U2) (Match^ U' R')", "comments": "This is just the inverse of the Sune, called the Anti sune." },
 	{ "type": "oll", "name": "22", "imageFileName": "oll22.gif", "moves": "(R U2) (R2' U') (R2 U') (R2' U2 R)", "comments": "The execution of this algorithm is pretty neat. The R2 turns should alternate in direction so that they can be performed by the right hand without letting go of the cube. The left hand holds the cube and makes the U' turns." },
-	{ "type": "oll", "name": "21", "imageFileName": "oll21.gif", "moves": "L' U' L U' L' U L U' L' U2 L", "comments": "Custom. Double sune (or anti-sune, I can never remember) with the left hand." },
+	{ "type": "oll", "name": "21", "imageFileName": "oll21.gif", "moves": "L' U' L U' L' U L U' L' U2 L", "comments": "Custom. Double sune (or Anti -sune, I can never remember) with the left hand." },
 	{ "type": "oll", "name": "3", "imageFileName": "oll03.gif", "moves": "f (Match U') f' U' F (Match U') F'", "comments": "This is a clever combination of the two six move OLLs." },
 	{ "type": "oll", "name": "4", "imageFileName": "oll04.gif", "moves": "f (Match U') f' U F (Match U') F'", "comments": "This is another combination of the two six move OLLs." },
 	{ "type": "oll", "name": "17", "imageFileName": "oll17.gif", "moves": "(Match U) (R' F R F') U2 (R' F R F')", "comments": "This one is very fast. Each of the three triggers should be lightning fast." },
@@ -102,8 +102,8 @@ var oll = [
 	{ "type": "oll", "name": "40", "imageFileName": "oll40.gif", "moves": "(R' F) (Match U') F' U R", "comments": "This is just the mirror of OLL #39." },
 	{ "type": "oll", "name": "34", "imageFileName": "oll34.gif", "moves": "(R U R2' U') (R' F) (R U) (R U') F'", "comments": "This case is fast. It takes a little while to get used to the R2' not being just R', but the algorithm flows very nicely. I make the last F' turn with my right index finger." },
 	{ "type": "oll", "name": "46", "imageFileName": "oll46.gif", "moves": "(R' U') (R' F R F') (U R)", "comments": "There's nothing fancy here. This is just a sledgehammer with a setup move." },
-	{ "type": "oll", "name": "5", "imageFileName": "oll05.gif", "moves": "(r' U2) (Match U r)", "comments": "This is just a fat Antisune performed from the back of the cube." },
-	{ "type": "oll", "name": "6", "imageFileName": "oll06.gif", "moves": "(r U2) (Match^ U' r')", "comments": "This is just a fat Antisune." },
+	{ "type": "oll", "name": "5", "imageFileName": "oll05.gif", "moves": "(r' U2) (Match U r)", "comments": "This is just a fat Anti sune performed from the back of the cube." },
+	{ "type": "oll", "name": "6", "imageFileName": "oll06.gif", "moves": "(r U2) (Match^ U' r')", "comments": "This is just a fat Anti sune." },
 	{ "type": "oll", "name": "7", "imageFileName": "oll07.gif", "moves": "(r U R' U) (R U2 r')", "comments": "This case is just the inverse of one of the squares (OLL #6)." },
 	{ "type": "oll", "name": "12", "imageFileName": "oll12.gif", "moves": "[F (Match U') F'] U [F (Match U') F']", "comments": "This is just a Sune from the back right except with a setup move." },
 	{ "type": "oll", "name": "8", "imageFileName": "oll08.gif", "moves": "(r' U' R U') (R' U2 r)", "comments": "Like OLL #7, this is just the inverse of one of the squares (OLL #5)." },
@@ -140,7 +140,7 @@ var oll = [
 		name: "All Edges Correctly Oriented",
 		algs: [ /* http://badmephisto.com/2LookOLL.pdf */
 			{ type: "oll", moves: "Match U LeftSlot", name: "27-Sune", comment: "fish like, head is front-left, front side sticker adjacent" },
-			{ type: "oll", moves: "(Match U LeftSlot)^", name: "26-AntiSune", comment: "fish like, head is left-back, left side sticker opposite" },
+			{ type: "oll", moves: "(Match U LeftSlot)^", name: "26-Anti Sune", comment: "fish like, head is left-back, left side sticker opposite" },
 			{ type: "oll", moves: "[F: Sexy3]", name: "21-Car" },
 			{ type: "oll", moves: "[f: Sexy] [F: Sexy]", name: "22-Blinker" },
 			{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },
@@ -151,114 +151,114 @@ var oll = [
 	{
 		name: "No Edges Correctly Oriented",
 		algs: [
-			{ type: "oll", moves: "R U2 [R2' F R F'] U2 [Sledge]", name: "1-No" },
-			{ type: "oll", moves: "[F: Sexy] [f: Sexy]", name: "2-No" },
-			{ type: "oll", moves: "[f: Sexy] U' [F: Sexy]", name: "3-No" },
-			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-No" },
-			{ type: "oll", moves: "[Match U] [Sledge] U2 [Sledge]", name: "17-No" },
-			{ type: "oll", moves: "M U Sexy M2 [U R U' r']", name: "20-No" },
-			{ type: "oll", moves: "[F Match U] y' R' U2 [Sledge]", name: "18-No" },
-			{ type: "oll", moves: "[r' R] U [Sexy] r [R2' F R F']", name: "19-No" },
+			{ type: "oll", moves: "R U2 [R2' F R F'] U2 [Sledge]", name: "1-Runway" },
+			{ type: "oll", moves: "[F: Sexy] [f: Sexy]", name: "2-Zamboni" },
+			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-Nazi" },
+			{ type: "oll", moves: "[f: Sexy] U' [F: Sexy]", name: "3-Anti Nazi" },
+			{ type: "oll", moves: "[Match U] [Sledge] U2 [Sledge]", name: "17-Slash" },
+			{ type: "oll", moves: "M U Sexy M2 [U R U' r']", name: "20-Checkers" },
+			{ type: "oll", moves: "[F Match U] y' R' U2 [Sledge]", name: "18-Crown" },
+			{ type: "oll", moves: "[r' R] U [Sexy] r [R2' F R F']", name: "19-Bunny" },
 		]
 	},
 	{
 		name: "C shapes",
 		algs: [
-			{ type: "oll", moves: "[(R' U'): Sledge]", name: "46-C" },
-			{ type: "oll", moves: "R U R2 U' R' F R U R U' F'", name: "34-C" },
+			{ type: "oll", moves: "[(R' U'): Sledge]", name: "46-C & Headlights" },
+			{ type: "oll", moves: "R U R2 U' R' F R U R U' F'", name: "34-City" },
 		]
 	},
 	{
 		name: "I shapes",
 		algs: [
-			{ type: "oll", moves: "R U2 R2 U' Slot U2 F R F'", name: "55-I" },
-			{ type: "oll", moves: "Match U R d' Slot F'", name: "52-I" },
-			{ type: "oll", moves: "[f: Sexy2]", name: "51-I" },
-			{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'", name: "56-I" },
+			{ type: "oll", moves: "R U2 R2 U' Slot U2 F R F'", name: "55-Highway" },
+			{ type: "oll", moves: "Match U R d' Slot F'", name: "52-Rice Cooker" },
+			{ type: "oll", moves: "[f: Sexy2]", name: "51-Bottlecap" },
+			{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'", name: "56-Streetlights" },
 		]
 	},
 	{
 		name: "L shapes",
 		algs: [
-			{ type: "oll", moves: "F Sexy2 F'", name: "48-L" },
-			{ type: "oll", moves: "R' U' Sledge2 U R", name: "47-L" },
-			{ type: "oll", moves: "[r U R' U] [Slot U] [R U2 r']", name: "54-L" },
-			{ type: "oll", moves: "[l' U' L U'] [L' U L U'] [L' U2 l]", name: "53-L" },
-			{ type: "oll", moves: "[R' F R' F'] R2 U2 y [Sledge]", name: "49-L" },
-			{ type: "oll", moves: "R' F R2 B' R2' F' R2 B R'", name: "50-L" },
+			{ type: "oll", moves: "F Sexy2 F'", name: "48-Breakneck" },
+			{ type: "oll", moves: "R' U' Sledge2 U R", name: "47-Anti Breakneck" },
+			{ type: "oll", moves: "[l' U' L U'] [L' U L U'] [L' U2 l]", name: "53-Frying Pan" },
+			{ type: "oll", moves: "[r U R' U] [Slot U] [R U2 r']", name: "54-Anti Frying Pan" },
+			{ type: "oll", moves: "[R' F R' F'] R2 U2 y [Sledge]", name: "49-Right Back Squeezy" },
+			{ type: "oll", moves: "R' F R2 B' R2' F' R2 B R'", name: "50-Right Front Squeezy" },
 		]
 	},
 	{
 		name: "P shapes",
 		algs: [
 			{ type: "oll", moves: "[f: Sexy]", name: "44-P" },
-			{ type: "oll", moves: "f' (L' U' L U) f", name: "43-P" },
-			{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-P" },
-			{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-P" },
+			{ type: "oll", moves: "f' (L' U' L U) f", name: "43-Anti P" },
+			{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-Couch" },
+			{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-Anti Couch" },
 		]
 	},
 	{
 		name: "T shapes",
 		algs: [
-			{ type: "oll", moves: "[F: Sexy]", name: "45-T" },
-			{ type: "oll", moves: "Sexy Sledge", name: "33-T" },
+			{ type: "oll", moves: "[F: Sexy]", name: "45-Suit Up" },
+			{ type: "oll", moves: "Sexy Sledge", name: "33-Shoelaces" },
 		]
 	},
 	{
 		name: "W shapes",
 		algs: [
-			{ type: "oll", moves: "[Match U] [Slot U'] [Sledge]", name: "38-W" },
-			{ type: "oll", moves: "[L' U' L U'] [L' U L U] [L F' L' F]", name: "36-W" },
+			{ type: "oll", moves: "[L' U' L U'] [L' U L U] [L F' L' F]", name: "36-Mario" },
+			{ type: "oll", moves: "[Match U] [Slot U'] [Sledge]", name: "38-Wario" },
 		]
 	},
 	{
 		name: "Awkward shapes",
 		algs: [
-			{ type: "oll", moves: "R2 U R' B' R U' R2 U R B R'", name: "30-Awkward" },
-			{ type: "oll", moves: "M U [Sexy] [Sledge] M'", name: "29-Awkward" },
-			{ type: "oll", moves: "[Slot U2] R U y Slot U' F'", name: "41-Awkward" },
-			{ type: "oll", moves: "R' U2 [Match U] R y [F Sexy F']", name: "42-Awkward" },
+			{ type: "oll", moves: "M U [Sexy] [Sledge] M'", name: "29-Spotted Chameleon" },
+			{ type: "oll", moves: "R2 U R' B' R U' R2 U R B R'", name: "30-Anti Spotted Chameleon" },
+			{ type: "oll", moves: "[Slot U2] R U y Slot U' F'", name: "41-Awkward Fish" },
+			{ type: "oll", moves: "R' U2 [Match U] R y [F Sexy F']", name: "42-Anti Awkward Fish" },
 		]
 	},
 	{
 		name: "Fish shapes",
 		algs: [
-			{ type: "oll", moves: "F Slot U' Match F'", name: "37-Fish" },
+			{ type: "oll", moves: "[Sexy R' F] R2 U R' U' F'", name: "9-Kite" },
+			{ type: "oll", moves: "[Match U] [Sledge] [LeftSlot]", name: "10-Anti Kite" },
 			{ type: "oll", moves: "R U2 [R2 F R F'] [LeftSlot]", name: "35-Fish" },
-			{ type: "oll", moves: "[Match U] [Sledge] [LeftSlot]", name: "10-Fish" },
-			{ type: "oll", moves: "[Sexy R' F] R2 U R' U' F'", name: "9-Fish" },
+			{ type: "oll", moves: "F Slot U' Match F'", name: "37-Mounted Fish" },
 		]
 	},
 	{
 		name: "Knight Move shapes",
 		algs: [
-			{ type: "oll", moves: "r U' r' U' r U r' y' [Slot^]" , name: "13-Knight"},
-			{ type: "oll", moves: "R' F Match F' R y' [Slot]", name: "14-Knight" },
-			{ type: "oll", moves: "[r U r'] [Sexy] [r U' r']", name: "16-Knight" },
-			{ type: "oll", moves: "[l' U' l] [L' U' L U] [l' U l]", name: "15-Knight" },
+			{ type: "oll", moves: "r U' r' U' r U r' y' [Slot^]" , name: "13-Gun"},
+			{ type: "oll", moves: "R' F Match F' R y' [Slot]", name: "14-Anti Gun" },
+			{ type: "oll", moves: "[l' U' l] [L' U' L U] [l' U l]", name: "15-Squeegee" },
+			{ type: "oll", moves: "[r U r'] [Sexy] [r U' r']", name: "16-Anti Squeegee" },
 		]
 	},
 	{
 		name: "Big Lightning Bolts shapes",
 		algs: [
-			{ type: "oll", moves: "[R' F Sexy F'] U R", name: "40-Big Lightning" },
-			{ type: "oll", moves: "[L F' L' U' L U F] U' L'", name: "39-Big Lightning" },
+			{ type: "oll", moves: "[L F' L' U' L U F] U' L'", name: "39-Fung" },
+			{ type: "oll", moves: "[R' F Sexy F'] U R", name: "40-Anti Fung" },
 		]
 	},
 	{
 		name: "Small Lightning Bolts shapes",
 		algs: [
-			{ type: "oll", moves: "LeftSlot U2 Sledge", name: "8-Small Lightning" },
-			{ type: "oll", moves: "[r U R' U] [R U2 r']", name: "7-Small Lightning" },
-			{ type: "oll", moves: "[F Sexy F'] U [F Sexy F']", name: "12-Small Lightning" },
-			{ type: "oll", moves: "[F' L' U' L U F] y [F Sexy F'] y'", name: "11-Small Lightning" },
+			{ type: "oll", moves: "[r U R' U] [R U2 r']", name: "7-Lightning" },
+			{ type: "oll", moves: "LeftSlot U2 Sledge", name: "8-Reverse Lightning" },
+			{ type: "oll", moves: "[F Sexy F'] U [F Sexy F']", name: "12-Upstairs" },
+			{ type: "oll", moves: "[F' L' U' L U F] y [F Sexy F'] y'", name: "11-Downstairs" },
 		]
 	},
 	{
 		name: "Square shapes",
 		algs: [
-			{ type: "oll", moves: "r U2 Match^ U' r'", name: "6-Square" },
-			{ type: "oll", moves: "l' U2 L U L' U l", name: "5-Square" },
+			{ type: "oll", moves: "r U2 Match^ U' r'", name: "6-Righty Square" },
+			{ type: "oll", moves: "l' U2 L U L' U l", name: "5-Lefty Square" },
 		]
 	},
 	{
