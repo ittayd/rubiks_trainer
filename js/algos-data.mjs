@@ -153,7 +153,7 @@ var oll = [
 		algs: [
 			{ type: "oll", moves: "R U2 [R2' F R F'] U2 [Sledge]", name: "1-Runway" },
 			{ type: "oll", moves: "[F: Sexy] [f: Sexy]", name: "2-Zamboni" },
-			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-Nazi" },
+			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-Nazi", comment: "Blinker with a U in the middle" },
 			{ type: "oll", moves: "[f: Sexy] U' [F: Sexy]", name: "3-Anti Nazi" },
 			{ type: "oll", moves: "[Match U] [Sledge] U2 [Sledge]", name: "17-Slash" },
 			{ type: "oll", moves: "M U Sexy M2 [U R U' r']", name: "20-Checkers" },
