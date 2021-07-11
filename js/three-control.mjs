@@ -94,8 +94,13 @@ class ThreeControl {
       $(this.#cube).on('cube:reset', this.#resetted.bind(this))
     }
 
-    reset() {
-        this.#cube.reset();
+    reset({clearUndo = false} = {}) {
+      if (clearUndo) {
+        this.#moves = []
+        this.#undoIndex = -1
+        this.#resetIndexes = []
+      }
+      this.#cube.reset({trigger: !clearUndo});
     }
 
     move(moves, quiet = false) {

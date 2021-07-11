@@ -742,7 +742,7 @@ $algo_demo.bind('blur change click dblclick error focus focusin focusout hover k
 
 let demo_formula;
 function demoReset() {
-	mini_cube.reset();
+	mini_cube.reset({clearUndo: true});
 	mini_cube.move(demo_formula, true);
 }
 function showAlgoDemo(formula, $obj) {
