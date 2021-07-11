@@ -4,6 +4,24 @@ import * as data from './algos-data.mjs'
 import {Collapse} from 'https://cdn.skypack.dev/bootstrap@5.0.1';
 
 
+function shuffle(array) {
+    var currentIndex = array.length,  randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+  
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
+}
+
 function random(arr, probabilities) {
     if (! probabilities) {
         let i = Math.floor(Math.random() * arr.length);
@@ -32,8 +50,8 @@ function random_turn() {
 
 function random_weight(algs, weight) {
     // powers of weight, e.g. for 5 algs and weight 2: [1, 2, 4, 8, 16]. So the last one is twice more likely than the previous and 16 more than the first
-    // the actual weight is 1 to 10 where for 1 the factor should be 1 and for 10 it should be 2 so 1/9*weight+8/9
-    weight = 1/9*weight+8/9
+    // the actual weight is 0 to 9 where for 0 the factor should be 1 and for 9 it should be 2 so 1/9*weight+1
+    weight = 1/9*weight + 1
     let weights = algs.map((a, i) => {
         return Math.pow(weight, i); 
     });
@@ -55,7 +73,7 @@ function choose_alg(choices, type, previous_ref, pre_move_i) {
         previous_ref.i = (previous_ref.i + 1) % choices.length
         chosen = choices[previous_ref.i]
     } else {
-        chosen = random_weight(choices, weight)
+        chosen = random_weight(choices, weight) 
     }
 
     tip(chosen, `#${type}-tips`, ((-pre_move_i + 4) % 4)) // the comments are when moves are in reverse)
@@ -415,7 +433,7 @@ class Train {
         const algotext = this.algotext()
 
         tip(undefined, '#oll-tips')
-        var pre_moves = random(['U ', "U' ", 'U2 ', ''])
+        var [pre_moves, pre_move_i] = random_turn();
 
         if (algo === undefined) {
             let selected = $('#oll-group').val();
@@ -447,12 +465,14 @@ class Train {
                 default: {
                     let algs = selected.flatMap(s => {
                         let [group, alg] = s.split('.').map(x => parseInt(x))
-                        return data.oll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
+                        let all = data.oll[group].algs
+                        if (alg == undefined) {
+                            return shuffle(all.slice()) // if the user chooses a group, then has no priorities over algorithms there, but with the weight the first one will get picked rarely. So shuffle
+                        } 
+                        return all[alg]
                     })
-                    let weight = parseInt($('#oll-weight').val())
-                    algo = random_weight(algs, weight)
-                    tip(algo, '#oll-tips')
-                    algo = alg_move(algo)
+                    algo = choose_alg(algs, 'oll', this.oll_choice, pre_move_i)
+
                 }
             }
         }
@@ -496,8 +516,11 @@ class Train {
                     break;
                 default: { // from multi-selected algorithms
                     let algs = selected.flatMap(s => {
-                        let [group, alg] = s.split('.').map(x => parseInt(x))
-                        return data.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1));
+                        let all = data.oll[group].algs
+                        if (alg == undefined) {
+                            return shuffle(all.slice()) // if the user chooses a group, then has no priorities over algorithms there, but with the weight the first one will get picked rarely. So shuffle
+                        } 
+                        return all[alg]
                     })
 
                     algo = choose_alg(algs, 'pll', this.pll_choice, pre_move_i)
