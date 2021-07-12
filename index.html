@@ -165,7 +165,7 @@
 								<div id="f2l-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
 									<div class="form-group row">
 										<input id="f2l-btn" type="button" value="F2L" class="btn btn-mine  col-auto"></input>
-										<div class="col-2">
+										<div class="col-3">
 											<input id="f2l-cnt" class="form-control form-control-sm" type="number" value="1" min="1" max="4">
 										</div>
 										<input id="f2l-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
@@ -185,6 +185,11 @@
 								<div id="oll-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
 									<div class="form-group row">
 										<input id="oll-btn" class="btn btn-mine  align-self-start col-auto " type="button" value="OLL">
+										<label class="col-2" for="oll-weight">priority</label>
+										<div class="col-2">
+											<!--<input class="form-control form-control-sm col-4" type="range" id="oll-weight" name="oll-weight" min="-1" max="9" step="1" value="4">-->
+											<input id="oll-weight" name="oll-weight" class="form-control form-control-sm" type="text" min="0" value="1" >
+										</div>
 										<input id="oll-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
 										<div id="oll-tips" class="col"></div>
 									</div>
@@ -198,10 +203,7 @@
 										</div>
 									</div>
 									<div class="form-group row">
-										<label class="col-auto" for="oll-weight">weight</label>
-										<div class="col">
-											<input class="form-control form-control-sm col-4" type="range" id="oll-weight" name="oll-weight" min="-1" max="9" step="1" value="4">								  
-										</div>
+										
 									</div>
 								</div>
 							</div>
@@ -209,6 +211,11 @@
 								<div id="pll-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
 									<div class="form-group row">
 										<input id="pll-btn" class="btn btn-mine  align-self-start col-auto" type="button" value="PLL">
+										<label class="col-2" for="pll-weight">priority</label>
+										<div class="col-2">
+											<!--<input class="form-control form-control-sm col-4" type="range" id="pll-weight" name="pll-weight" min="-1" max="9" step="1" value="4">-->
+											<input id="pll-weight" name="pll-weight" class="form-control form-control-sm" type="text" min="0" value="1" >
+										</div>
 										<input id="pll-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
 										<div id="pll-tips" class="col" ></div>
 									</div>
@@ -219,12 +226,6 @@
 												<option value="-2">-- random --</option>
 												<option value="-1">-- algo --</option>
 											</select>
-										</div>
-									</div>
-									<div class="form-group row">
-										<label class=" ml-n2 mr-2 col-auto" for="pll-weight">weight</label>
-										<div class="col">
-											<input class="form-control form-control-sm " type="range" id="pll-weight" name="pll-weight" min="-1" max="9" step="1" value="4">								  
 										</div>
 									</div>
 								</div>

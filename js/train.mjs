@@ -3,6 +3,19 @@ import * as algos from './algos.mjs'
 import * as data from './algos-data.mjs'
 import {Collapse} from 'https://cdn.skypack.dev/bootstrap@5.0.1';
 
+$.fn.visible = function() {
+    return this.css('visibility', 'visible');
+};
+
+$.fn.invisible = function() {
+    return this.css('visibility', 'hidden');
+};
+
+$.fn.visibilityToggle = function() {
+    return this.css('visibility', function(i, visibility) {
+        return (visibility == 'visible') ? 'hidden' : 'visible';
+    });
+};
 
 function shuffle(array) {
     var currentIndex = array.length,  randomIndex;
@@ -49,12 +62,9 @@ function random_turn() {
 }
 
 function random_weight(algs, weight) {
-    // powers of weight, e.g. for 5 algs and weight 2: [1, 2, 4, 8, 16]. So the last one is twice more likely than the previous and 16 more than the first
-    // the actual weight is 0 to 9 where for 0 the factor should be 1 and for 9 it should be 2 so 1/9*weight+1
-    weight = 1/9*weight + 1
-    let weights = algs.map((a, i) => {
-        return Math.pow(weight, i); 
-    });
+    // weight is how many algorithms to prioritize, starting from the last.
+    // If there are N algs and weight is K, then for the first N-K, weight is 1 and for the last K, weight is N-K
+    let weights = algs.map((a, i) => i >= algs.length - weight ? algs.length - weight : 1);
 
     // turn into a distribution
     let sum = weights.reduce((a,b) => a+b, 0)
@@ -64,18 +74,11 @@ function random_weight(algs, weight) {
     return random(algs, weights)
 }
 
-function choose_alg(choices, type, previous_ref, pre_move_i) {
+function choose_alg(choices, type, pre_move_i) {
     let weight = parseInt($(`#${type}-weight`).val())
-    let round = weight == -1
 
-    let chosen;
-    if (round) {
-        previous_ref.i = (previous_ref.i + 1) % choices.length
-        chosen = choices[previous_ref.i]
-    } else {
-        chosen = random_weight(choices, weight) 
-    }
-
+    let chosen = random_weight(choices, weight) 
+    
     tip(chosen, `#${type}-tips`, ((-pre_move_i + 4) % 4)) // the comments are when moves are in reverse)
 
     return alg_move(chosen)
@@ -97,7 +100,7 @@ function tip(alg, elem, i) {
     if (!alg) {
         $('#algo').html('')
         elem.text('')
-        elem.toggle(false)
+        elem.invisible(false)
         return
     }
     if (!alg.name) {
@@ -121,13 +124,7 @@ class Train {
         this.$algo = $('#algo')
         this.current_idx = 0;
 
-        this.oll_choice = {i: -1}
-        this.pll_choice = {i: -1}
-
-        let self = this;
-        this.$algo.keyup(function(){
-            self.all_moves = self.algotext();
-        })     
+        this.$algo.keyup(_ => this.all_moves = this.algotext())
 
         function renderSelect($select, coll) {
             $select = $($select)
@@ -233,11 +230,11 @@ class Train {
                 $select.trigger('change')
             }
         }
-        $('#f2l-btn').click(_ => self.f2l_scramble())
+        $('#f2l-btn').click(_ => this.f2l_scramble())
 
-        $('#oll-btn').click(_ => self.oll_scramble())
+        $('#oll-btn').click(_ => this.oll_scramble())
 
-        $('#pll-btn').click(_ => self.pll_scramble())
+        $('#pll-btn').click(_ => this.pll_scramble())
 
         renderSelect('#f2l-group', data.f2l);
         renderSelect('#pll-group', data.pll);
@@ -265,69 +262,69 @@ class Train {
             })
         })
 
-        $('#full-btn').click(function(){
-            self.$algo.html(self.all_moves);
+        $('#full-btn').click(_ => {
+            this.$algo.html(this.all_moves);
         })
 
-        $('#start-btn').click(function () {
-            self.advance({ reset: true });
+        $('#start-btn').click(_ => {
+            this.advance({ reset: true });
 
         })
 
-        $('#back-btn').click(function () {
-            self.advance({ delta: -1 })
+        $('#back-btn').click(_ => {
+            this.advance({ delta: -1 })
         })
 
-        self.$move_idx.change(function (event) {
-            self.advance({ to: $(this).val(), jump: true })
+        this.$move_idx.change(_ => {
+            this.advance({ to: $(this).val(), jump: true })
         })
 
-        $('#forward-btn').click(function () {
-            self.advance({ delta: 1 })
+        $('#forward-btn').click(_ => {
+            this.advance({ delta: 1 })
 
         })
 
         
-        $('#end-btn').click(function () {
-            self.advance({ to: (algos.parse(self.train_moves).toMoves({keepTriggers: false}).length), jump: true })
+        $('#end-btn').click(_ => {
+            this.advance({ to: (algos.parse(this.train_moves).toMoves({keepTriggers: false}).length), jump: true })
         })
 
-        $('#do-btn').click(_ => self.doAlgo());
-        $('#undo-btn').click(_ => self.doAlgo(true));
+        $('#do-btn').click(_ => this.doAlgo());
+        $('#undo-btn').click(_ => this.doAlgo(true));
         $('#reset-btn').click(_ => control.reset());
         $('#reposition-btn').click(_ => control.reposition());
 
         let $result = $('#result')
 
         $('#atomic-btn').click(_ => {
-            $result.text(algos.parse(self.algotext()).toMoves({nested: true, keepTriggers: false, string:true}))
+            $result.text(algos.parse(this.algotext()).toMoves({nested: true, keepTriggers: false, string:true}))
         })
         $('#reverse-btn').click(_ => {
-            $result.text(algos.parse(self.algotext()).inverted.toMoves({nested: true, keepTriggers: true, string:true}))
+            $result.text(algos.parse(this.algotext()).inverted.toMoves({nested: true, keepTriggers: true, string:true}))
         })
         
         $('#order-btn').click(_ => {
-            $result.text(algos.parse(self.algotext()).permutation.order)
+            $result.text(algos.parse(this.algotext()).permutation.order)
         })
         'xyz'.split('').forEach(axis => {
             $(`#mirror-${axis}-btn`).click(_ => {
-                $result.text(algos.parse(self.algotext()).mirror(axis).toString())
+                $result.text(algos.parse(this.algotext()).mirror(axis).toString())
             })
             $(`#clockwise-${axis}-btn`).click(_ => {
-                $result.text(algos.parse(self.algotext()).rotate(axis).toString())
+                $result.text(algos.parse(this.algotext()).rotate(axis).toString())
             })
             $(`#counter-${axis}-btn`).click(_ => {
-                $result.text(algos.parse(self.algotext()).rotate(axis, -1).toString())
+                $result.text(algos.parse(this.algotext()).rotate(axis, -1).toString())
             })
         })
 
         $('#copy-btn').click(_ => {
-            self.$algo.text($result.text())
+            this.$algo.text($result.text())
         })
 
-        $('#f2l-tips-btn').click(_ => {$('#f2l-tips').toggle(true); self.$algo.html(self.train_moves)})
-        $('#oll-tips-btn').click(_ => {$('#oll-tips').toggle(true); self.$algo.html(self.train_moves)})
-        $('#pll-tips-btn').click(_ => {$('#pll-tips').toggle(true); self.$algo.html(self.train_moves)})
+        $('#f2l-tips-btn').click(_ => {$('#f2l-tips').visible(); this.$algo.html(this.train_moves)})
+        $('#oll-tips-btn').click(_ => {$('#oll-tips').visible(); this.$algo.html(this.train_moves)})
+        $('#pll-tips-btn').click(_ => {$('#pll-tips').visible(); this.$algo.html(this.train_moves)})
 
 
     }
@@ -465,13 +462,9 @@ class Train {
                 default: {
                     let algs = selected.flatMap(s => {
                         let [group, alg] = s.split('.').map(x => parseInt(x))
-                        let all = data.oll[group].algs
-                        if (alg == undefined) {
-                            return shuffle(all.slice()) // if the user chooses a group, then has no priorities over algorithms there, but with the weight the first one will get picked rarely. So shuffle
-                        } 
-                        return all[alg]
+                        return data.oll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1)).map(a => Array.isArray(a) ? a[0] : a);
                     })
-                    algo = choose_alg(algs, 'oll', this.oll_choice, pre_move_i)
+                    algo = choose_alg(algs, 'oll', pre_move_i)
 
                 }
             }
@@ -516,14 +509,11 @@ class Train {
                     break;
                 default: { // from multi-selected algorithms
                     let algs = selected.flatMap(s => {
-                        let all = data.oll[group].algs
-                        if (alg == undefined) {
-                            return shuffle(all.slice()) // if the user chooses a group, then has no priorities over algorithms there, but with the weight the first one will get picked rarely. So shuffle
-                        } 
-                        return all[alg]
+                        let [group, alg] = s.split('.').map(x => parseInt(x))
+                        return data.pll[group].algs.slice(alg, alg === undefined ? alg : (alg + 1)).map(a => Array.isArray(a) ? a[0] : a);
                     })
 
-                    algo = choose_alg(algs, 'pll', this.pll_choice, pre_move_i)
+                    algo = choose_alg(algs, 'pll', pre_move_i)
                 }
             }
         }
