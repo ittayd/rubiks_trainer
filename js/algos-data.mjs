@@ -16,7 +16,7 @@ var f2l = [ /* http://www.rubiksplace.com/speedcubing/F2L-algorithms/ */
 			// {type: "f2l", moves: "y' (Match^) y"},
 			// {type: "f2l", moves: "Match"},
 			{ type: "f2l", moves: "d Match^ U' (Match^) y" },
-			{ type: "f2l", moves: "U' Match U Match" },
+			{ type: "f2l", moves: "U' Shoot Match" },
 			{ type: "f2l", moves: "U' LeftSlot d (Match^) y" },
 			{ type: "f2l", moves: "R' U2 R2 U R2' U R" },
 			{ type: "f2l", moves: "d Slot^ U' (Match^) y" },
@@ -29,7 +29,7 @@ var f2l = [ /* http://www.rubiksplace.com/speedcubing/F2L-algorithms/ */
 			{ type: "f2l", moves: "y' LeftSlot^ U (Match^) y" },
 			{ type: "f2l", moves: "U LeftSlot U Slot" },
 			{ type: "f2l", moves: "y' U' LeftSlot^ U' (Slot^) y" },
-			{ type: "f2l", moves: "U2 Match U Slot" },
+			{ type: "f2l", moves: "U2 Shoot Slot" },
 			{ type: "f2l", moves: "y' U2 Match^ U' (Slot^) y" },
 			{ type: "f2l", moves: "y' U LeftSlot^ y R U2 Slot^ U' R'" },
 			{ type: "f2l", moves: "U' LeftSlot y' LeftSlot^ U' Slot^ y" }]
@@ -102,7 +102,7 @@ var oll = [
 	{ "type": "oll", "name": "40", "imageFileName": "oll40.gif", "moves": "(R' F) (Match U') F' U R", "comments": "This is just the mirror of OLL #39." },
 	{ "type": "oll", "name": "34", "imageFileName": "oll34.gif", "moves": "(R U R2' U') (R' F) (R U) (R U') F'", "comments": "This case is fast. It takes a little while to get used to the R2' not being just R', but the algorithm flows very nicely. I make the last F' turn with my right index finger." },
 	{ "type": "oll", "name": "46", "imageFileName": "oll46.gif", "moves": "(R' U') (R' F R F') (U R)", "comments": "There's nothing fancy here. This is just a sledgehammer with a setup move." },
-	{ "type": "oll", "name": "5", "imageFileName": "oll05.gif", "moves": "(r' U2) (Match U r)", "comments": "This is just a fat Anti sune performed from the back of the cube." },
+	{ "type": "oll", "name": "5", "imageFileName": "oll05.gif", "moves": "(r' U2) (Shoot r)", "comments": "This is just a fat Anti sune performed from the back of the cube." },
 	{ "type": "oll", "name": "6", "imageFileName": "oll06.gif", "moves": "(r U2) (Match^ U' r')", "comments": "This is just a fat Anti sune." },
 	{ "type": "oll", "name": "7", "imageFileName": "oll07.gif", "moves": "(r U R' U) (R U2 r')", "comments": "This case is just the inverse of one of the squares (OLL #6)." },
 	{ "type": "oll", "name": "12", "imageFileName": "oll12.gif", "moves": "[F (Match U') F'] U [F (Match U') F']", "comments": "This is just a Sune from the back right except with a setup move." },
@@ -139,8 +139,8 @@ var oll = [
 	{
 		name: "All Edges Correctly Oriented",
 		algs: [ /* http://badmephisto.com/2LookOLL.pdf */
-			{ type: "oll", moves: "Match U LeftSlot", name: "27-Sune", comment: "fish like, head is front-left, front side sticker adjacent" },
-			{ type: "oll", moves: "(Match U LeftSlot)^", name: "26-Anti Sune", comment: "fish like, head is left-back, left side sticker opposite" },
+			{ type: "oll", moves: "Shoot LeftSlot", name: "27-Sune", comment: "fish like, head is front-left, front side sticker adjacent" },
+			{ type: "oll", moves: "(Shoot LeftSlot)^", name: "26-Anti Sune", comment: "fish like, head is left-back, left side sticker opposite" },
 			{ type: "oll", moves: "[F: Sexy3]", name: "21-Car" },
 			{ type: "oll", moves: "[f: Sexy] [F: Sexy]", name: "22-Blinker" },
 			{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },
@@ -151,13 +151,13 @@ var oll = [
 	{
 		name: "No Edges Correctly Oriented",
 		algs: [
-			{ type: "oll", moves: "R U2 [R2' F R F'] U2 [Sledge]", name: "1-Runway" },
+			{ type: "oll", moves: "LeftSlot Sledge U2 Sledge", name: "1-Runway" },
 			{ type: "oll", moves: "[F: Sexy] [f: Sexy]", name: "2-Zamboni" },
 			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-Nazi", comment: "Blinker with a U in the middle" },
 			{ type: "oll", moves: "[f: Sexy] U' [F: Sexy]", name: "3-Anti Nazi" },
-			{ type: "oll", moves: "[Match U] [Sledge] U2 [Sledge]", name: "17-Slash" },
-			{ type: "oll", moves: "M U Sexy M2 [U R U' r']", name: "20-Checkers" },
-			{ type: "oll", moves: "[F Match U] y' R' U2 [Sledge]", name: "18-Crown" },
+			{ type: "oll", moves: "Shoot Sledge U2 Sledge", name: "17-Slash", comment: "Similar to Runway but with Shoot instead of LeftSlot" },
+			{ type: "oll", moves: "M U Sexy M2 FatSexy'", name: "20-Checkers" },
+			{ type: "oll", moves: "[F Shoot] y' R' U2 Sledge", name: "18-Crown" },
 			{ type: "oll", moves: "[r' R] U [Sexy] r [R2' F R F']", name: "19-Bunny" },
 		]
 	},
@@ -172,7 +172,7 @@ var oll = [
 		name: "I shapes",
 		algs: [
 			{ type: "oll", moves: "R U2 R2 U' Slot U2 F R F'", name: "55-Highway" },
-			{ type: "oll", moves: "Match U R d' Slot F'", name: "52-Rice Cooker" },
+			{ type: "oll", moves: "Shoot R d' Slot F'", name: "52-Rice Cooker" },
 			{ type: "oll", moves: "[f: Sexy2]", name: "51-Bottlecap" },
 			{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'", name: "56-Streetlights" },
 		]
@@ -208,7 +208,7 @@ var oll = [
 		name: "W shapes",
 		algs: [
 			{ type: "oll", moves: "[L' U' L U'] [L' U L U] [L F' L' F]", name: "36-Mario" },
-			{ type: "oll", moves: "[Match U] [Slot U'] [Sledge]", name: "38-Wario" },
+			{ type: "oll", moves: "Shoot [Slot U'] [Sledge]", name: "38-Wario" },
 		]
 	},
 	{
@@ -217,14 +217,14 @@ var oll = [
 			{ type: "oll", moves: "M U [Sexy] [Sledge] M'", name: "29-Spotted Chameleon" },
 			{ type: "oll", moves: "R2 U R' B' R U' R2 U R B R'", name: "30-Anti Spotted Chameleon" },
 			{ type: "oll", moves: "[Slot U2] R U y Slot U' F'", name: "41-Awkward Fish" },
-			{ type: "oll", moves: "R' U2 [Match U] R y [F Sexy F']", name: "42-Anti Awkward Fish" },
+			{ type: "oll", moves: "R' U2 Shoot R y [F Sexy F']", name: "42-Anti Awkward Fish" },
 		]
 	},
 	{
 		name: "Fish shapes",
 		algs: [
 			{ type: "oll", moves: "[Sexy R' F] R2 U R' U' F'", name: "9-Kite" },
-			{ type: "oll", moves: "[Match U] [Sledge] [LeftSlot]", name: "10-Anti Kite" },
+			{ type: "oll", moves: "Shoot [Sledge] [LeftSlot]", name: "10-Anti Kite" },
 			{ type: "oll", moves: "R U2 [R2 F R F'] [LeftSlot]", name: "35-Fish" },
 			{ type: "oll", moves: "F Slot U' Match F'", name: "37-Mounted Fish" },
 		]
@@ -325,8 +325,8 @@ var pll = [
 			{ type: "pll", moves: ["<bl>[Match F']</bl> LeftSexy [<r>R' F</r>] R U LeftSlot U'", "[L U2 L' U2] [L F'] [L' U' L U] [L F] L2' U"], name: "Ra", image_comment: "HL, I2B: 4 colors | O2B(adj), 3C: adj twice | 3C, 3C: BE adj twice | HL, 3C : checkers "},
 			{ type: "pll", moves: "LeftSexy^ [<r>R' F</r>] Sexy [<g>R' F' R2 U'</g>]", name: "Rb", image_comment: "HL, 3C : checkers | 3C, 3C: BE adj twice | O2B(adj), 3C: adj twice | HL, I2B: 4 colors " },
 			{ type: "pll", moves: "Pull d' [<g>R' F' R2 U'</g>] Pull [F R F] y'", name: "V", image_comment: "O2B: NBE | 4checkers: NBE | O2B: NBE | I2B, I2B: NBE"},
-			{ type: "pll", moves: ["R' U' F' Match <bl>{U' R' F [<m>R2 U' R'</m>]}</bl> U' Match U R", "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'"], name: "F", image_comment: "4checkers: BE | 3B, 3C: 4 colors | 3B, 3C: 4 colors | 4checkers: BE"},
-			{ type: "pll", moves: ["Match U Match F' Match <bl>{U' R' F [<m>R2 U' R'</m>]}</bl> U2 Slot","{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U"], name: "Na", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
+			{ type: "pll", moves: ["R' U' F' Match <bl>{U' R' F [<m>R2 U' R'</m>]}</bl> U' Shoot R", "[R' U2 R' d'] [R' F'] [R2 U' R' U] [R' F R U' F] y'"], name: "F", image_comment: "4checkers: BE | 3B, 3C: 4 colors | 3B, 3C: 4 colors | 4checkers: BE"},
+			{ type: "pll", moves: ["Shoot Match F' Match <bl>{U' R' F [<m>R2 U' R'</m>]}</bl> U2 Slot","{(L U' R) U2 (L' U R')} {(L U' R) U2 (L' U R')} U"], name: "Na", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
 			{ type: "pll", moves: ["R' U Slot F' U' F Match F R' F' Pull^", "R' [U,  Slot F'] [F : R'] Pull^", "{(R' U L') U2 (R U' L)} {(R' U L') U2 (R U' L)} U'"], name: "Nb", image_comment: "I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE | I2B, O2B: NBE" },
 		]
 	},
@@ -370,6 +370,7 @@ add("Pull", "R' U R'", 30)
 add("Slot", "R  U' R'", 4, "Match")
 add("LeftSlot", "R U2 R'", 2, "LeftSlot")
 add("LeftSexy", "R U2 R' U2", 15)
+add("Shoot", "R U R' U", 5)
 
 export  {
 	f2l,
