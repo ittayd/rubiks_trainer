@@ -226,7 +226,12 @@ class Train {
                     let option = $select.children(`[value="${id}"]`);
                     option.detach();
                     $select.append(option)
+                    if (id.indexOf('.') == -1) {
+                        $select.children().filter((i, e) => e.value != id && e.value.split('.')[0] == id).attr('disabled', 'disabled')
+                    }
                 })
+
+
                 $select.trigger('change')
             }
         }
