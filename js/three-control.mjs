@@ -87,11 +87,19 @@ class ThreeControl {
     #moves = []
     #undoIndex = -1;
     #resetIndexes = []
+    #rotateAllBtn
 
-    constructor(container, options = {mirror: true}) {   
+    constructor(container, options = {mirror: true, rotateAllBtn: undefined}) {   
       this.#cube = new ThreeCube($(container), options)
       $(this.#cube).on('cube:rotation', this.#rotated.bind(this))
       $(this.#cube).on('cube:reset', this.#resetted.bind(this))
+      if (options.rotateAllBtn) {
+        this.#rotateAllBtn = options.rotateAllBtn
+        this.#rotateAllBtn.click(_ => {
+          this.#cube.rotateAll = !this.#cube.rotateAll
+          this.#rotateAllBtn.toggleClass('collapsed')
+        })
+      }
     }
 
     reset({clearUndo = false} = {}) {
@@ -143,6 +151,10 @@ class ThreeControl {
       this.#clearRedo();
       this.#moves.push(new Move(axis, layers, turns))
       this.#undoIndex++
+      if (this.#cube.rotateAll && layers.length == 3) {
+        this.#cube.rotateAll = false;
+        this.#rotateAllBtn.toggleClass('collapsed')
+      }
     }
 
     #resetted(ev) {

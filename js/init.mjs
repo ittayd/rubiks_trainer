@@ -22,7 +22,7 @@ $(document).ready(function () {
     $('.nav-tabs').stickyTabs();
 
 
-    var control = new Control('#three-cube')
+    var control = new Control('#three-cube', {mirror: true, rotateAllBtn: $('#cube-rotate')})
     var train = new Train(control)
     var keybaord = new Keyboard(train, control)
     var buttons = new Buttons(control)

@@ -185,6 +185,17 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
     height: var(--cube-height);
     width: var(--cube-width);
 	touch-action: none;
+	position: relative
+}
+
+#cube-rotate {
+	background-size: 62px 48px;
+	background-image: url( '../images/cube_rotate.png' );
+	background-repeat: no-repeat;
+	width: 66px;
+	height: 52px;
+	position: absolute;
+	bottom: 0;
 }
 
 #demo_cube {

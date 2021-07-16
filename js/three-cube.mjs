@@ -102,6 +102,8 @@ class ThreeCube {
     #cube;
     #rotation = {state: "", group: undefined, queue: [], tl: undefined}
     #pieces = new Array(3).fill().map(_ => new Array(3).fill().map(_ => new Array(3).fill().map(_ => new THREE.Group())))
+
+    rotateAll = false;
     
     constructor(container, {mirror = true} = {}) {
         this.#container = $(container)
@@ -359,7 +361,7 @@ class ThreeCube {
             let direction = delta[(axis+1) % 3] > 0 || delta[(axis+2)%3] < 0 ? 1 : -1;
 
             let layers = [targetPick.position[axis] + 1]
-            if (multitouch || ev.ctrlKey/*length_square(originPick.position) == 1*/) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
+            if (multitouch || ev.ctrlKey || this.rotateAll /*length_square(originPick.position) == 1*/) // [1,0,0] or [0,1,0] or [0,0,1] which are for the center piece
                 layers = [0,1,2]
 
             if (ev.shiftKey && layers.length == 1 && layers[0] != 1) {
