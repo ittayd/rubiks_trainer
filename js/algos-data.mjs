@@ -158,7 +158,7 @@ var oll = [
 			{ type: "oll", moves: "Shoot Sledge U2 Sledge", name: "17-Slash", comment: "Similar to Runway but with Shoot instead of LeftSlot" },
 			{ type: "oll", moves: "M U Sexy M2 FatSexy'", name: "20-Checkers" },
 			{ type: "oll", moves: "[F Shoot] y' R' U2 Sledge", name: "18-Crown" },
-			{ type: "oll", moves: "[r' R] U [Sexy] r [R2' F R F']", name: "19-Bunny" },
+			{ type: "oll", moves: "M U Sexy M' Sledge", name: "19-Bunny" },
 		]
 	},
 	{
