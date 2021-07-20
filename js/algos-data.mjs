@@ -145,7 +145,7 @@ var oll = [
 			{ type: "oll", moves: "[f: Sexy] [F: Sexy]", name: "22-Blinker" },
 			{ type: "oll", moves: "(R2 D) (R' U2) (R D') (R' U2 R')", name: "23-Headlights" },
 			{ type: "oll", moves: "FatSexy FatSledge", name: "24-Chameleon" },
-			{ type: "oll", moves: "F' (FatSexy) (r' F R )", name: "25-Bowtie" },
+			{ type: "oll", moves: "F' (FatSexy) (r' F R )", name: "25-Bowtie", comment: "Like Chameleon shifted" },
 		]
 	},
 	{
@@ -156,16 +156,16 @@ var oll = [
 			{ type: "oll", moves: "[f: Sexy] U [F: Sexy]", name: "4-Nazi", comment: "Blinker with a U in the middle" },
 			{ type: "oll", moves: "[f: Sexy] U' [F: Sexy]", name: "3-Anti Nazi" },
 			{ type: "oll", moves: "Shoot Sledge U2 Sledge", name: "17-Slash", comment: "Similar to Runway but with Shoot instead of LeftSlot" },
-			{ type: "oll", moves: "M U Sexy M2 FatSexy'", name: "20-Checkers" },
+			{ type: "oll", moves: "[M U Sexy] M2 FatSexy'", name: "20-Checkers" },
 			{ type: "oll", moves: "[F Shoot] y' R' U2 Sledge", name: "18-Crown" },
-			{ type: "oll", moves: "M U Sexy M' Sledge", name: "19-Bunny" },
+			{ type: "oll", moves: "[M U Sexy] M' Sledge", name: "19-Bunny", comment: "Starts like Checkers" },
 		]
 	},
 	{
 		name: "C shapes",
 		algs: [
 			{ type: "oll", moves: "[(R' U'): Sledge]", name: "46-C & Headlights" },
-			{ type: "oll", moves: "R U R2 U' R' F R U R U' F'", name: "34-City" },
+			{ type: "oll", moves: ["Sexy B' Sledge B", "R U R2 U' R' F R U R U' F'"], name: "34-City" },
 		]
 	},
 	{
