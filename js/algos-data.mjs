@@ -171,7 +171,7 @@ var oll = [
 	{
 		name: "I shapes",
 		algs: [
-			{ type: "oll", moves: "R U2 R2 U' Slot U2 F R F'", name: "55-Highway" },
+			{ type: "oll", moves: "LeftSlot Shoot^ R' U2 F R F'", name: "55-Highway" },
 			{ type: "oll", moves: "Shoot R d' Slot F'", name: "52-Rice Cooker" },
 			{ type: "oll", moves: "[f: Sexy2]", name: "51-Bottlecap" },
 			{ type: "oll", moves: "[F Sexy R] F' [FatSexy] r'", name: "56-Streetlights" },
