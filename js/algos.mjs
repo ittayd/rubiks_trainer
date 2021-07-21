@@ -38,6 +38,8 @@ var parse;
 var notationpeg = $.ajax('resources/notation.pegjs')
 
 var classes = (function(){
+
+	// LCM - least common multiplier, AKA LCD.
 	function lcm(n1, n2) {
 		//Find the smallest and biggest number from both the numbers
 		let lar = Math.max(n1, n2);
@@ -121,6 +123,29 @@ var classes = (function(){
 		get cycles() {return cycles(this.array)}
 
 		static faceOrder = "ULFRBD".split("")
+
+		toString() {
+			let str = `
+			         +--------+
+			         |00 01 02|
+			         |03 U  05|
+			         |06 07 08|
+			+--------+--------+--------+--------+
+			|09 10 11|18 19 20|27 28 29|36 37 38|
+			|12 L  14|21 F  23|30 R  32|39 B  41|
+			|15 16 17|24 25 26|33 34 35|42 43 44|
+			+--------+--------+--------+--------+
+			         |45 46 47|
+			         |48 D  50|
+			         |51 52 53|
+			         +--------+
+			`.replace(/\t/gi,"")
+			
+			for(let i = 0; i < 54; i++) {
+				str = str.replace(new RegExp((i < 10 ? "0" : "") + i ), (Permutation.faceOrder[Math.floor(this.array[i]/9)]) + (this.array[i]%9));
+			}
+			return str;
+		}
 	}
 
 	
@@ -443,7 +468,7 @@ var classes = (function(){
 		}
 
 		selfPermutation() {
-			return this.repeatable_unit.permutation
+			return this.repeatable_unit.permutation.inverted // called only when not a group...
 		}
 
 		toIndividual() {
@@ -475,6 +500,7 @@ var classes = (function(){
 		get permutation() {
 			let p = Permutation[this.character]
 			switch(this.amount) {
+				case 0: return Permutation.identity
 				case 1: return p
 				case 2: return p.then(p)
 				case -1: return p.inverted
