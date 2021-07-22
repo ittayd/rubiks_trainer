@@ -467,7 +467,7 @@ var classes = (function(){
 			return this.repeatable_unit.toString(options) + "^";
 		}
 
-		selfPermutation() {
+		individualPermutation() {
 			return this.repeatable_unit.permutation.inverted // called only when not a group...
 		}
 
