@@ -394,7 +394,7 @@ var classes = (function(){
 				}
 				p = resolved.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
 			} else {
-				p = this.selfPermutation();
+				p = this.individualPermutation();
 				if (this.amount < 0) {
 					p = p.inverted;
 				}
