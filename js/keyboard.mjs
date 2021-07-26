@@ -46,7 +46,7 @@ class Keyboard {
                         this.control.move(algos.parse(move).toMoves());
                         this.update_move()
                     } catch (e) {
-                        console.log("Exception ", e);
+                        console.log("Exception ", move, e);
                         $('#keyboard').html(`<span class="yellow-fade">${$('#keyboard').text()}</span>`)
                     }
                 }
