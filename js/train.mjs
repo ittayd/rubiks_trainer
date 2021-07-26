@@ -3,6 +3,12 @@ import * as algos from './algos.mjs'
 import * as data from './algos-data.mjs'
 import {Collapse} from 'https://cdn.skypack.dev/bootstrap@5.0.1';
 
+import bootstrapStarRating from 'https://cdn.skypack.dev/bootstrap-star-rating';
+import theme from 'https://cdn.skypack.dev/bootstrap-star-rating/themes/krajee-uni/theme.js';
+
+
+
+
 $.fn.visible = function() {
     return this.css('visibility', 'visible');
 };
@@ -61,27 +67,38 @@ function random_turn() {
     return [turn, turns.indexOf(turn)]
 }
 
-function random_weight(algs, weight) {
-    // weight is how many algorithms to prioritize, starting from the last.
-    // If there are N algs and weight is K, then for the first N-K, weight is 1 and for the last K, weight is N-K
-    let weights = algs.map((a, i) => i >= algs.length - weight ? algs.length - weight : 1);
-
-    // turn into a distribution
+function random_weight(algs) {
+    let ratings = algs.map(algo => parseInt(localStorage.getItem(alg_id(algo)) || 1));
+    let counts = ratings.reduce((counts, rating) => {counts[rating] = (counts[rating] || 0) + 1; return counts}, [])
+                        .reduceRight((acc, count, rating) => {acc[rating] = count + (acc[rating + 1] || 0); return acc}, [])
+    
+    let weights = ratings.map(rating => rating == 5 ? 1 : counts[rating])
+    
     let sum = weights.reduce((a,b) => a+b, 0)
     weights = weights.map(w => w / sum)
 
-    // sample
     return random(algs, weights)
 }
 
-function choose_alg(choices, type, pre_move_i) {
-    let weight = parseInt($(`#${type}-weight`).val())
+function alg_id(algo) {
+    return algo.id || algo.name
+}
 
-    let chosen = random_weight(choices, weight) 
+function choose_alg(choices, type, pre_move_i) {
+    let chosen = random_weight(choices) 
     
     tip(chosen, `#${type}-tips`, ((-pre_move_i + 4) % 4)) // the comments are when moves are in reverse)
 
-    return alg_move(chosen)
+    let id = alg_id(chosen)
+
+    $(`#${type}-rating`)
+        .rating('update', id ? (localStorage.getItem(id) || 0) : 0)
+        .off('rating:change')
+        .on('rating:change', (event, value, caption) => {
+            localStorage.setItem(id, value);
+        });
+
+    return alg_move(chosen);
 }
 
 function alg_move(alg) {
@@ -235,9 +252,14 @@ class Train {
                 $select.trigger('change')
             }
         }
+        function persist(id) {
+            $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val())) 
+        }
+
         $('#f2l-btn').click(_ => this.f2l_scramble())
 
-        $('#oll-btn').click(_ => this.oll_scramble())
+        $('#oll-btn').click(_ => this.oll_scramble());
+        
 
         $('#pll-btn').click(_ => this.pll_scramble())
 
@@ -245,14 +267,6 @@ class Train {
         renderSelect('#pll-group', data.pll);
         renderSelect('#oll-group', data.oll);
         
-        function persist(id) {
-            $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val())) 
-        }
-        ['pll', 'oll'].forEach(type => {
-
-            persist(`#${type}-weight`)
-        })
-
         persist('#f2l-cnt')
 
         $('.collapse').each((i, e) => {

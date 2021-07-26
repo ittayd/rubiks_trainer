@@ -29,6 +29,9 @@
 	<link rel="stylesheet" href="//cdn.skypack.dev/select2/dist/css/select2.min.css" />
 	<link rel="stylesheet" href="css/algos.css" />
 
+	<link href="https://cdn.skypack.dev/bootstrap-star-rating/css/star-rating.min.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="https://cdn.skypack.dev/bootstrap-star-rating/themes/krajee-uni/theme.css" media="all" rel="stylesheet" type="text/css" />
+	
 	<script type="module" src="./js/init.mjs"></script>
 </head>
 
@@ -187,11 +190,7 @@
 								<div id="oll-controls" class="container-fluid collapse mt-2 dont-collapse-sm gx-1">
 									<div class="form-group row">
 										<input id="oll-btn" class="btn btn-mine  align-self-start col-auto " type="button" value="OLL">
-										<label class="col-2" for="oll-weight">priority</label>
-										<div class="col-2">
-											<!--<input class="form-control form-control-sm col-4" type="range" id="oll-weight" name="oll-weight" min="-1" max="9" step="1" value="4">-->
-											<input id="oll-weight" name="oll-weight" class="form-control form-control-sm" type="text" min="0" value="1" >
-										</div>
+										<input id="oll-rating" name="oll-rating" class="d-none rating" data-container-class="col" data-min="0" data-max="5" data-step="1" data-theme="krajee-uni" data-min-threshold="1" data-show-caption="false" data-size="sm" data-show-clear="false" data-hover-enabled="false"></input>
 										<input id="oll-tips-btn" type="button" class="btn btn-mine  col-auto" value="tip">
 										<div id="oll-tips" class="col"></div>
 									</div>
