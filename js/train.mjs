@@ -73,7 +73,7 @@ function random_weight(algs) {
 
     // per rating r, what is the comulative count of algos with rating >= r. So if there's an algorithm with a rating of '1' and 5 with rating of '5', counts will be 
     // 6 for the first algorithm and 5 for the others. Basically for the first algorithm, the count is how many algorithms there are that have its rating or above (6)
-    let counts = ratings.reduce((counts, rating) => {counts[rating] = (counts[rating] || 0) + 1; return counts}, [])
+    let counts = ratings.reduce((counts, rating) => {counts[rating] = (counts[rating] || 0) + 1; return counts}, Array(6).fill(0))
                         .reduceRight((acc, count, rating) => {acc[rating] = count + (acc[rating + 1] || 0); return acc}, [])
     
     // the weight is 1 for known algorithms (rating of 5) and the count for others. So for 4 rating algorithm, it'll be the number of '5' algorithms plus
