@@ -180,8 +180,8 @@ var oll = [
 	{
 		name: "L shapes",
 		algs: [
-			{ type: "oll", moves: "F Sexy2 F'", name: "48-Breakneck" },
-			{ type: "oll", moves: "R' U' Sledge2 U R", name: "47-Anti Breakneck" },
+			{ type: "oll", moves: "[F: Sexy2]", name: "48-Breakneck" },
+			{ type: "oll", moves: "[(R' U'): Sledge2]", name: "47-Anti Breakneck" },
 			{ type: "oll", moves: "[l' U' L U'] [L' U L U'] [L' U2 l]", name: "53-Frying Pan" },
 			{ type: "oll", moves: "[r U R' U] [Slot U] [R U2 r']", name: "54-Anti Frying Pan" },
 			{ type: "oll", moves: "[R' F R' F'] R2 U2 y [Sledge]", name: "49-Right Back Squeezy" },
@@ -192,7 +192,7 @@ var oll = [
 		name: "P shapes",
 		algs: [
 			{ type: "oll", moves: "[f: Sexy]", name: "44-P" },
-			{ type: "oll", moves: "f' (L' U' L U) f", name: "43-Anti P" },
+			{ type: "oll", moves: ["z [f': Ugly^] z'", "f' (L' U' L U) f"], name: "43-Anti P" },
 			{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-Couch" },
 			{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-Anti Couch" },
 		]
