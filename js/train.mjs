@@ -73,12 +73,16 @@ function random_weight(algs) {
 
     // per rating r, what is the comulative count of algos with rating >= r. So if there's an algorithm with a rating of '1' and 5 with rating of '5', counts will be 
     // 6 for the first algorithm and 5 for the others. Basically for the first algorithm, the count is how many algorithms there are that have its rating or above (6)
-    let counts = ratings.reduce((counts, rating) => {counts[rating] = (counts[rating] || 0) + 1; return counts}, Array(6).fill(0))
-                        .reduceRight((acc, count, rating) => {acc[rating] = count + (acc[rating + 1] || 0); return acc}, [])
+    let counts = ratings.reduce((counts, rating) => {counts[rating] = (counts[rating] || 0) + 1; return counts}, Array(6).fill(0)) // count per rating
+                        .reduceRight((acc, count, rating) => {acc[rating] = count + (acc[rating + 1] || 0); return acc}, []) // commulative                       
     
-    // the weight is 1 for known algorithms (rating of 5) and the count for others. So for 4 rating algorithm, it'll be the number of '5' algorithms plus
-    // the number of '4' algorithms.                         
-    let weights = ratings.map(rating => rating == 5 ? 1 : counts[rating])
+    // the weight is 1 for well known algorithms (rating of 5) and the commulative counts for others, but deprioritized by rating
+    // So for 4 rating algorithm, it'll be (number of '5' algorithms + the number of '4' algorithms) / 4. Which means that roughly for every 4 5 algorithms, there will
+    // be 1 4 algorithm (e.g. if there are 11 5 algorithms and 1 four, the weight will be (11+1)/4=3, so 3 times more weight. Note that just setting a weight of '4'
+    // will not cut it. Imagine 96 '5' algorithms and 1 '4' algorithm. The probabilities are 0.01 and 0.04 respectively, but it means that 96% of the time, a '5' algorithm
+    // is chosen. On the other hand, by dividing by 4, we have 97/4 = 24.25. and probablilities will be ~0.008 and  0.20 respectively, so 80% of the time, a '5' algorithm
+    // is chosen, and 20%, a '4'. 
+    let weights = ratings.map(rating => rating == 5 ? 1 : counts[rating] / rating)
     
     let sum = weights.reduce((a,b) => a+b, 0)
     weights = weights.map(w => w / sum)
