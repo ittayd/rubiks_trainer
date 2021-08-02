@@ -1,4 +1,4 @@
-import $ from 'https://cdn.skypack.dev/jquery';
+import $ from './jquery-global.mjs'
 import pegjs from 'https://cdn.skypack.dev/pegjs';
 import * as data from './algos-data.mjs';
 import Control from './three-control.mjs'

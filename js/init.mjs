@@ -1,9 +1,10 @@
-import './jquery-global.mjs'
+import $ from './jquery-global.mjs'
 import bootstrap from 'https://cdn.skypack.dev/bootstrap@5.0.1';
-import $ from 'https://cdn.skypack.dev/jquery';
 import select2 from 'https://cdn.skypack.dev/select2';
 select2(undefined, $);
 import jqueryStickytabs from 'https://cdn.skypack.dev/jquery-stickytabs';
+
+$(document).ready(_ => console.log('init: ready'))
 
 import Train from './train.mjs';
 import Control from './three-control.mjs';

@@ -1,12 +1,37 @@
-import $ from 'https://cdn.skypack.dev/jquery';
+import $ from './jquery-global.mjs'
 import * as algos from './algos.mjs'
 import * as data from './algos-data.mjs'
 import {Collapse} from 'https://cdn.skypack.dev/bootstrap@5.0.1';
 
+
+// doesn't work since bootstrap-star-rating loads as a module, so uses its internal jQuery instance while theme.js expects it to be in the window
 import bootstrapStarRating from 'https://cdn.skypack.dev/bootstrap-star-rating';
 import theme from 'https://cdn.skypack.dev/bootstrap-star-rating/themes/krajee-uni/theme.js';
 
+/*
+function include(file, {defer = true} = {}){
+    return new Promise(function(resolve, reject){
+        console.log('adding tags')
+        var script = document.createElement('script');
+        script.src = file;
+        script.type ='text/javascript';
+        script.defer = defer;
+        document.getElementsByTagName('head').item(0).appendChild(script);
 
+        script.onload = function(){
+            resolve()
+        }
+        script.onerror = function(){
+            reject()
+        }
+    })
+}
+
+
+// star-rating auto initializes on document ready which is already hapenning. not sure why. 
+include('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.1.0/js/star-rating.js'); // it autoinitializes elements on document.ready.
+include('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-star-rating/4.1.0/themes/krajee-uni/theme.js');
+*/
 
 
 $.fn.visible = function() {

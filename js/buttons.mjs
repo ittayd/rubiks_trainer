@@ -1,4 +1,4 @@
-import $ from 'https://cdn.skypack.dev/jquery';
+import $ from './jquery-global.mjs'
 import * as data from './algos-data.mjs'
 import * as algos from './algos.mjs'
 
