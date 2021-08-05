@@ -9,7 +9,7 @@ import initThreeDatGui from 'https://cdn.skypack.dev/three-dat.gui';
 initThreeDatGui(Dat)
 
 import {gsap, Linear, Sine} from 'https://cdn.skypack.dev/gsap';
-import $ from 'https://cdn.skypack.dev/jquery';
+import $ from './jquery-global.mjs'
 
 // import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
 
