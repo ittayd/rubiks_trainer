@@ -464,7 +464,7 @@ var classes = (function(){
 			if (this.repeatable_unit.constructor === Atomic) {
 				return this.toIndividual().toString(options)
 			}
-			return this.repeatable_unit.toString(options) + "^";
+			return `(${this.repeatable_unit.toString(options)})^`;
 		}
 
 		individualPermutation() {
@@ -473,6 +473,10 @@ var classes = (function(){
 
 		toIndividual() {
 			return new Atomic(this.repeatable_unit.character, this.repeatable_unit.inner, this.repeatable_unit.outer, this.repeatable_unit.amount * (-this.amount))
+		}
+
+		cascade(f) {
+			return new InvertEach(f(this.repeatable_unit), this.amount)
 		}
 
 	}
