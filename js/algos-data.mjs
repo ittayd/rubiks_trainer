@@ -181,18 +181,18 @@ var oll = [
 		name: "L shapes",
 		algs: [
 			{ type: "oll", moves: "[F: Sexy2]", name: "48-Breakneck" },
-			{ type: "oll", moves: ["[F': LeftSexy2]", "[(R' U'): Sledge2]"], name: "47-Anti Breakneck", comment: "Mirror on the x axis of Breakneck" },
+			{ type: "oll", moves: ["[F': Sexy<2]", "[(R' U'): Sledge2]"], name: "47-Anti Breakneck", comment: "Mirror on the x axis of Breakneck" },
 			{ type: "oll", moves: "r' U' Slot U Slot U2 r", name: "53-Frying Pan" },
 			{ type: "oll", moves: "r U Slot^ U' Slot^ U2 r'", name: "54-Anti Frying Pan", comment: "This is Frying Pan with each move reversed" },
-			{ type: "oll", moves: ["y2 r U' r2 U r2 U r2 U' r", "l U' l2 U l2 U l2 U' l", "[R' F R' F'] R2 U2 y [Sledge]"], name: "49-Right Back Squeezy", comment: "the l variant is RFS mirrored on x" },
-			{ type: "oll", moves: ["r' U r2 U' r2 U' r2 U r'", "R' F R2 B' R2' F' R2 B R'"], name: "50-Right Front Squeezy", comment: "RBS reversed" },
+			{ type: "oll", moves: ["r U' r2 U r2 U r2 U' r", "l U' l2 U l2 U l2 U' l", "[R' F R' F'] R2 U2 y [Sledge]"], name: "49-Right Back Squeezy", comment: "the l variant is RFS mirrored on x" },
+			{ type: "oll", moves: ["(r U' r2 U r2 U r2 U' r)^", "R' F R2 B' R2' F' R2 B R'"], name: "50-Right Front Squeezy", comment: "RBS reversed" },
 		]
 	},
 	{
 		name: "P shapes",
 		algs: [
 			{ type: "oll", moves: "[f: Sexy]", name: "44-P" },
-			{ type: "oll", moves: "[f': LeftSexy", name: "43-Anti P" },
+			{ type: "oll", moves: "[f': Sexy<]", name: "43-Anti P" },
 			{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-Couch" },
 			{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-Anti Couch" },
 		]
@@ -362,7 +362,6 @@ function add(name, moves, order, inverse) {
 }
 
 add("Sexy", "R U R' U'", 6, "Ugly")
-add("LeftSexy", "L' U' L U", 6),
 add("FatSexy", "r U R' U'", 12)
 add("Sledge", "R' F R F'", 6, "Hedge")
 add("FatSledge", "r' F R F'", 12)

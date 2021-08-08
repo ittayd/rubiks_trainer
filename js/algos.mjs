@@ -183,6 +183,11 @@ var classes = (function(){
 			return Permutation.faceOrder.indexOf(this.name) * 9
 		}
 
+		/**
+		 * return an array with the stickers of this face. 
+		 * named: return something like F3 instead of the 1-54 number 
+		 * rebase: instead of something like 9-17 return 0-8
+		 */ 
 		toArray({rebase = false, named = false} = {}) {
 			var result = [this.tl, this.tm, this.tr, this.el, this.em, this.er, this.bl, this.bm, this.br]
 			if (named) {
@@ -198,6 +203,9 @@ var classes = (function(){
 			return cycles(this.toArray(rebase), rebase ? 0 : this.base)
 		} 
 
+		/**
+		 * similar to x,y,z moves on the cube: don't change the face, just look at it from another angle (i think... long time since I wrote this)
+		 */
 		get clockwiseOrbit() {
 			return this.counter.remap(Face.U.clockwise.toArray())
 		}
@@ -210,6 +218,9 @@ var classes = (function(){
 			return this.double.remap(Face.U.double.toArray())
 		}
 
+		/** 
+		 * Change each face index (e.g. 33) to the mapping in the map (e.g. what is in index 33)
+		 */
 		remap(map) {
 			return new Face(this.name, this.toArray().map(i => map[i]))
 		}
@@ -363,7 +374,14 @@ var classes = (function(){
 					op = arr => arr
 				}
 				let result = new Array(options.sequence ? 1 : Math.abs(this.amount)).fill(op(resolved))
-				result = options.nested ? result[0] : result.flat(Infinity)
+				function flatten(arr) { 
+					if (!Array.isArray(arr)) return arr;
+					if (arr.length == 1) return flatten(arr[0])
+					return arr.map(x => flatten(x)); 
+				}
+				result = flatten(result)
+				if (!Array.isArray(result)) result = [result];
+				result = options.nested ? result : result.flat(Infinity)
 				if (string) {
 					function toStr(arr) { 
 						return arr.reduce((acc, e) => acc.concat((Array.isArray(e) ? `[${toStr(e)}]` : e)), []).join(" ")
@@ -442,22 +460,23 @@ var classes = (function(){
 	}
 
 
-	class InvertEach extends RepeatedUnit{
-		constructor(repeatable_unit, amount = 1) {
+	class Mirror extends RepeatedUnit{
+		constructor(repeatable_unit, amount = 1, axis = 'z') {
 			super(undefined, amount)
 			this.repeatable_unit = repeatable_unit;
+			this.axis = axis
 		}
 
 		get inverted() {
-			return new InvertEach(this.repeatable_unit, -this.amount)
+			return new Mirror(this.repeatable_unit, -this.amount, this.axis)
 		}
 
 		isGroup(options) {
-			return this.repeatable_unit.isGroup(options);
+			return this.repeatable_unit.isGroup($.extend({}, options, {keepTriggers: false}));
 		}
 
 		resolveShallow(options) {
-			return this.repeatable_unit.resolveShallow(options).map(x => new InvertEach(x, Math.abs(this.amount) )); // resolveShallow is used by toMove that will do the invert action if amount < 0
+			return this.repeatable_unit.resolveShallow(options).map(x => new Mirror(x, 1, this.axis )); // resolveShallow is used by toMove will use the amount
 		}
 
 		innerString(options) {
@@ -468,15 +487,15 @@ var classes = (function(){
 		}
 
 		individualPermutation() {
-			return this.repeatable_unit.permutation.inverted // called only when not a group...
+			return this.repeatable_unit.mirror(this.axis).permutation // called only when not a group...
 		}
 
 		toIndividual() {
-			return new Atomic(this.repeatable_unit.character, this.repeatable_unit.inner, this.repeatable_unit.outer, this.repeatable_unit.amount * (-this.amount))
+			return new Atomic(this.repeatable_unit.character, this.repeatable_unit.inner, this.repeatable_unit.outer, this.repeatable_unit.amount * this.amount).mirror(this.axis)
 		}
 
 		cascade(f) {
-			return new InvertEach(f(this.repeatable_unit), this.amount)
+			return new Mirror(f(this.repeatable_unit), this.amount, this.axis)
 		}
 
 	}
@@ -565,6 +584,12 @@ var classes = (function(){
 		cascade(f) {
 			return f(this.toSequence())
 		}
+
+		toIndividual() {
+			return this;
+		}
+
+
 
 	}
 
@@ -713,7 +738,7 @@ var classes = (function(){
 		Pause: Pause, 
 		Permutation: Permutation,
 		Face: Face,
-		InvertEach: InvertEach
+		Mirror: Mirror
 	}
 })();
 

@@ -7,6 +7,9 @@ AMOUNT = "'" amount:AMOUNT { return -amount; }
        / number:NUMBER { return number; }
        / "'" { return -1; }
 
+OPERATOR = "^" {return ru => new options.classes.Mirror(ru, 1, 'z')}
+        / "<" {return ru => new options.classes.Mirror(ru, 1, 'x')}
+
 ATOMIC_MOVE = character:[LRUDFBMESlrudfbmesxyz] { return character; }
 
 ATOMIC = move:ATOMIC_MOVE { return new options.classes.Atomic(move); }
@@ -28,12 +31,11 @@ REPEATABLE_UNIT = BLOCK_MOVE
                 / [(\[{}] nestedSequence:SEQUENCE [)\]}] { return nestedSequence; }
                 / MARKUP_SEQUENCE
 
-REPEATABLE_UNIT2 =  repeatable_unit:REPEATABLE_UNIT "^" { return new options.classes.InvertEach(repeatable_unit) }
-              / repeatable_unit:REPEATABLE_UNIT { return repeatable_unit; }
-
-
-REPEATED_UNIT = repeatable_unit:REPEATABLE_UNIT2 amount:AMOUNT { repeatable_unit.amount = amount; return repeatable_unit; }
-              / repeatable_unit:REPEATABLE_UNIT2 { repeatable_unit.amount = 1; return repeatable_unit; }
+REPEATED_UNIT = repeatable_unit:REPEATABLE_UNIT amount:AMOUNT op:OPERATOR {let ru = op(repeatable_unit); ru.amount = amount; return ru; }
+              / repeatable_unit:REPEATABLE_UNIT op:OPERATOR amount:AMOUNT {let ru = op(repeatable_unit); ru.amount = amount; return ru; }
+              / repeatable_unit:REPEATABLE_UNIT amount:AMOUNT {repeatable_unit.amount = amount; return repeatable_unit; }
+              / repeatable_unit:REPEATABLE_UNIT op:OPERATOR {return op(repeatable_unit);}
+              / repeatable_unit:REPEATABLE_UNIT { repeatable_unit.amount = 1; return repeatable_unit; }
 
 COMMENT = "//" body:[^\n\r]* { return new options.classes.Comment(body.join("")); }
         / "/*" body:[^*\n\r]* "*/" { return new options.classes.Comment(body.join("")); }
