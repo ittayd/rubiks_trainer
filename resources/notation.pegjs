@@ -8,7 +8,7 @@ AMOUNT = "'" amount:AMOUNT { return -amount; }
        / "'" { return -1; }
 
 OPERATOR = "^" {return ru => new options.classes.Mirror(ru, 1, 'z')}
-        / "<" {return ru => new options.classes.Mirror(ru, 1, 'x')}
+        / "~" {return ru => new options.classes.Mirror(ru, 1, 'x')}
 
 ATOMIC_MOVE = character:[LRUDFBMESlrudfbmesxyz] { return character; }
 
