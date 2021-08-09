@@ -281,3 +281,8 @@ ul.pll:not(.expand-images) .images > .image:not(:first-child) {
 .rating-sm {
 	line-height: 0px;
 }
+
+#oll-tips, #pll-tips {
+	overflow: hidden;
+	white-space: nowrap;
+}
