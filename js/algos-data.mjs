@@ -193,8 +193,8 @@ var oll = [
 		algs: [
 			{ type: "oll", moves: "[f: Sexy]", name: "44-P" },
 			{ type: "oll", moves: "[f': Sexy~]", name: "43-Anti P" },
-			{ type: "oll", moves: "[R' U'] F [Ugly] F' R", name: "31-Couch" },
-			{ type: "oll", moves: "R U B' U' Slot^ B R'", name: "32-Anti Couch" },
+			{ type: "oll", moves: "[R' U'] [F: Ugly] R", name: "31-Couch" },
+			{ type: "oll", moves: "([R' U'] [F: Ugly] R)^", name: "32-Anti Couch", comment: "Couch in the back" },
 		]
 	},
 	{
