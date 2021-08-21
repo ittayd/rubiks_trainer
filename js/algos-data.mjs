@@ -207,8 +207,8 @@ var oll = [
 	{
 		name: "W shapes",
 		algs: [
-			{ type: "oll", moves: "[L' U' L U'] [L' U L U] [L F' L' F]", name: "36-Mario" },
-			{ type: "oll", moves: "Shoot [Slot U'] [Sledge]", name: "38-Wario" },
+			{ type: "oll", moves: "(Shoot Slot U' Sledge)~", name: "36-Mario", comment: "Wario on the left" },
+			{ type: "oll", moves: "Shoot Slot U' Sledge", name: "38-Wario" },
 		]
 	},
 	{
