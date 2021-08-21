@@ -406,10 +406,7 @@ var classes = (function(){
 		get permutation() {
 			let p;
 			if (this.isGroup({})) {
-				let resolved = this.amount == 0 ? [] : this.resolveShallow({})
-				if (this.amount < 0) {
-					resolved = resolved.map(x => x.inverted).reverse();
-				}
+				let resolved = this.amount == 0 ? [] : this.toMoves({shallow: true})
 				p = resolved.reduceRight((permutation, val) => permutation.composeWith(val.permutation), new Permutation())
 			} else {
 				p = this.individualPermutation();
@@ -476,7 +473,7 @@ var classes = (function(){
 		}
 
 		resolveShallow(options) {
-			return this.repeatable_unit.resolveShallow(options).map(x => new Mirror(x, 1, this.axis )); // resolveShallow is used by toMove will use the amount
+			return this.repeatable_unit.toMoves($.extend({}, options, {shallow: true})).map(x => new Mirror(x, 1, this.axis )); // resolveShallow is used by toMove will use the amount
 		}
 
 		innerString(options) {
@@ -574,7 +571,7 @@ var classes = (function(){
 		}
 
 		resolveShallow(options) {
-			return this.toSequence(true).resolveShallow(options)
+			return this.toSequence(true).toMoves($.extend({}, options, {shallow: true}))
 		}
 
 		innerString() {
@@ -640,7 +637,7 @@ var classes = (function(){
 		}
 
 		resolveShallow(options) {
-			return this.sequence.resolveShallow(options)
+			return this.sequence.toMoves($.extend({}, options, {shallow:true}))
 		}
 
 		innerString(options) {
