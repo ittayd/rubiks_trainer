@@ -66,7 +66,6 @@ async function loadStl(url) {
     resource.scale(0.5, 0.5, 0.5)
     resource.normalizeNormals();
     resource.computeVertexNormals();
-    resource.computeFaceNormals();
     return resource;
 };
 
@@ -161,8 +160,7 @@ class ThreeCube {
         // Build the cube
         let face = new THREE.Group();
 
-        const pick_g = new THREE.PlaneBufferGeometry(1,1)
-        pick_g.computeFaceNormals();
+        const pick_g = new THREE.PlaneGeometry(1,1)
 
         // transparent "stickers" that will capture user touch/drag events
         //DEBUG: const pick_m = new THREE.MeshBasicMaterial( { depthWrite: true, transparent: false, opacity: 1, side: THREE.DoubleSide, color: 0x0033ff } );
