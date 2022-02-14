@@ -13,7 +13,7 @@ import $ from './jquery-global.mjs'
 
 // import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
 
-import {GPUPicker} from /*'https://rawcdn.githack.com/ittayd/three_js_gpu_picking/e22cb7fc9ed0a10d6e01edf2f1e44eff957c499b/gpupicker.js'*/ 'https://raw.githack.com/ittayd/three_js_gpu_picking/master/gpupicker.js';
+import {GPUPicker} from 'https://ittayd.github.io/three_js_gpu_picking/gpupicker.js' /*'https://rawcdn.githack.com/ittayd/three_js_gpu_picking/e22cb7fc9ed0a10d6e01edf2f1e44eff957c499b/gpupicker.js' */ /* 'https://raw.githack.com/ittayd/three_js_gpu_picking/master/gpupicker.js';*/
 
 
 Array.prototype.minBy = function (fn) { return this.extremumBy(fn, Math.min); };
