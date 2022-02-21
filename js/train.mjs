@@ -445,15 +445,15 @@ class Train {
 
         if (algo === undefined) {
             let groupIdx = parseInt($('#f2l-group').find(":selected").val());
-            switch(groupIdx) {
+            switch(isNaN(groupIdx) || groupIdx) {
+                case true:
+                    alert("could not parse selection");
+                    break;
                 case -2:
                     algo = alg_move(random_alg(data.f2l, '#f2l-tips'))
                     break;
                 case -1:
                     algo = algotext
-                    break;
-                case NaN:
-                    alert("could not parse selection");
                     break;
                 default: {
                     let group = data.f2l[groupIdx];
