@@ -830,7 +830,7 @@ function renderItem(default_stage, items, $container) {
 	}
 
 	async function img_blob(url) {
-		let response = await fetch(`https://cors.bridged.cc/https:${url}`)
+		let response = await fetch(`https://cors.bridged.cc/https:${url}`, {headers: {'x-cors-grida-api-key': 'a6a375de-8d25-4dbe-81dd-cfd21d1e5fef'}})
 		let blob = await response.blob()
 		return blob; //URL.createObjectURL(blob);
 	}
