@@ -516,7 +516,7 @@ class ThreeCube {
             new THREE.Vector3(-2.4, 2.2, 2.4),
         ]).map(p => p.sub(lookAt))
 
-        const tany = Math.tan(this.#camera.fov * THREE.Math.DEG2RAD/2)
+        const tany = Math.tan(THREE.MathUtils.degToRad(this.#camera.fov / 2))
 
         // to calculate the distance, project each point to the x or y axis of the camera and calculate the distance it'll take to position the camera
         // given its FOV so the point is in its furstrum. 

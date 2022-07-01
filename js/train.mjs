@@ -288,7 +288,10 @@ class Train {
             }
         }
         function persist(id) {
-            $(id).val(localStorage.getItem(id)).on('change', e => localStorage.setItem(id, $(e.target).val())) 
+	    let prev = localStorage.getItem(id) 
+	    if (prev !== null) 
+		$(id).val(prev)
+            $(id).on('change', e => localStorage.setItem(id, $(e.target).val())) 
         }
 
         $('#f2l-btn').click(_ => this.f2l_scramble())
