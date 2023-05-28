@@ -8,7 +8,7 @@ import Dat from 'https://cdn.skypack.dev/dat.gui';
 import initThreeDatGui from 'https://cdn.skypack.dev/three-dat.gui';
 initThreeDatGui(Dat)
 
-import {gsap, Linear, Sine} from 'https://cdn.skypack.dev/gsap';
+import {gsap, Linear, Sine} from 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js';
 import $ from './jquery-global.mjs'
 
 // import documentReadyPromise from 'https://cdn.skypack.dev/document-ready-promise';
