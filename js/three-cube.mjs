@@ -1,9 +1,9 @@
-import * as THREE from 'https://unpkg.com/browse/three@0.144.0/build/three.module.js';
-import Stats from 'https://unpkg.com/browse/three@0.144.0/examples/jsm/libs/stats.module.js';
-import { STLLoader } from 'https://unpkg.com/browse/three@0.144.0/examples/jsm/loaders/STLLoader.js';
-import { GLTFLoader } from 'https://unpkg.com/browse/three@0.144.0/examples/jsm/loaders/GLTFLoader.js';
-import {OrbitControls} from 'https://unpkg.com/browse/three@0.144.0/examples/jsm/controls/OrbitControls.js'
-import { TransformControls } from 'https://unpkg.com/browse/three@0.144.0/examples/jsm/controls/TransformControls.js';
+import * as THREE from 'https://unpkg.com/three@0.144.0/build/three.module.js';
+import Stats from 'https://unpkg.com/three@0.144.0/examples/jsm/libs/stats.module.js';
+import { STLLoader } from 'https://unpkg.com/three@0.144.0/examples/jsm/loaders/STLLoader.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.144.0/examples/jsm/loaders/GLTFLoader.js';
+import {OrbitControls} from 'https://unpkg.com/three@0.144.0/examples/jsm/controls/OrbitControls.js'
+import { TransformControls } from 'https://unpkg.com/three@0.144.0/examples/jsm/controls/TransformControls.js';
 import Dat from 'https://cdn.skypack.dev/dat.gui';
 import initThreeDatGui from 'https://cdn.skypack.dev/three-dat.gui';
 initThreeDatGui(Dat)
